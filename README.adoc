@@ -1,2 +1,4 @@
 = asciimath2unitsml
 Convert Asciimath via MathML to UnitsML
+
+Encode UnitsML expressions in AsciiMath as `"unitsml(...)"`

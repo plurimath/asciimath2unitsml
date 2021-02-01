@@ -8,8 +8,8 @@ end
 SimpleCov.start 'gem'
 
 require 'asciimath2unitsml'
-require "equivalent-xml"
 require "rspec/matchers"
+require "equivalent-xml/rspec_matchers"
 require "rexml/document"
 
 RSpec.configure do |config|
@@ -22,4 +22,12 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
+end
+
+def xmlpp(x)
+  s = ""
+  f = REXML::Formatters::Pretty.new(2)
+  f.compact = true
+  f.write(REXML::Document.new(x),s)
+  s
 end
