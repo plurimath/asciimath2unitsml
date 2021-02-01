@@ -5,13 +5,17 @@ require "htmlentities"
 module Asciimath2UnitsML
   MATHML_NS = "http://www.w3.org/1998/Math/MathML".freeze
 
-  def self.conv(x)
+  def self.Asciimath2UnitsML(x)
     xml = Nokogiri::XML(asciimath2mathml(x))
     xml.xpath(".//m:mtext", "m" => MATHML_NS).each do |x|
       next unless %r{^unitsml\(.+\)$}.match(x.text)
       x.replace(unitsml(x.text.sub(%r{^unitsml\((.+)\)$}m, "\\1")))
     end
     xml.to_xml
+  end
+
+  def self.UnitsML2MathML(x)
+    x
   end
 
   def self.asciimath2mathml(x)
