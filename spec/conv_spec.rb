@@ -11,7 +11,7 @@ RSpec.describe Asciimath2UnitsML do
   <mn>5</mn>
   <mo>&#xD7;</mo>
   <mn>7</mn>
-  <UnitsML>g</UnitsML>
+  <unitsml xmlns='http://unitsml.nist.gov/2005'>g</unitsml>
 </math>
     OUTPUT
   end
@@ -24,7 +24,7 @@ RSpec.describe Asciimath2UnitsML do
   <mn>5</mn>
   <mo>&#xD7;</mo>
   <mn>7</mn>
-  <UnitsML>g</UnitsML>
+  <unitsml xmlns='http://unitsml.nist.gov/2005'>g</unitsml>
 </math>
     INPUT
         <math xmlns='http://www.w3.org/1998/Math/MathML'>
@@ -33,7 +33,7 @@ RSpec.describe Asciimath2UnitsML do
   <mn>5</mn>
   <mo>&#xD7;</mo>
   <mn>7</mn>
-  <UnitsML>g</UnitsML>
+  <unitsml xmlns='http://unitsml.nist.gov/2005'>g</unitsml>
 </math>
     OUTPUT
   end
