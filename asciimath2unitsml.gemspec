@@ -27,6 +27,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "asciimath"
   spec.add_dependency "htmlentities"
   spec.add_dependency "nokogiri", "~> 1.10.4"
+  spec.add_dependency "rsec", "~> 1.0.0"
 
   spec.add_development_dependency "bundler"
   spec.add_development_dependency "byebug", "~> 9.1"
