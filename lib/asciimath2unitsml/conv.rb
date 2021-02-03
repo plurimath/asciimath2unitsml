@@ -13,26 +13,44 @@ module Asciimath2UnitsML
 
     def initialize
       @prefixes = read_yaml("../unitsdb/prefixes.yaml")
-      @quantities = YAML.load_file(File.join(File.join(File.dirname(__FILE__),
-                                                       "../unitsdb/quantities.yaml")))
+      @quantities = symbolize_keys(YAML.load_file(File.join(File.join(File.dirname(__FILE__),
+                                                       "../unitsdb/quantities.yaml"))))
       @units = read_yaml("../unitsdb/units.yaml")
       @parser = parser
     end
 
     def read_yaml(path)
       yaml = YAML.load_file(File.join(File.join(File.dirname(__FILE__), path)))
-      yaml.each_with_object({}) do |(k, v), m|
+      symbolize_keys(yaml.each_with_object({}) do |(k, v), m|
         next if v["name"].nil? || v["name"].empty?
         symbol = v["symbol"] || v["short"]
         m[symbol] = v
         m[symbol]["symbol"] = symbol
         m[symbol]["id"] = k
-      end
+      end)
+    end
+
+    def symbolize_keys(hash)
+      hash.inject({}){|result, (key, value)|
+        new_key = case key
+                  when String then key.to_sym
+                  else key
+                  end
+        new_value = case value
+                    when Hash then symbolize_keys(value)
+                    else value
+                    end
+        result[new_key] = new_value
+        result
+      }
     end
 
     def parser
       prefix = /#{@prefixes.keys.join("|")}/.r
-      unit1 = /#{@units.keys.reject { |k| /\*|\^/.match(k) }.map { |k| Regexp.escape(k) }.join("|")}/.r
+      unit_keys = @units.keys.reject do |k|
+        @units[k][:type]&.include?("buildable") || /\*|\^/.match(k)
+      end.map { |k| Regexp.escape(k) }
+      unit1 = /#{unit_keys.join("|")}/.r
       exponent = /\^-?\d+/.r.map { |m| m.sub(/\^/, "") }
       multiplier = /\*/.r
       unit = seq(unit1, exponent._?) { |x| { prefix: nil, unit: x[0], exponent: x[1][0] } } |
@@ -61,15 +79,112 @@ module Asciimath2UnitsML
       gsub(/<math>/, "<math xmlns='#{MATHML_NS}'>")
     end
 
+    def unit(units, text)
+      id = @units[text.to_sym] ? @units[text.to_sym][:id] : text.gsub(/\*/, ".").gsub(/\^/, "")
+      <<~END
+      <Unit xmlns='#{UNITSML_NS}' xml:id=#{id}>
+      #{unitsystem(units)}
+      #{unitname(units, text)}
+      #{unitsymbol(units)}
+      #{rootunits(units)}
+      </Unit>
+      END
+    end
+
+    def unitsystem(units)
+      ret = []
+      units.any? { |x| @units[x[:unit].to_sym][:si] != true } and
+        ret << "<UnitSystem name='not_SI' type='not_SI' xml:lang='en-US'/>"
+      if units.any? { |x| @units[x[:unit].to_sym][:si] == true }
+        if units.size > 1
+          ret << "<UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>"
+        else
+          base = @units[units[0][:unit].to_sym][:type].include?("si-base")
+          ret << "<UnitSystem name='SI' type='#{base ? "SI_base" : "SI_derived"}' xml:lang='en-US'/>"
+        end
+      end
+      ret.join("\n")
+    end
+
+    def unitname(units, text)
+      name = @units[text.to_sym] ? @units[text.to_sym][:name] : compose_name(units, text)
+      "<UnitName xml:lang='en'>#{name}</UnitName>"
+    end
+
+    # TODO: compose name from the component units
+    def compose_name(units, text)
+      text
+    end
+
+    def unitsymbol(units)
+      <<~END
+      <UnitSymbol type="HTML">#{htmlsymbol(units)}</UnitSymbol>
+      <UnitSymbol type="MathML">#{mathmlsymbol(units)}</UnitSymbol>
+      END
+    end
+
+    def htmlsymbol(units)
+      units.map do |u|
+        u[:exponent] and exp = "<sup>#{u[:exponent].sub(/-/, "&#x2212;")}</sup>"
+        "#{u[:prefix]}#{u[:unit]}#{exp}"
+      end.join(" &#183; ")
+    end
+
+    def mathmlsymbol(units)
+      exp = units.map do |u|
+        base = "<mi mathvariant='normal'>#{u[:prefix]}#{u[:unit]}</mi>"
+        if u[:exponent]
+          exp = "<mn>#{u[:exponent]}</mn>".sub(/<mn>-/, "<mo>&#x2212;</mo><mn>")
+          "<msup><mrow>#{base}</mrow><mrow>#{exp}</mrow></msup>"
+        else
+          base
+        end
+      end.join("<mo>&#xB7;</mo>")
+      <<~END
+      <math xmlns='#{MATHML_NS}'>
+      <mrow>#{exp}</mrow>
+      </math>
+      END
+    end
+
+    def rootunits(units)
+      return if units.size == 1
+      exp = units.map do |u|
+        prefix = " prefix='#{u[:prefix]}'" if u[:prefix]
+        exponent = " powerNumerator='#{u[:exponent]}'" if u[:exponent]
+        "<EnumeratedRootUnit unit='#{@units[u[:unit].to_sym][:name]}'#{prefix}#{exponent}/>"
+      end.join("\n")
+      <<~END
+      <RootUnits>#{exp}</RootUnits>
+      END
+    end
+
+    def prefix(units)
+      units.map { |u| u[:prefix] }.reject { |u| u.nil? }.uniq.map do |p1|
+        p = p1.to_sym
+        <<~END
+        <Prefix xmlns='#{UNITSML_NS}' prefixBase='#{@prefixes[p][:base]}'
+                prefixPower='#{@prefixes[p][:power]}' xml:id='#{@prefixes[p][:id]}'>
+          <PrefixName xml:lang="en">#{@prefixes[p][:name]}</PrefixName>
+          <PrefixSymbol type="ASCII">#{@prefixes[p][:symbol]}</PrefixSymbol>
+        </Prefix>
+        END
+      end.join("\n")
+    end
+
+    def dimension(units)
+    end
+
     def unitsml(x)
       units = @parser.parse(x)
       if !units || Rsec::INVALID[units]
         raise Rsec::SyntaxError.new "error parsing UnitsML expression", x, 1, 0
       end
       Rsec::Fail.reset
-      warn "#{x}: #{@parser.parse(x)}"
       <<~END
-      <unitsml xmlns='#{UNITSML_NS}'>#{x}</unitsml>
+      #{unit(units, x)}
+      #{prefix(units)}
+      #{dimension(units)}
       END
     end
   end

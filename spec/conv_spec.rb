@@ -6,22 +6,119 @@ RSpec.describe Asciimath2UnitsML do
     32 + 5 xx 7 "unitsml(kg^-2)" xx 9 "unitsml(g)" xx 1 "unitsml(kg*s^-2)" xx 812 "unitsml(m*s^-2)"
     INPUT
     <math xmlns='http://www.w3.org/1998/Math/MathML'>
-  <mn>32</mn>
-  <mo>+</mo>
-  <mn>5</mn>
-  <mo>&#xD7;</mo>
-  <mn>7</mn>
-  <unitsml xmlns='http://unitsml.nist.gov/2005'>kg^-2</unitsml>
+         <mn>32</mn>
+         <mo>+</mo>
+         <mn>5</mn>
+         <mo>&#xD7;</mo>
+         <mn>7</mn>
+         <unit xmlns='http://unitsml.nist.gov/2005' xml:id='kg-2'>
+           <unitsystem name='SI' type='SI_base' xml:lang='en-US'/>
+           <unitname xml:lang='en'>kg^-2</unitname>
+           <unitsymbol type='HTML'>
+             kg
+             <sup>&#x2212;2</sup>
+           </unitsymbol>
+           <unitsymbol type='MathML'>
+             <math xmlns='http://www.w3.org/1998/Math/MathML'>
+               <mrow>
+                 <msup>
+                   <mrow>
+                     <mi mathvariant='normal'>kg</mi>
+                   </mrow>
+                   <mrow>
+                     <mo>&#x2212;</mo>
+                     <mn>2</mn>
+                   </mrow>
+                 </msup>
+               </mrow>
+             </math>
+           </unitsymbol>
+         </unit>
+         <prefix xmlns='http://unitsml.nist.gov/2005' prefixbase='10' prefixpower='3' xml:id='NISTp10_3'>
+           <prefixname xml:lang='en'>kilo</prefixname>
+           <prefixsymbol type='ASCII'>k</prefixsymbol>
+         </prefix>
          <mo>&#xD7;</mo>
          <mn>9</mn>
-         <unitsml xmlns='http://unitsml.nist.gov/2005'>g</unitsml>
+         <unit xmlns='http://unitsml.nist.gov/2005' xml:id='NISTu27'>
+           <unitsystem name='SI' type='SI_base' xml:lang='en-US'/>
+           <unitname xml:lang='en'>gram</unitname>
+           <unitsymbol type='HTML'>g</unitsymbol>
+           <unitsymbol type='MathML'>
+             <math xmlns='http://www.w3.org/1998/Math/MathML'>
+               <mrow>
+                 <mi mathvariant='normal'>g</mi>
+               </mrow>
+             </math>
+           </unitsymbol>
+         </unit>
          <mo>&#xD7;</mo>
          <mn>1</mn>
-         <unitsml xmlns='http://unitsml.nist.gov/2005'>kg*s^-2</unitsml>
+         <unit xmlns='http://unitsml.nist.gov/2005' xml:id='kg.s-2'>
+           <unitsystem name='SI' type='SI_derived' xml:lang='en-US'/>
+           <unitname xml:lang='en'>kg*s^-2</unitname>
+           <unitsymbol type='HTML'>
+             kg &#xB7; s
+             <sup>&#x2212;2</sup>
+           </unitsymbol>
+           <unitsymbol type='MathML'>
+             <math xmlns='http://www.w3.org/1998/Math/MathML'>
+               <mrow>
+                 <mi mathvariant='normal'>kg</mi>
+                 <mo>&#xB7;</mo>
+                 <msup>
+                   <mrow>
+                     <mi mathvariant='normal'>s</mi>
+                   </mrow>
+                   <mrow>
+                     <mo>&#x2212;</mo>
+                     <mn>2</mn>
+                   </mrow>
+                 </msup>
+               </mrow>
+             </math>
+           </unitsymbol>
+           <rootunits>
+             <enumeratedrootunit unit='gram' prefix='k'/>
+             <enumeratedrootunit unit='second' powernumerator='-2'/>
+           </rootunits>
+         </unit>
+         <prefix xmlns='http://unitsml.nist.gov/2005' prefixbase='10' prefixpower='3' xml:id='NISTp10_3'>
+           <prefixname xml:lang='en'>kilo</prefixname>
+           <prefixsymbol type='ASCII'>k</prefixsymbol>
+         </prefix>
          <mo>&#xD7;</mo>
          <mn>812</mn>
-         <unitsml xmlns='http://unitsml.nist.gov/2005'>m*s^-2</unitsml>
-</math>
+         <unit xmlns='http://unitsml.nist.gov/2005' xml:id='NISTu1.u3e-2_1'>
+           <unitsystem name='SI' type='SI_derived' xml:lang='en-US'/>
+           <unitname xml:lang='en'>meter per second squared</unitname>
+           <unitsymbol type='HTML'>
+             m &#xB7; s
+             <sup>&#x2212;2</sup>
+           </unitsymbol>
+           <unitsymbol type='MathML'>
+             <math xmlns='http://www.w3.org/1998/Math/MathML'>
+               <mrow>
+                 <mi mathvariant='normal'>m</mi>
+                 <mo>&#xB7;</mo>
+                 <msup>
+                   <mrow>
+                     <mi mathvariant='normal'>s</mi>
+                   </mrow>
+                   <mrow>
+                     <mo>&#x2212;</mo>
+                     <mn>2</mn>
+                   </mrow>
+                 </msup>
+               </mrow>
+             </math>
+           </unitsymbol>
+           <rootunits>
+             <enumeratedrootunit unit='meter'/>
+             <enumeratedrootunit unit='second' powernumerator='-2'/>
+           </rootunits>
+         </unit>
+       </math>
     OUTPUT
   end
 
