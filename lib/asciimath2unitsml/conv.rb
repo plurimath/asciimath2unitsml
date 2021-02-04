@@ -64,13 +64,15 @@ module Asciimath2UnitsML
       parser = units.eof
     end
 
+    # https://www.w3.org/TR/mathml-units/ section 2: delimit number Invisible-Times unit
     def Asciimath2UnitsML(expression)
       xml = Nokogiri::XML(asciimath2mathml(expression))
       xml.xpath(".//m:mtext", "m" => MATHML_NS).each do |x|
         next unless %r{^unitsml\(.+\)$}.match(x.text)
         text = x.text.sub(%r{^unitsml\((.+)\)$}m, "\\1")
         units = parse(text)
-        x.replace("<mrow xref='#{id(text)}'>#{mathmlsymbol(units)}</mrow>\n#{unitsml(units, text)}")
+        delim = x&.previous_element&.name == "mn" ? "<mo rspace='thickmathspace'>&#x2062;</mo>" : ""
+        x.replace("#{delim}<mrow xref='#{id(text)}'>#{mathmlsymbol(units)}</mrow>\n#{unitsml(units, text)}")
       end
       xml.to_xml
     end
