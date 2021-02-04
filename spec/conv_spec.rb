@@ -5,7 +5,7 @@ RSpec.describe Asciimath2UnitsML do
     expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
     32 + 5 xx 7 "unitsml(kg^-2)" xx 9 "unitsml(g)" xx 1 "unitsml(kg*s^-2)" xx 812 "unitsml(m*s^-2)"
     INPUT
-     <math xmlns='http://www.w3.org/1998/Math/MathML'>
+    <math xmlns='http://www.w3.org/1998/Math/MathML'>
          <mn>32</mn>
          <mo>+</mo>
          <mn>5</mn>
@@ -23,14 +23,14 @@ RSpec.describe Asciimath2UnitsML do
              </mrow>
            </msup>
          </mrow>
-         <unit xmlns='http://unitsml.nist.gov/2005' xml:id='kg-2'>
-           <unitsystem name='SI' type='SI_base' xml:lang='en-US'/>
-           <unitname xml:lang='en'>kg^-2</unitname>
-           <unitsymbol type='HTML'>
+         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='kg-2'>
+           <UnitSystem name='SI' type='SI_base' xml:lang='en-US'/>
+           <UnitName xml:lang='en'>kg^-2</UnitName>
+           <UnitSymbol type='HTML'>
              kg
              <sup>&#x2212;2</sup>
-           </unitsymbol>
-           <unitsymbol type='MathML'>
+           </UnitSymbol>
+           <UnitSymbol type='MathML'>
              <math xmlns='http://www.w3.org/1998/Math/MathML'>
                <mrow>
                  <msup>
@@ -44,30 +44,30 @@ RSpec.describe Asciimath2UnitsML do
                  </msup>
                </mrow>
              </math>
-           </unitsymbol>
-         </unit>
-         <prefix xmlns='http://unitsml.nist.gov/2005' prefixbase='10' prefixpower='3' xml:id='NISTp10_3'>
-           <prefixname xml:lang='en'>kilo</prefixname>
-           <prefixsymbol type='ASCII'>k</prefixsymbol>
-         </prefix>
+           </UnitSymbol>
+         </Unit>
+         <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
+           <PrefixName xml:lang='en'>kilo</PrefixName>
+           <PrefixSymbol type='ASCII'>k</PrefixSymbol>
+         </Prefix>
          <mo>&#xD7;</mo>
          <mn>9</mn>
          <mo rspace='thickmathspace'>&#x2062;</mo>
          <mrow xref='NISTu27'>
            <mi mathvariant='normal'>g</mi>
          </mrow>
-         <unit xmlns='http://unitsml.nist.gov/2005' xml:id='NISTu27'>
-           <unitsystem name='SI' type='SI_base' xml:lang='en-US'/>
-           <unitname xml:lang='en'>gram</unitname>
-           <unitsymbol type='HTML'>g</unitsymbol>
-           <unitsymbol type='MathML'>
+         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='NISTu27'>
+           <UnitSystem name='SI' type='SI_base' xml:lang='en-US'/>
+           <UnitName xml:lang='en'>gram</UnitName>
+           <UnitSymbol type='HTML'>g</UnitSymbol>
+           <UnitSymbol type='MathML'>
              <math xmlns='http://www.w3.org/1998/Math/MathML'>
                <mrow>
                  <mi mathvariant='normal'>g</mi>
                </mrow>
              </math>
-           </unitsymbol>
-         </unit>
+           </UnitSymbol>
+         </Unit>
          <mo>&#xD7;</mo>
          <mn>1</mn>
          <mo rspace='thickmathspace'>&#x2062;</mo>
@@ -84,14 +84,14 @@ RSpec.describe Asciimath2UnitsML do
              </mrow>
            </msup>
          </mrow>
-         <unit xmlns='http://unitsml.nist.gov/2005' xml:id='kg.s-2'>
-           <unitsystem name='SI' type='SI_derived' xml:lang='en-US'/>
-           <unitname xml:lang='en'>kg*s^-2</unitname>
-           <unitsymbol type='HTML'>
+         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='kg.s-2'>
+           <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
+           <UnitName xml:lang='en'>kg*s^-2</UnitName>
+           <UnitSymbol type='HTML'>
              kg &#xB7; s
              <sup>&#x2212;2</sup>
-           </unitsymbol>
-           <unitsymbol type='MathML'>
+           </UnitSymbol>
+           <UnitSymbol type='MathML'>
              <math xmlns='http://www.w3.org/1998/Math/MathML'>
                <mrow>
                  <mi mathvariant='normal'>kg</mi>
@@ -107,16 +107,16 @@ RSpec.describe Asciimath2UnitsML do
                  </msup>
                </mrow>
              </math>
-           </unitsymbol>
-           <rootunits>
-             <enumeratedrootunit unit='gram' prefix='k'/>
-             <enumeratedrootunit unit='second' powernumerator='-2'/>
-           </rootunits>
-         </unit>
-         <prefix xmlns='http://unitsml.nist.gov/2005' prefixbase='10' prefixpower='3' xml:id='NISTp10_3'>
-           <prefixname xml:lang='en'>kilo</prefixname>
-           <prefixsymbol type='ASCII'>k</prefixsymbol>
-         </prefix>
+           </UnitSymbol>
+           <RootUnits>
+             <EnumeratedRootUnit unit='gram' prefix='k'/>
+             <EnumeratedRootUnit unit='second' powerNumerator='-2'/>
+           </RootUnits>
+         </Unit>
+         <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
+           <PrefixName xml:lang='en'>kilo</PrefixName>
+           <PrefixSymbol type='ASCII'>k</PrefixSymbol>
+         </Prefix>
          <mo>&#xD7;</mo>
          <mn>812</mn>
          <mo rspace='thickmathspace'>&#x2062;</mo>
@@ -133,14 +133,14 @@ RSpec.describe Asciimath2UnitsML do
              </mrow>
            </msup>
          </mrow>
-         <unit xmlns='http://unitsml.nist.gov/2005' xml:id='NISTu1.u3e-2_1'>
-           <unitsystem name='SI' type='SI_derived' xml:lang='en-US'/>
-           <unitname xml:lang='en'>meter per second squared</unitname>
-           <unitsymbol type='HTML'>
+         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='NISTu1.u3e-2_1'>
+           <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
+           <UnitName xml:lang='en'>meter per second squared</UnitName>
+           <UnitSymbol type='HTML'>
              m &#xB7; s
              <sup>&#x2212;2</sup>
-           </unitsymbol>
-           <unitsymbol type='MathML'>
+           </UnitSymbol>
+           <UnitSymbol type='MathML'>
              <math xmlns='http://www.w3.org/1998/Math/MathML'>
                <mrow>
                  <mi mathvariant='normal'>m</mi>
@@ -156,12 +156,12 @@ RSpec.describe Asciimath2UnitsML do
                  </msup>
                </mrow>
              </math>
-           </unitsymbol>
-           <rootunits>
-             <enumeratedrootunit unit='meter'/>
-             <enumeratedrootunit unit='second' powernumerator='-2'/>
-           </rootunits>
-         </unit>
+           </UnitSymbol>
+           <RootUnits>
+             <EnumeratedRootUnit unit='meter'/>
+             <EnumeratedRootUnit unit='second' powerNumerator='-2'/>
+           </RootUnits>
+         </Unit>
        </math>
     OUTPUT
   end

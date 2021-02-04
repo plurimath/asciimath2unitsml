@@ -93,7 +93,7 @@ module Asciimath2UnitsML
 
     def unit(units, text)
       <<~END
-      <Unit xmlns='#{UNITSML_NS}' xml:id=#{id(text)}>
+      <Unit xmlns='#{UNITSML_NS}' xml:id='#{id(text)}'>
       #{unitsystem(units)}
       #{unitname(units, text)}
       #{unitsymbol(units)}
