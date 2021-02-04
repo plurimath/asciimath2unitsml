@@ -7,31 +7,35 @@ require "rsec"
 module Asciimath2UnitsML
   MATHML_NS = "http://www.w3.org/1998/Math/MathML".freeze
   UNITSML_NS = "http://unitsml.nist.gov/2005".freeze
- 
+
   class Conv
     include Rsec::Helpers
 
     def initialize
-      @prefixes = read_yaml("../unitsdb/prefixes.yaml")
-      @quantities = symbolize_keys(YAML.load_file(File.join(File.join(File.dirname(__FILE__),
-                                                       "../unitsdb/quantities.yaml"))))
-      @units = read_yaml("../unitsdb/units.yaml")
+      @prefixes_id = read_yaml("../unitsdb/prefixes.yaml")
+      @prefixes = flip_name_and_id(@prefixes_id)
+      @quantities = read_yaml("../unitsdb/quantities.yaml")
+      @units_id = read_yaml("../unitsdb/units.yaml")
+      @units = flip_name_and_id(@units_id)
       @parser = parser
     end
 
     def read_yaml(path)
-      yaml = YAML.load_file(File.join(File.join(File.dirname(__FILE__), path)))
-      symbolize_keys(yaml.each_with_object({}) do |(k, v), m|
-        next if v["name"].nil? || v["name"].empty?
-        symbol = v["symbol"] || v["short"]
-        m[symbol] = v
-        m[symbol]["symbol"] = symbol
-        m[symbol]["id"] = k
-      end)
+      symbolize_keys(YAML.load_file(File.join(File.join(File.dirname(__FILE__), path))))
+    end
+
+    def flip_name_and_id(yaml)
+      yaml.each_with_object({}) do |(k, v), m|
+        next if v[:name].nil? || v[:name].empty?
+        symbol = v[:symbol] || v[:short]
+        m[symbol.to_sym] = v
+        m[symbol.to_sym][:symbol] = symbol
+        m[symbol.to_sym][:id] = k.to_s
+      end
     end
 
     def symbolize_keys(hash)
-      hash.inject({}){|result, (key, value)|
+      hash.inject({})do |result, (key, value)|
         new_key = case key
                   when String then key.to_sym
                   else key
@@ -42,7 +46,7 @@ module Asciimath2UnitsML
                     end
         result[new_key] = new_value
         result
-      }
+      end
     end
 
     def parser
@@ -60,11 +64,13 @@ module Asciimath2UnitsML
       parser = units.eof
     end
 
-    def Asciimath2UnitsML(x)
-      xml = Nokogiri::XML(asciimath2mathml(x))
+    def Asciimath2UnitsML(expression)
+      xml = Nokogiri::XML(asciimath2mathml(expression))
       xml.xpath(".//m:mtext", "m" => MATHML_NS).each do |x|
         next unless %r{^unitsml\(.+\)$}.match(x.text)
-        x.replace(unitsml(x.text.sub(%r{^unitsml\((.+)\)$}m, "\\1")))
+        text = x.text.sub(%r{^unitsml\((.+)\)$}m, "\\1")
+        units = parse(text)
+        x.replace("<mrow xref='#{id(text)}'>#{mathmlsymbol(units)}</mrow>\n#{unitsml(units, text)}")
       end
       xml.to_xml
     end
@@ -73,16 +79,19 @@ module Asciimath2UnitsML
       x
     end
 
-    def asciimath2mathml(x)
+    def asciimath2mathml(expression)
       AsciiMath::MathMLBuilder.new(:msword => true).append_expression(
-        AsciiMath.parse(HTMLEntities.new.decode(x)).ast).to_s.
+        AsciiMath.parse(HTMLEntities.new.decode(expression)).ast).to_s.
       gsub(/<math>/, "<math xmlns='#{MATHML_NS}'>")
     end
 
+    def id(text)
+      @units[text.to_sym] ? @units[text.to_sym][:id] : text.gsub(/\*/, ".").gsub(/\^/, "")
+    end
+
     def unit(units, text)
-      id = @units[text.to_sym] ? @units[text.to_sym][:id] : text.gsub(/\*/, ".").gsub(/\^/, "")
       <<~END
-      <Unit xmlns='#{UNITSML_NS}' xml:id=#{id}>
+      <Unit xmlns='#{UNITSML_NS}' xml:id=#{id(text)}>
       #{unitsystem(units)}
       #{unitname(units, text)}
       #{unitsymbol(units)}
@@ -119,7 +128,7 @@ module Asciimath2UnitsML
     def unitsymbol(units)
       <<~END
       <UnitSymbol type="HTML">#{htmlsymbol(units)}</UnitSymbol>
-      <UnitSymbol type="MathML">#{mathmlsymbol(units)}</UnitSymbol>
+      <UnitSymbol type="MathML">#{mathmlsymbolwrap(units)}</UnitSymbol>
       END
     end
 
@@ -140,9 +149,12 @@ module Asciimath2UnitsML
           base
         end
       end.join("<mo>&#xB7;</mo>")
+    end
+
+    def mathmlsymbolwrap(units)
       <<~END
       <math xmlns='#{MATHML_NS}'>
-      <mrow>#{exp}</mrow>
+      <mrow>#{mathmlsymbol(units)}</mrow>
       </math>
       END
     end
@@ -175,14 +187,18 @@ module Asciimath2UnitsML
     def dimension(units)
     end
 
-    def unitsml(x)
+    def parse(x)
       units = @parser.parse(x)
       if !units || Rsec::INVALID[units]
         raise Rsec::SyntaxError.new "error parsing UnitsML expression", x, 1, 0
       end
       Rsec::Fail.reset
+      units
+    end
+
+    def unitsml(units, text)
       <<~END
-      #{unit(units, x)}
+      #{unit(units, text)}
       #{prefix(units)}
       #{dimension(units)}
       END

@@ -11,6 +11,17 @@ RSpec.describe Asciimath2UnitsML do
          <mn>5</mn>
          <mo>&#xD7;</mo>
          <mn>7</mn>
+         <mrow xref='kg-2'>
+           <msup>
+             <mrow>
+               <mi mathvariant='normal'>kg</mi>
+             </mrow>
+             <mrow>
+               <mo>&#x2212;</mo>
+               <mn>2</mn>
+             </mrow>
+           </msup>
+         </mrow>
          <unit xmlns='http://unitsml.nist.gov/2005' xml:id='kg-2'>
            <unitsystem name='SI' type='SI_base' xml:lang='en-US'/>
            <unitname xml:lang='en'>kg^-2</unitname>
@@ -40,6 +51,9 @@ RSpec.describe Asciimath2UnitsML do
          </prefix>
          <mo>&#xD7;</mo>
          <mn>9</mn>
+         <mrow xref='NISTu27'>
+           <mi mathvariant='normal'>g</mi>
+         </mrow>
          <unit xmlns='http://unitsml.nist.gov/2005' xml:id='NISTu27'>
            <unitsystem name='SI' type='SI_base' xml:lang='en-US'/>
            <unitname xml:lang='en'>gram</unitname>
@@ -54,6 +68,19 @@ RSpec.describe Asciimath2UnitsML do
          </unit>
          <mo>&#xD7;</mo>
          <mn>1</mn>
+         <mrow xref='kg.s-2'>
+           <mi mathvariant='normal'>kg</mi>
+           <mo>&#xB7;</mo>
+           <msup>
+             <mrow>
+               <mi mathvariant='normal'>s</mi>
+             </mrow>
+             <mrow>
+               <mo>&#x2212;</mo>
+               <mn>2</mn>
+             </mrow>
+           </msup>
+         </mrow>
          <unit xmlns='http://unitsml.nist.gov/2005' xml:id='kg.s-2'>
            <unitsystem name='SI' type='SI_derived' xml:lang='en-US'/>
            <unitname xml:lang='en'>kg*s^-2</unitname>
@@ -89,6 +116,19 @@ RSpec.describe Asciimath2UnitsML do
          </prefix>
          <mo>&#xD7;</mo>
          <mn>812</mn>
+         <mrow xref='NISTu1.u3e-2_1'>
+           <mi mathvariant='normal'>m</mi>
+           <mo>&#xB7;</mo>
+           <msup>
+             <mrow>
+               <mi mathvariant='normal'>s</mi>
+             </mrow>
+             <mrow>
+               <mo>&#x2212;</mo>
+               <mn>2</mn>
+             </mrow>
+           </msup>
+         </mrow>
          <unit xmlns='http://unitsml.nist.gov/2005' xml:id='NISTu1.u3e-2_1'>
            <unitsystem name='SI' type='SI_derived' xml:lang='en-US'/>
            <unitname xml:lang='en'>meter per second squared</unitname>
