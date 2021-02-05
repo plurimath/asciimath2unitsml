@@ -3,14 +3,14 @@ require "nokogiri"
 require "htmlentities"
 require "yaml"
 require "rsec"
+require_relative "string"
+require_relative "parse"
 
 module Asciimath2UnitsML
   MATHML_NS = "http://www.w3.org/1998/Math/MathML".freeze
   UNITSML_NS = "http://unitsml.nist.gov/2005".freeze
 
   class Conv
-    include Rsec::Helpers
-
     def initialize
       @prefixes_id = read_yaml("../unitsdb/prefixes.yaml")
       @prefixes = flip_name_and_id(@prefixes_id)
@@ -18,50 +18,6 @@ module Asciimath2UnitsML
       @units_id = read_yaml("../unitsdb/units.yaml")
       @units = flip_name_and_id(@units_id)
       @parser = parser
-    end
-
-    def read_yaml(path)
-      symbolize_keys(YAML.load_file(File.join(File.join(File.dirname(__FILE__), path))))
-    end
-
-    def flip_name_and_id(yaml)
-      yaml.each_with_object({}) do |(k, v), m|
-        next if v[:name].nil? || v[:name].empty?
-        symbol = v[:symbol] || v[:short]
-        m[symbol.to_sym] = v
-        m[symbol.to_sym][:symbol] = symbol
-        m[symbol.to_sym][:id] = k.to_s
-      end
-    end
-
-    def symbolize_keys(hash)
-      hash.inject({})do |result, (key, value)|
-        new_key = case key
-                  when String then key.to_sym
-                  else key
-                  end
-        new_value = case value
-                    when Hash then symbolize_keys(value)
-                    else value
-                    end
-        result[new_key] = new_value
-        result
-      end
-    end
-
-    def parser
-      prefix = /#{@prefixes.keys.join("|")}/.r
-      unit_keys = @units.keys.reject do |k|
-        @units[k][:type]&.include?("buildable") || /\*|\^/.match(k)
-      end.map { |k| Regexp.escape(k) }
-      unit1 = /#{unit_keys.join("|")}/.r
-      exponent = /\^-?\d+/.r.map { |m| m.sub(/\^/, "") }
-      multiplier = /\*/.r
-      unit = seq(unit1, exponent._?) { |x| { prefix: nil, unit: x[0], exponent: x[1][0] } } |
-        seq(prefix, unit1, exponent._?) { |x| { prefix: x[0][0], unit: x[1], exponent: x[2][0] } }
-      units_tail = seq(multiplier, unit) { |u| u[1] }
-      units = seq(unit, units_tail.star) { |x| [x[0], x[1]].flatten }
-      parser = units.eof
     end
 
     # https://www.w3.org/TR/mathml-units/ section 2: delimit number Invisible-Times unit
@@ -77,10 +33,6 @@ module Asciimath2UnitsML
       xml.to_xml
     end
 
-    def UnitsML2MathML(x)
-      x
-    end
-
     def asciimath2mathml(expression)
       AsciiMath::MathMLBuilder.new(:msword => true).append_expression(
         AsciiMath.parse(HTMLEntities.new.decode(expression)).ast).to_s.
@@ -91,9 +43,10 @@ module Asciimath2UnitsML
       @units[text.to_sym] ? @units[text.to_sym][:id] : text.gsub(/\*/, ".").gsub(/\^/, "")
     end
 
-    def unit(units, text)
+    def unit(units, text, dims)
+      dimid = dim_id(dims)
       <<~END
-      <Unit xmlns='#{UNITSML_NS}' xml:id='#{id(text)}'>
+      <Unit xmlns='#{UNITSML_NS}' xml:id='#{id(text)}'#{dimid ? " dimensionURL='##{dimid}'" : ""}>
       #{unitsystem(units)}
       #{unitname(units, text)}
       #{unitsymbol(units)}
@@ -107,12 +60,8 @@ module Asciimath2UnitsML
       units.any? { |x| @units[x[:unit].to_sym][:si] != true } and
         ret << "<UnitSystem name='not_SI' type='not_SI' xml:lang='en-US'/>"
       if units.any? { |x| @units[x[:unit].to_sym][:si] == true }
-        if units.size > 1
-          ret << "<UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>"
-        else
-          base = @units[units[0][:unit].to_sym][:type].include?("si-base")
-          ret << "<UnitSystem name='SI' type='#{base ? "SI_base" : "SI_derived"}' xml:lang='en-US'/>"
-        end
+        base = units.size == 1 && @units[units[0][:unit].to_sym][:type].include?("si-base")
+        ret << "<UnitSystem name='SI' type='#{base ? "SI_base" : "SI_derived"}' xml:lang='en-US'/>"
       end
       ret.join("\n")
     end
@@ -186,7 +135,83 @@ module Asciimath2UnitsML
       end.join("\n")
     end
 
-    def dimension(units)
+    def dimension(dims)
+      return if dims.nil? || dims.empty?
+      <<~END
+      <Dimension xml:id="#{dim_id(dims)}">
+      #{dims.map { |u| dimension1(u) }.join("\n") }
+      </Dimension>
+      END
+    end
+
+    U2D = {
+      "m" => { dimension: "Length", order: 1, symbol: "L" },
+      "g" => { dimension: "Mass", order: 2, symbol: "M" },
+      "kg" => { dimension: "Mass", order: 2, symbol: "M" },
+      "s" => { dimension: "Time", order: 3, symbol: "T" },
+      "A" => { dimension: "ElectricCurrent", order: 4, symbol: "I" },
+      "K" => { dimension: "ThermodynamicTemperature", order: 5, symbol: "Theta" },
+      "mol" => { dimension: "AmountOfSubstance", order: 6, symbol: "N" },
+      "cd" => { dimension: "LuminousIntensity", order: 7, symbol: "J" },
+    }
+
+    def units2dimensions(units)
+      norm = normalise_units(units)
+      return if norm.any? { |u| u[:unit] == "unknown" || u[:prefix] == "unknown" }
+      norm.map do |u|
+        { dimension: U2D[u[:unit]][:dimension],
+          unit: u[:unit],
+          exponent: u[:exponent] || 1,
+          symbol: U2D[u[:unit]][:symbol] } 
+      end.sort { |a, b| U2D[a[:unit]][:order] <=> U2D[b[:unit]][:order] }
+    end
+
+    def dimension1(u)
+      %(<#{u[:dimension]} symbol="#{u[:symbol]}" powerNumerator="#{u[:exponent]}"/>)
+    end
+
+    def dim_id(dims)
+      return nil if dims.nil? || dims.empty?
+      dims.map { |d| U2D[d[:unit]][:symbol] + (d[:exponent] == 1 ? "" : d[:exponent].to_s) }.join("")
+    end
+
+    def normalise_units(units)
+      gather_units(units.map { |u| normalise_unit(u) }.flatten)
+    end
+
+    def gather_units(units)
+      units.sort { |a, b| a[:unit] <=> b[:unit] }.each_with_object([]) do |k, m|
+        if m.empty? || m[-1][:unit] != k[:unit] then m << k
+        else
+          m[-1] = { prefix: combine_prefixes(@prefixes[m[-1][:prefix]], @prefixes[k[:prefix]]),
+                    unit: m[-1][:unit],
+                    exponent: (k[:exponent]&.to_i || 1) + (m[-1][:exponent]&.to_i || 1) }
+        end
+      end
+    end
+
+    def normalise_unit(u)
+      if @units[u[:unit].to_sym][:type]&.include?("si-base") then u
+      elsif !@units[u[:unit].to_sym][:bases] then { prefix: u[:prefix], unit: "unknown", exponent: u[:exponent] }
+      else
+        @units[u[:unit].to_sym][:bases].each_with_object([]) do |k, m|
+          m << { prefix: k["prefix"] ?
+                 combine_prefixes(@prefixes_id[k["prefix"]], @prefixes[u[:prefix]]) : u[:prefix],
+                 unit: @units_id[k["id"].to_sym][:symbol],
+                 exponent: (k["power"]&.to_i || 1) * (u[:exponent]&.to_i || 1) }
+        end
+      end
+    end
+
+    def combine_prefixes(p1, p2)
+      return nil if p1.nil? && p2.nil?
+      return p1[:symbol] if p2.nil?
+      return p2[:symbol] if p1.nil?
+      return "unknown" if p1[:base] != p2[:base]
+      @prefixes.each do |p|
+        return p[:symbol] if p[:base] == p1[:base] && p[:power] == p1[:power] + p2[:power]
+      end
+      "unknown"
     end
 
     def parse(x)
@@ -199,10 +224,11 @@ module Asciimath2UnitsML
     end
 
     def unitsml(units, text)
+      dims = units2dimensions(units)
       <<~END
-      #{unit(units, text)}
+      #{unit(units, text, dims)}
       #{prefix(units)}
-      #{dimension(units)}
+      #{dimension(dims)}
       END
     end
   end

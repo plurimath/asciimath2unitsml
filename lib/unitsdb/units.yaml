@@ -187,7 +187,7 @@ NISTu15:
   symbol: C
   si: true
   bases:
-    - id: NISTu2
+    - id: NISTu3
       prefix:
       power: 1
     - id: NISTu4
