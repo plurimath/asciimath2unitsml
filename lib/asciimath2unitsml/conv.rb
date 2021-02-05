@@ -28,7 +28,7 @@ module Asciimath2UnitsML
         text = x.text.sub(%r{^unitsml\((.+)\)$}m, "\\1")
         units = parse(text)
         delim = x&.previous_element&.name == "mn" ? "<mo rspace='thickmathspace'>&#x2062;</mo>" : ""
-        x.replace("#{delim}<mrow xref='#{id(text)}'>#{mathmlsymbol(units)}</mrow>\n#{unitsml(units, text)}")
+        x.replace("#{delim}<mrow xref='#{unit_id(text)}'>#{mathmlsymbol(units)}</mrow>\n#{unitsml(units, text)}")
       end
       xml.to_xml
     end
@@ -39,14 +39,15 @@ module Asciimath2UnitsML
       gsub(/<math>/, "<math xmlns='#{MATHML_NS}'>")
     end
 
-    def id(text)
-      @units[text.to_sym] ? @units[text.to_sym][:id] : text.gsub(/\*/, ".").gsub(/\^/, "")
+    def unit_id(text)
+      "U_" +
+        (@units[text.to_sym] ? @units[text.to_sym][:id] : text.gsub(/\*/, ".").gsub(/\^/, ""))
     end
 
     def unit(units, text, dims)
       dimid = dim_id(dims)
       <<~END
-      <Unit xmlns='#{UNITSML_NS}' xml:id='#{id(text)}'#{dimid ? " dimensionURL='##{dimid}'" : ""}>
+      <Unit xmlns='#{UNITSML_NS}' xml:id='#{unit_id(text)}'#{dimid ? " dimensionURL='##{dimid}'" : ""}>
       #{unitsystem(units)}
       #{unitname(units, text)}
       #{unitsymbol(units)}
@@ -138,7 +139,7 @@ module Asciimath2UnitsML
     def dimension(dims)
       return if dims.nil? || dims.empty?
       <<~END
-      <Dimension xml:id="#{dim_id(dims)}">
+      <Dimension xmlns='#{UNITSML_NS}' xml:id="#{dim_id(dims)}">
       #{dims.map { |u| dimension1(u) }.join("\n") }
       </Dimension>
       END
@@ -172,7 +173,7 @@ module Asciimath2UnitsML
 
     def dim_id(dims)
       return nil if dims.nil? || dims.empty?
-      dims.map { |d| U2D[d[:unit]][:symbol] + (d[:exponent] == 1 ? "" : d[:exponent].to_s) }.join("")
+      "D_" + dims.map { |d| U2D[d[:unit]][:symbol] + (d[:exponent] == 1 ? "" : d[:exponent].to_s) }.join("")
     end
 
     def normalise_units(units)
