@@ -23,6 +23,10 @@ module Asciimath2UnitsML
     # https://www.w3.org/TR/mathml-units/ section 2: delimit number Invisible-Times unit
     def Asciimath2UnitsML(expression)
       xml = Nokogiri::XML(asciimath2mathml(expression))
+      MathML2UnitsML(xml).to_xml
+    end
+
+    def MathML2UnitsML(xml)
       xml.xpath(".//m:mtext", "m" => MATHML_NS).each do |x|
         next unless %r{^unitsml\(.+\)$}.match(x.text)
         text = x.text.sub(%r{^unitsml\((.+)\)$}m, "\\1")
@@ -30,7 +34,7 @@ module Asciimath2UnitsML
         delim = x&.previous_element&.name == "mn" ? "<mo rspace='thickmathspace'>&#x2062;</mo>" : ""
         x.replace("#{delim}<mrow xref='#{unit_id(text)}'>#{mathmlsymbol(units)}</mrow>\n#{unitsml(units, text)}")
       end
-      xml.to_xml
+      xml
     end
 
     def asciimath2mathml(expression)
