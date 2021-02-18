@@ -24,7 +24,7 @@ module Asciimath2UnitsML
     def multiplier(x)
       case x
       when :space
-        { html: "&nbsp;", mathml: "<mo rspace='thickmathspace'>&#x2062;</mo>" }
+        { html: "&#xA0;", mathml: "<mo rspace='thickmathspace'>&#x2062;</mo>" }
       when :nospace
         { html: "", mathml: "<mo>&#x2062;</mo>" }
       else

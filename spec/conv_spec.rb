@@ -315,59 +315,59 @@ RSpec.describe Asciimath2UnitsML do
 1 "unitsml(kg*s^-2)"
     INPUT
     <math xmlns='http://www.w3.org/1998/Math/MathML'>
-  <mn>1</mn>
-  <mo rspace='thickmathspace'>&#x2062;</mo>
-  <mrow xref='U_kg.s-2'>
-    <mi mathvariant='normal'>kg</mi>
-    <mo rspace='thickmathspace'>&#x2062;</mo>
-    <msup>
-      <mrow>
-        <mi mathvariant='normal'>s</mi>
-      </mrow>
-      <mrow>
-        <mo>&#x2212;</mo>
-        <mn>2</mn>
-      </mrow>
-    </msup>
-  </mrow>
-  <unit xmlns='http://unitsml.nist.gov/2005' dimensionurl='#D_MT-2' xml:id='U_kg.s-2'>
-    <unitsystem name='SI' type='SI_derived' xml:lang='en-US'/>
-    <unitname xml:lang='en'>kg*s^-2</unitname>
-    <unitsymbol type='HTML'>
-      kg&#xA0;s
-      <sup>&#x2212;2</sup>
-    </unitsymbol>
-    <unitsymbol type='MathML'>
-      <math xmlns='http://www.w3.org/1998/Math/MathML'>
-        <mrow>
-          <mi mathvariant='normal'>kg</mi>
-          <mo rspace='thickmathspace'>&#x2062;</mo>
-          <msup>
-            <mrow>
-              <mi mathvariant='normal'>s</mi>
-            </mrow>
-            <mrow>
-              <mo>&#x2212;</mo>
-              <mn>2</mn>
-            </mrow>
-          </msup>
-        </mrow>
-      </math>
-    </unitsymbol>
-    <rootunits>
-      <enumeratedrootunit unit='gram' prefix='k'/>
-      <enumeratedrootunit unit='second' powernumerator='-2'/>
-    </rootunits>
-  </unit>
-  <prefix xmlns='http://unitsml.nist.gov/2005' prefixbase='10' prefixpower='3' xml:id='NISTp10_3'>
-    <prefixname xml:lang='en'>kilo</prefixname>
-    <prefixsymbol type='ASCII'>k</prefixsymbol>
-  </prefix>
-  <dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_MT-2'>
-    <mass symbol='M' powernumerator='1'/>
-    <time symbol='T' powernumerator='-2'/>
-  </dimension>
-</math>
+         <mn>1</mn>
+         <mo rspace='thickmathspace'>&#x2062;</mo>
+         <mrow xref='U_kg.s-2'>
+           <mi mathvariant='normal'>kg</mi>
+           <mo rspace='thickmathspace'>&#x2062;</mo>
+           <msup>
+             <mrow>
+               <mi mathvariant='normal'>s</mi>
+             </mrow>
+             <mrow>
+               <mo>&#x2212;</mo>
+               <mn>2</mn>
+             </mrow>
+           </msup>
+         </mrow>
+         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_kg.s-2' dimensionURL='#D_MT-2'>
+           <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
+           <UnitName xml:lang='en'>kg*s^-2</UnitName>
+           <UnitSymbol type='HTML'>
+             kg&#xA0;s
+             <sup>&#x2212;2</sup>
+           </UnitSymbol>
+           <UnitSymbol type='MathML'>
+             <math xmlns='http://www.w3.org/1998/Math/MathML'>
+               <mrow>
+                 <mi mathvariant='normal'>kg</mi>
+                 <mo rspace='thickmathspace'>&#x2062;</mo>
+                 <msup>
+                   <mrow>
+                     <mi mathvariant='normal'>s</mi>
+                   </mrow>
+                   <mrow>
+                     <mo>&#x2212;</mo>
+                     <mn>2</mn>
+                   </mrow>
+                 </msup>
+               </mrow>
+             </math>
+           </UnitSymbol>
+           <RootUnits>
+             <EnumeratedRootUnit unit='gram' prefix='k'/>
+             <EnumeratedRootUnit unit='second' powerNumerator='-2'/>
+           </RootUnits>
+         </Unit>
+         <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
+           <PrefixName xml:lang='en'>kilo</PrefixName>
+           <PrefixSymbol type='ASCII'>k</PrefixSymbol>
+         </Prefix>
+         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_MT-2'>
+           <Mass symbol='M' powerNumerator='1'/>
+           <Time symbol='T' powerNumerator='-2'/>
+         </Dimension>
+       </math>
     OUTPUT
     expect(xmlpp(Asciimath2UnitsML::Conv.new(multiplier: :nospace).Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
 1 "unitsml(kg*s^-2)"
