@@ -54,5 +54,39 @@ module Asciimath2UnitsML
       Rsec::Fail.reset
       units
     end
+
+    U2D = {
+      "m" => { dimension: "Length", order: 1, symbol: "L" },
+      "g" => { dimension: "Mass", order: 2, symbol: "M" },
+      "kg" => { dimension: "Mass", order: 2, symbol: "M" },
+      "s" => { dimension: "Time", order: 3, symbol: "T" },
+      "A" => { dimension: "ElectricCurrent", order: 4, symbol: "I" },
+      "K" => { dimension: "ThermodynamicTemperature", order: 5, symbol: "Theta" },
+      "mol" => { dimension: "AmountOfSubstance", order: 6, symbol: "N" },
+      "cd" => { dimension: "LuminousIntensity", order: 7, symbol: "J" },
+    }
+
+    def Asciimath2UnitsML(expression)
+      xml = Nokogiri::XML(asciimath2mathml(expression))
+      MathML2UnitsML(xml).to_xml
+    end
+
+    # https://www.w3.org/TR/mathml-units/ section 2: delimit number Invisible-Times unit
+    def MathML2UnitsML(xml)
+      xml.xpath(".//m:mtext", "m" => MATHML_NS).each do |x|
+        next unless %r{^unitsml\(.+\)$}.match(x.text)
+        text = x.text.sub(%r{^unitsml\((.+)\)$}m, "\\1")
+        units = parse(text)
+        delim = x&.previous_element&.name == "mn" ? "<mo rspace='thickmathspace'>&#x2062;</mo>" : ""
+        x.replace("#{delim}<mrow xref='#{unit_id(text)}'>#{mathmlsymbol(units)}</mrow>\n#{unitsml(units, text)}")
+      end
+      xml
+    end
+
+    def asciimath2mathml(expression)
+      AsciiMath::MathMLBuilder.new(:msword => true).append_expression(
+        AsciiMath.parse(HTMLEntities.new.decode(expression)).ast).to_s.
+      gsub(/<math>/, "<math xmlns='#{MATHML_NS}'>")
+    end
   end
 end

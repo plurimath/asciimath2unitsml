@@ -1,21 +1,27 @@
 = asciimath2unitsml
-Convert Asciimath via MathML to UnitsML
+Convert Units expressions via MathML to UnitsML
 
-Encode UnitsML expressions in AsciiMath as `"unitsml(...)"`. The gem converts 
-AsciiMath incorporating UnitsML expressions (based on the Ascii representation provided by NIST)
+This gem converts 
+MathML incorporating UnitsML expressions (based on the Ascii representation provided by NIST)
 into MathML complying with https://www.w3.org/TR/mathml-units/[], with
-UnitsML markup embedded in it, with identifiers for each unit and dimension. 
+UnitsML markup embedded in it, and with unique identifiers for each distinct unit and dimension. 
+Units expressions are identified in MathML as `<mtext>unitsml(...)</mtext>`, which in turn
+can be identified in AsciiMath  as `"unitsml(...)"`. 
 The consuming document is meant to deduplicate the instances of UnitsML markup
 with the same identifier, and potentially remove them to elsewhere in the document
 or another document.
 
-The AsciiMath conventions used are:
+The conventions used for writing units are:
 
 * `^` for exponents, e.g. `m^-2`
 * `*` to combine two units by multiplication; e.g. `m*s^-2`. Division is not supported, use negative exponents instead
 * `u` for μ (micro-)
 
-So 
+The gem follows the MathML Units convention of inserting a spacing invisible times operator
+(`<mo rspace='thickmathspace'>&#x2062;</mo>`) between any numbers (`<mn>`) and unit expressions
+in MathML, and representing units in MathML as non-italic variables (`<mi mathvariant='normal'>`).
+
+So:
 
 [source]
 ----
@@ -77,4 +83,20 @@ is converted into:
 </math>
 ----
 
+The converter is run as:
 
+[source,ruby]
+----
+c = Asciimath2UnitsML::Conv.new()
+c.Asciimath2UnitsML({Asciimath string containing "unitsml()"})
+c.MathML2UnitsML({Nokogiri parse of MathML document containing <mtext>unitsml()</mtext>})
+----
+
+The converter class may be initialised with options:
+
+* `multiplier` is the symbol used to represent the multiplication of units. By default,
+following MathML Units, the symbol is middle dot (`&#xB7`). An arbitrary UTF-8 string can be
+supplied instead; it will be encoded as XML entities. The value `:space` is rendered
+as a spacing invisible times in MathML (`<mo rspace='thickmathspace'>&#x2062;</mo>`),
+and as a non-breaking space in HTML. The value `:nospace` is rendered as a non-spacing
+invisible times in MathML (`<mo>&#x2062;</mo>`), and is not rendered in HTML.
