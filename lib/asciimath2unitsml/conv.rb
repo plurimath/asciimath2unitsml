@@ -11,36 +11,25 @@ module Asciimath2UnitsML
   UNITSML_NS = "http://unitsml.nist.gov/2005".freeze
 
   class Conv
-    def initialize
+    def initialize(options = {})
       @prefixes_id = read_yaml("../unitsdb/prefixes.yaml")
       @prefixes = flip_name_and_id(@prefixes_id)
       @quantities = read_yaml("../unitsdb/quantities.yaml")
       @units_id = read_yaml("../unitsdb/units.yaml")
       @units = flip_name_and_id(@units_id)
       @parser = parser
+      @multiplier = multiplier(options[:multiplier] || "\u00b7")
     end
 
-    # https://www.w3.org/TR/mathml-units/ section 2: delimit number Invisible-Times unit
-    def Asciimath2UnitsML(expression)
-      xml = Nokogiri::XML(asciimath2mathml(expression))
-      MathML2UnitsML(xml).to_xml
-    end
-
-    def MathML2UnitsML(xml)
-      xml.xpath(".//m:mtext", "m" => MATHML_NS).each do |x|
-        next unless %r{^unitsml\(.+\)$}.match(x.text)
-        text = x.text.sub(%r{^unitsml\((.+)\)$}m, "\\1")
-        units = parse(text)
-        delim = x&.previous_element&.name == "mn" ? "<mo rspace='thickmathspace'>&#x2062;</mo>" : ""
-        x.replace("#{delim}<mrow xref='#{unit_id(text)}'>#{mathmlsymbol(units)}</mrow>\n#{unitsml(units, text)}")
+    def multiplier(x)
+      case x
+      when :space
+        { html: "&nbsp;", mathml: "<mo rspace='thickmathspace'>&#x2062;</mo>" }
+      when :nospace
+        { html: "", mathml: "<mo>&#x2062;</mo>" }
+      else
+        { html: HTMLEntities.new.encode(x), mathml: "<mo>#{HTMLEntities.new.encode(x)}</mo>" }
       end
-      xml
-    end
-
-    def asciimath2mathml(expression)
-      AsciiMath::MathMLBuilder.new(:msword => true).append_expression(
-        AsciiMath.parse(HTMLEntities.new.decode(expression)).ast).to_s.
-      gsub(/<math>/, "<math xmlns='#{MATHML_NS}'>")
     end
 
     def unit_id(text)
@@ -92,7 +81,7 @@ module Asciimath2UnitsML
       units.map do |u|
         u[:exponent] and exp = "<sup>#{u[:exponent].sub(/-/, "&#x2212;")}</sup>"
         "#{u[:prefix]}#{u[:unit]}#{exp}"
-      end.join(" &#183; ")
+      end.join(@multiplier[:html])
     end
 
     def mathmlsymbol(units)
@@ -104,7 +93,7 @@ module Asciimath2UnitsML
         else
           base
         end
-      end.join("<mo>&#xB7;</mo>")
+      end.join(@multiplier[:mathml])
     end
 
     def mathmlsymbolwrap(units)
@@ -148,17 +137,6 @@ module Asciimath2UnitsML
       </Dimension>
       END
     end
-
-    U2D = {
-      "m" => { dimension: "Length", order: 1, symbol: "L" },
-      "g" => { dimension: "Mass", order: 2, symbol: "M" },
-      "kg" => { dimension: "Mass", order: 2, symbol: "M" },
-      "s" => { dimension: "Time", order: 3, symbol: "T" },
-      "A" => { dimension: "ElectricCurrent", order: 4, symbol: "I" },
-      "K" => { dimension: "ThermodynamicTemperature", order: 5, symbol: "Theta" },
-      "mol" => { dimension: "AmountOfSubstance", order: 6, symbol: "N" },
-      "cd" => { dimension: "LuminousIntensity", order: 7, symbol: "J" },
-    }
 
     def units2dimensions(units)
       norm = normalise_units(units)
@@ -217,15 +195,6 @@ module Asciimath2UnitsML
         return p[:symbol] if p[:base] == p1[:base] && p[:power] == p1[:power] + p2[:power]
       end
       "unknown"
-    end
-
-    def parse(x)
-      units = @parser.parse(x)
-      if !units || Rsec::INVALID[units]
-        raise Rsec::SyntaxError.new "error parsing UnitsML expression", x, 1, 0
-      end
-      Rsec::Fail.reset
-      units
     end
 
     def unitsml(units, text)
