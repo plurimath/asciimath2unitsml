@@ -89,6 +89,7 @@ The converter is run as:
 ----
 c = Asciimath2UnitsML::Conv.new()
 c.Asciimath2UnitsML({Asciimath string containing "unitsml()"})
+c.MathML2UnitsML({MathML document containing <mtext>unitsml()</mtext>})
 c.MathML2UnitsML({Nokogiri parse of MathML document containing <mtext>unitsml()</mtext>})
 ----
 

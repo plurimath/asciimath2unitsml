@@ -24,7 +24,7 @@ module Asciimath2UnitsML
     def multiplier(x)
       case x
       when :space
-        { html: "&nbsp;", mathml: "<mo rspace='thickmathspace'>&#x2062;</mo>" }
+        { html: "&#xA0;", mathml: "<mo rspace='thickmathspace'>&#x2062;</mo>" }
       when :nospace
         { html: "", mathml: "<mo>&#x2062;</mo>" }
       else
@@ -32,17 +32,21 @@ module Asciimath2UnitsML
       end
     end
 
+    def units_only(units)
+      units.reject { |u| u[:multiplier] }
+    end
+
     def unit_id(text)
       "U_" +
         (@units[text.to_sym] ? @units[text.to_sym][:id] : text.gsub(/\*/, ".").gsub(/\^/, ""))
     end
 
-    def unit(units, text, dims)
+    def unit(units, origtext, normtext, dims)
       dimid = dim_id(dims)
       <<~END
-      <Unit xmlns='#{UNITSML_NS}' xml:id='#{unit_id(text)}'#{dimid ? " dimensionURL='##{dimid}'" : ""}>
+      <Unit xmlns='#{UNITSML_NS}' xml:id='#{unit_id(origtext)}'#{dimid ? " dimensionURL='##{dimid}'" : ""}>
       #{unitsystem(units)}
-      #{unitname(units, text)}
+      #{unitname(units, normtext)}
       #{unitsymbol(units)}
       #{rootunits(units)}
       </Unit>
@@ -51,6 +55,7 @@ module Asciimath2UnitsML
 
     def unitsystem(units)
       ret = []
+      units = units_only(units)
       units.any? { |x| @units[x[:unit].to_sym][:si] != true } and
         ret << "<UnitSystem name='not_SI' type='not_SI' xml:lang='en-US'/>"
       if units.any? { |x| @units[x[:unit].to_sym][:si] == true }
@@ -79,21 +84,27 @@ module Asciimath2UnitsML
 
     def htmlsymbol(units)
       units.map do |u|
-        u[:exponent] and exp = "<sup>#{u[:exponent].sub(/-/, "&#x2212;")}</sup>"
-        "#{u[:prefix]}#{u[:unit]}#{exp}"
-      end.join(@multiplier[:html])
+        if u[:multiplier] then u[:multiplier] == "*" ? @multiplier[:html] : u[:multiplier]
+        else
+          u[:display_exponent] and exp = "<sup>#{u[:display_exponent].sub(/-/, "&#x2212;")}</sup>"
+          "#{u[:prefix]}#{u[:unit]}#{exp}"
+        end
+      end.join("")
     end
 
     def mathmlsymbol(units)
       exp = units.map do |u|
-        base = "<mi mathvariant='normal'>#{u[:prefix]}#{u[:unit]}</mi>"
-        if u[:exponent]
-          exp = "<mn>#{u[:exponent]}</mn>".sub(/<mn>-/, "<mo>&#x2212;</mo><mn>")
-          "<msup><mrow>#{base}</mrow><mrow>#{exp}</mrow></msup>"
+        if u[:multiplier] then u[:multiplier] == "*" ? @multiplier[:mathml] : "<mo>#{u[:multiplier]}</mo>"
         else
-          base
+          base = "<mi mathvariant='normal'>#{u[:prefix]}#{u[:unit]}</mi>"
+          if u[:display_exponent]
+            exp = "<mn>#{u[:display_exponent]}</mn>".sub(/<mn>-/, "<mo>&#x2212;</mo><mn>")
+            "<msup><mrow>#{base}</mrow><mrow>#{exp}</mrow></msup>"
+          else
+            base
+          end
         end
-      end.join(@multiplier[:mathml])
+      end.join("")
     end
 
     def mathmlsymbolwrap(units)
@@ -106,9 +117,9 @@ module Asciimath2UnitsML
 
     def rootunits(units)
       return if units.size == 1
-      exp = units.map do |u|
+      exp = units_only(units).map do |u|
         prefix = " prefix='#{u[:prefix]}'" if u[:prefix]
-        exponent = " powerNumerator='#{u[:exponent]}'" if u[:exponent]
+        exponent = " powerNumerator='#{u[:exponent]}'" if u[:exponent] && u[:exponent] != "1"
         "<EnumeratedRootUnit unit='#{@units[u[:unit].to_sym][:name]}'#{prefix}#{exponent}/>"
       end.join("\n")
       <<~END
@@ -159,7 +170,7 @@ module Asciimath2UnitsML
     end
 
     def normalise_units(units)
-      gather_units(units.map { |u| normalise_unit(u) }.flatten)
+      gather_units(units_only(units).map { |u| normalise_unit(u) }.flatten)
     end
 
     def gather_units(units)
@@ -197,10 +208,10 @@ module Asciimath2UnitsML
       "unknown"
     end
 
-    def unitsml(units, text)
+    def unitsml(units, origtext, normtext)
       dims = units2dimensions(units)
       <<~END
-      #{unit(units, text, dims)}
+      #{unit(units, origtext, normtext, dims)}
       #{prefix(units)}
       #{dimension(dims)}
       END

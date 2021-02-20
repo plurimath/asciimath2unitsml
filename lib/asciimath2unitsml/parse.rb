@@ -38,10 +38,10 @@ module Asciimath2UnitsML
       end.map { |k| Regexp.escape(k) }
       unit1 = /#{unit_keys.sort_by(&:length).reverse.join("|")}/.r
       exponent = /\^-?\d+/.r.map { |m| m.sub(/\^/, "") }
-      multiplier = /\*/.r
-      unit = seq(unit1, exponent._?) { |x| { prefix: nil, unit: x[0], exponent: x[1][0] } } |
-        seq(prefix, unit1, exponent._?) { |x| { prefix: x[0][0], unit: x[1], exponent: x[2][0] } }
-      units_tail = seq(multiplier, unit) { |u| u[1] }
+      multiplier = %r{[*/]}.r.map { |x| { multiplier: x } }
+      unit = seq(unit1, exponent._?) { |x| { prefix: nil, unit: x[0], display_exponent: (x[1][0] )} } |
+        seq(prefix, unit1, exponent._?) { |x| { prefix: x[0][0], unit: x[1], display_exponent: (x[2][0] ) } }
+      units_tail = seq(multiplier, unit) { |x| [x[0], x[1]] }
       units = seq(unit, units_tail.star) { |x| [x[0], x[1]].flatten }
       parser = units.eof
     end
@@ -52,7 +52,29 @@ module Asciimath2UnitsML
         raise Rsec::SyntaxError.new "error parsing UnitsML expression", x, 1, 0
       end
       Rsec::Fail.reset
-      units
+      postprocess(units, x)
+    end
+
+    def postprocess(units, text)
+      units = postprocess1(units)
+      normtext = units_only(units).each.map do |u|
+        exp = u[:exponent] && u[:exponent] != "1" ? "^#{u[:exponent]}" : ""
+        "#{u[:prefix]}#{u[:unit]}#{exp}"
+      end.join("*")
+      [units, text, normtext]
+    end
+
+    def postprocess1(units)
+      inverse = false
+      units.each_with_object([]) do |u, m| 
+        if u[:multiplier]
+          inverse = (u[:multiplier] == "/")
+        else
+          u[:exponent] = inverse ? "-#{u[:display_exponent] || '1'}" : u[:display_exponent]
+          u[:exponent] = u[:exponent]&.sub(/^--+/, "")
+        end
+        m << u
+      end
     end
 
     U2D = {
@@ -73,12 +95,14 @@ module Asciimath2UnitsML
 
     # https://www.w3.org/TR/mathml-units/ section 2: delimit number Invisible-Times unit
     def MathML2UnitsML(xml)
+      xml.is_a? String and xml = Nokogiri::XML(xml)
       xml.xpath(".//m:mtext", "m" => MATHML_NS).each do |x|
         next unless %r{^unitsml\(.+\)$}.match(x.text)
         text = x.text.sub(%r{^unitsml\((.+)\)$}m, "\\1")
-        units = parse(text)
+        units, origtext, normtext = parse(text)
         delim = x&.previous_element&.name == "mn" ? "<mo rspace='thickmathspace'>&#x2062;</mo>" : ""
-        x.replace("#{delim}<mrow xref='#{unit_id(text)}'>#{mathmlsymbol(units)}</mrow>\n#{unitsml(units, text)}")
+        x.replace("#{delim}<mrow xref='#{unit_id(text)}'>#{mathmlsymbol(units)}</mrow>\n"\
+                  "#{unitsml(units, origtext, normtext)}")
       end
       xml
     end
