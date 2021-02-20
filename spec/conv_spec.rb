@@ -3,7 +3,7 @@ require "spec_helper"
 RSpec.describe Asciimath2UnitsML do
   it "converts an AsciiMath string to MathML + UnitsML" do
     expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
-    32 + 5 xx 7 "unitsml(kg^-2)" xx 9 "unitsml(g)" xx 1 "unitsml(kg*s^-2)" xx 812 "unitsml(m*s^-2)" - 9 "unitsml(C^3*A)" + 7 "unitsml(hp)"
+    32 + 5 xx 7 "unitsml(kg^-2)" xx 9 "unitsml(g)" xx 1 "unitsml(kg*s^-2)" xx 812 "unitsml(m*s^-2)" - 9 "unitsml(C^3*A)" + 7 "unitsml(hp)" + 13 "unitsml(A/C^-3)"
     INPUT
     <math xmlns='http://www.w3.org/1998/Math/MathML'>
          <mn>32</mn>
@@ -244,6 +244,72 @@ RSpec.describe Asciimath2UnitsML do
          </Unit>
        </math>
     OUTPUT
+  end
+
+  it "converts MathML to MatML + UnitsML" do
+    input = <<~INPUT
+      <math xmlns='http://www.w3.org/1998/Math/MathML'>
+         <mn>32</mn>
+         <mo>+</mo>
+         <mn>5</mn>
+         <mo>&#xD7;</mo>
+         <mn>7</mn>
+         <mtext>unitsml(kg^-2)</mtext>
+</math>
+    INPUT
+    output = <<~OUTPUT
+     <math xmlns='http://www.w3.org/1998/Math/MathML'>
+         <mn>32</mn>
+         <mo>+</mo>
+         <mn>5</mn>
+         <mo>&#xD7;</mo>
+         <mn>7</mn>
+         <mo rspace='thickmathspace'>&#x2062;</mo>
+         <mrow xref='U_kg-2'>
+           <msup>
+             <mrow>
+               <mi mathvariant='normal'>kg</mi>
+             </mrow>
+             <mrow>
+               <mo>&#x2212;</mo>
+               <mn>2</mn>
+             </mrow>
+           </msup>
+         </mrow>
+          <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_kg-2' dimensionURL='#D_M-2'>
+   <UnitSystem name='SI' type='SI_base' xml:lang='en-US'/>
+   <UnitName xml:lang='en'>kg^-2</UnitName>
+   <UnitSymbol type='HTML'>
+     kg
+     <sup>&#x2212;2</sup>
+   </UnitSymbol>
+   <UnitSymbol type='MathML'>
+     <math xmlns='http://www.w3.org/1998/Math/MathML'>
+       <mrow>
+         <msup>
+           <mrow>
+             <mi mathvariant='normal'>kg</mi>
+           </mrow>
+           <mrow>
+             <mo>&#x2212;</mo>
+             <mn>2</mn>
+           </mrow>
+         </msup>
+       </mrow>
+     </math>
+   </UnitSymbol>
+ </Unit>
+ <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
+   <PrefixName xml:lang='en'>kilo</PrefixName>
+   <PrefixSymbol type='ASCII'>k</PrefixSymbol>
+ </Prefix>
+ <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_M-2'>
+   <Mass symbol='M' powerNumerator='-2'/>
+ </Dimension>
+</math>
+OUTPUT
+    expect(xmlpp(Asciimath2UnitsML::Conv.new().MathML2UnitsML(input).to_xml)).to be_equivalent_to xmlpp(output)
+    expect(xmlpp(Asciimath2UnitsML::Conv.new().MathML2UnitsML(Nokogiri::XML(input)).to_xml)).to be_equivalent_to xmlpp(output)
   end
 
   it "raises error for illegal unit" do
