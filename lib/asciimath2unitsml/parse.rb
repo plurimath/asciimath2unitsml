@@ -37,8 +37,9 @@ module Asciimath2UnitsML
         @units[k][:type]&.include?("buildable") || /\*|\^/.match(k)
       end.map { |k| Regexp.escape(k) }
       unit1 = /#{unit_keys.sort_by(&:length).reverse.join("|")}/.r
-      exponent = /\^-?\d+/.r.map { |m| m.sub(/\^/, "") }
-      multiplier = %r{[*/]}.r.map { |x| { multiplier: x } }
+      exponent = /\^\(-?\d+\)/.r.map { |m| m.sub(/\^/, "").gsub(/[()]/, "") } |
+        /\^-?\d+/.r.map { |m| m.sub(/\^/, "") }
+      multiplier = %r{\*|//|/}.r.map { |x| { multiplier: x[0] } }
       unit = seq(unit1, exponent._?) { |x| { prefix: nil, unit: x[0], display_exponent: (x[1][0] )} } |
         seq(prefix, unit1, exponent._?) { |x| { prefix: x[0][0], unit: x[1], display_exponent: (x[2][0] ) } }
       units_tail = seq(multiplier, unit) { |x| [x[0], x[1]] }

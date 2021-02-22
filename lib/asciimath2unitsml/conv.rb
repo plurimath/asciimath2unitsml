@@ -17,6 +17,10 @@ module Asciimath2UnitsML
       @quantities = read_yaml("../unitsdb/quantities.yaml")
       @units_id = read_yaml("../unitsdb/units.yaml")
       @units = flip_name_and_id(@units_id)
+      #temporary
+      @units[:degC][:render] = "&#xB0;C"
+      @units[:degF][:render] = "&#xB0;F"
+      @units[:Ohm][:render] = "&#x3A9;"
       @parser = parser
       @multiplier = multiplier(options[:multiplier] || "\u00b7")
     end
@@ -37,6 +41,7 @@ module Asciimath2UnitsML
     end
 
     def unit_id(text)
+      text = text.gsub(/[()]/, "")
       "U_" +
         (@units[text.to_sym] ? @units[text.to_sym][:id] : text.gsub(/\*/, ".").gsub(/\^/, ""))
     end
@@ -82,12 +87,17 @@ module Asciimath2UnitsML
       END
     end
 
+    def render(unit)
+      #require "byebug"; byebug if unit == "degC"
+      @units[unit.to_sym][:render] || unit
+    end
+
     def htmlsymbol(units)
       units.map do |u|
         if u[:multiplier] then u[:multiplier] == "*" ? @multiplier[:html] : u[:multiplier]
         else
           u[:display_exponent] and exp = "<sup>#{u[:display_exponent].sub(/-/, "&#x2212;")}</sup>"
-          "#{u[:prefix]}#{u[:unit]}#{exp}"
+          "#{u[:prefix]}#{render(u[:unit])}#{exp}"
         end
       end.join("")
     end
@@ -96,7 +106,7 @@ module Asciimath2UnitsML
       exp = units.map do |u|
         if u[:multiplier] then u[:multiplier] == "*" ? @multiplier[:mathml] : "<mo>#{u[:multiplier]}</mo>"
         else
-          base = "<mi mathvariant='normal'>#{u[:prefix]}#{u[:unit]}</mi>"
+          base = "<mi mathvariant='normal'>#{u[:prefix]}#{render(u[:unit])}</mi>"
           if u[:display_exponent]
             exp = "<mn>#{u[:display_exponent]}</mn>".sub(/<mn>-/, "<mo>&#x2212;</mo><mn>")
             "<msup><mrow>#{base}</mrow><mrow>#{exp}</mrow></msup>"
