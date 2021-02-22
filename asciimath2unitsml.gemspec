@@ -1,5 +1,5 @@
 # coding: utf-8
-  
+
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "asciimath2unitsml/version"
@@ -39,5 +39,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rubocop", "= 0.54.0"
   spec.add_development_dependency "simplecov", "~> 0.15"
   spec.add_development_dependency "timecop", "~> 0.9"
+  spec.add_development_dependency "rexml"
 end
 
