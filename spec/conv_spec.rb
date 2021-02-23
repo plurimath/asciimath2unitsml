@@ -3,7 +3,7 @@ require "spec_helper"
 RSpec.describe Asciimath2UnitsML do
   it "converts an AsciiMath string to MathML + UnitsML" do
     expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
-    1 "unitsml(kg*s^-2)" xx 9 "unitsml(g)"
+    1 "unitsml(kg*s^-2)"
     INPUT
     <math xmlns='http://www.w3.org/1998/Math/MathML'>
          <mn>1</mn>
@@ -58,14 +58,47 @@ RSpec.describe Asciimath2UnitsML do
            <Mass symbol='M' powerNumerator='1'/>
            <Time symbol='T' powerNumerator='-2'/>
          </Dimension>
-         <mo>&#xD7;</mo>
-         <mn>9</mn>
+       </math>
+    OUTPUT
+  end
+
+  it "deals with kg and g" do
+    expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
+    1 "unitsml(kg)" + 1 "unitsml(g)"
+    INPUT
+       <math xmlns='http://www.w3.org/1998/Math/MathML'>
+         <mn>1</mn>
+         <mo rspace='thickmathspace'>&#x2062;</mo>
+         <mrow xref='U_NISTu2'>
+           <mi mathvariant='normal'>kg</mi>
+         </mrow>
+         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu2' dimensionURL='#D_M'>
+           <UnitSystem name='SI' type='SI_base' xml:lang='en-US'/>
+           <UnitName xml:lang='en'>kilogram</UnitName>
+           <UnitSymbol type='HTML'>kg</UnitSymbol>
+           <UnitSymbol type='MathML'>
+             <math xmlns='http://www.w3.org/1998/Math/MathML'>
+               <mrow>
+                 <mi mathvariant='normal'>kg</mi>
+               </mrow>
+             </math>
+           </UnitSymbol>
+         </Unit>
+         <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
+           <PrefixName xml:lang='en'>kilo</PrefixName>
+           <PrefixSymbol type='ASCII'>k</PrefixSymbol>
+         </Prefix>
+         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_M'>
+           <Mass symbol='M' powerNumerator='1'/>
+         </Dimension>
+         <mo>+</mo>
+         <mn>1</mn>
          <mo rspace='thickmathspace'>&#x2062;</mo>
          <mrow xref='U_NISTu27'>
            <mi mathvariant='normal'>g</mi>
          </mrow>
          <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu27' dimensionURL='#D_M'>
-           <UnitSystem name='SI' type='SI_base' xml:lang='en-US'/>
+           <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
            <UnitName xml:lang='en'>gram</UnitName>
            <UnitSymbol type='HTML'>g</UnitSymbol>
            <UnitSymbol type='MathML'>
@@ -223,14 +256,55 @@ RSpec.describe Asciimath2UnitsML do
     OUTPUT
   end
 
-=begin
   it "deals with notational variants" do
     expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
     9 "unitsml(degK)" + 10 "unitsml(K)"
 INPUT
+<math xmlns='http://www.w3.org/1998/Math/MathML'>
+  <mn>9</mn>
+  <mo rspace='thickmathspace'>&#x2062;</mo>
+  <mrow xref='U_NISTu5'>
+    <mi mathvariant='normal'>&#xB0;K</mi>
+  </mrow>
+  <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu5' dimensionURL='#D_Theta'>
+    <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
+    <UnitName xml:lang='en'>kelvin</UnitName>
+    <UnitSymbol type='HTML'>K</UnitSymbol>
+    <UnitSymbol type='MathML'>
+      <math xmlns='http://www.w3.org/1998/Math/MathML'>
+        <mrow>
+          <mi mathvariant='normal'>K</mi>
+        </mrow>
+      </math>
+    </UnitSymbol>
+  </Unit>
+  <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_Theta'>
+    <ThermodynamicTemperature symbol='Theta' powerNumerator='1'/>
+  </Dimension>
+  <mo>+</mo>
+  <mn>10</mn>
+  <mo rspace='thickmathspace'>&#x2062;</mo>
+  <mrow xref='U_NISTu5'>
+    <mi mathvariant='normal'>K</mi>
+  </mrow>
+  <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu5' dimensionURL='#D_Theta'>
+    <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
+    <UnitName xml:lang='en'>kelvin</UnitName>
+    <UnitSymbol type='HTML'>K</UnitSymbol>
+    <UnitSymbol type='MathML'>
+      <math xmlns='http://www.w3.org/1998/Math/MathML'>
+        <mrow>
+          <mi mathvariant='normal'>K</mi>
+        </mrow>
+      </math>
+    </UnitSymbol>
+  </Unit>
+  <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_Theta'>
+    <ThermodynamicTemperature symbol='Theta' powerNumerator='1'/>
+  </Dimension>
+</math>
 OUTPUT
   end
-=end
 
   it "deals with units division" do
     expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
@@ -251,7 +325,7 @@ INPUT
            <mo>&#xB7;</mo>
            <mi mathvariant='normal'>A</mi>
          </mrow>
-         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_C3.A' dimensionURL='#D_T3I4'>
+         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_C3.A' dimensionURL='#D_M3I4'>
            <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
            <UnitName xml:lang='en'>C^3*A</UnitName>
            <UnitSymbol type='HTML'>
@@ -280,8 +354,8 @@ INPUT
              <EnumeratedRootUnit unit='ampere'/>
            </RootUnits>
          </Unit>
-         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_T3I4'>
-           <Time symbol='T' powerNumerator='3'/>
+         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_M3I4'>
+           <Mass symbol='M' powerNumerator='3'/>
            <ElectricCurrent symbol='I' powerNumerator='4'/>
          </Dimension>
          <mo>+</mo>
@@ -300,24 +374,23 @@ INPUT
              </mrow>
            </msup>
          </mrow>
-         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_A/C-3' dimensionURL='#D_T3I4'>
+         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_A/C-3' dimensionURL='#D_M3I4'>
            <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
            <UnitName xml:lang='en'>A*C^3</UnitName>
            <UnitSymbol type='HTML'>
-             A/C
-             <sup>&#x2212;3</sup>
+             A&#xB7;C
+             <sup>3</sup>
            </UnitSymbol>
            <UnitSymbol type='MathML'>
              <math xmlns='http://www.w3.org/1998/Math/MathML'>
                <mrow>
                  <mi mathvariant='normal'>A</mi>
-                 <mo>/</mo>
+                 <mo>&#xB7;</mo>
                  <msup>
                    <mrow>
                      <mi mathvariant='normal'>C</mi>
                    </mrow>
                    <mrow>
-                     <mo>&#x2212;</mo>
                      <mn>3</mn>
                    </mrow>
                  </msup>
@@ -329,8 +402,8 @@ INPUT
              <EnumeratedRootUnit unit='coulomb' powerNumerator='3'/>
            </RootUnits>
          </Unit>
-         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_T3I4'>
-           <Time symbol='T' powerNumerator='3'/>
+         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_M3I4'>
+           <Mass symbol='M' powerNumerator='3'/>
            <ElectricCurrent symbol='I' powerNumerator='4'/>
          </Dimension>
        </math>

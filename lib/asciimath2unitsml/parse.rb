@@ -3,27 +3,60 @@ module Asciimath2UnitsML
     include Rsec::Helpers
 
     def read_yaml(path)
-      symbolize_keys(YAML.load_file(File.join(File.join(File.dirname(__FILE__), path))))
+      validate_yaml(symbolize_keys(YAML.load_file(File.join(File.join(File.dirname(__FILE__), path)))), path)
     end
 
     def flip_name_and_id(yaml)
       yaml.each_with_object({}) do |(k, v), m|
-        next if v[:name].nil? || v[:name].empty?
-        symbol = v[:symbol] || v[:short]
-        m[symbol.to_sym] = v
-        m[symbol.to_sym][:symbol] = symbol
-        m[symbol.to_sym][:id] = k.to_s
+        next if (v[:name].nil? || v[:name].empty?) && (v[:unit_name].nil? || v[:unit_name].empty?)
+        symbol = symbol_key(v)
+        Array(symbol).each do |s|
+          m[s.to_sym] = v
+          m[s.to_sym][:symbol] = symbol
+          m[s.to_sym][:id] = k.to_s
+        end
       end
     end
 
+    def validate_yaml(hash, path)
+      return hash if path == "../unitsdb/quantities.yaml"
+      hash.each_with_object({}) do |(k, v), m|
+        symbol = symbol_key(v)
+        !symbol.nil? or raise StandardError.new "No symbol provided for unit: #{v}"
+        Array(symbol)&.each do |s|
+          m[s] && s != "1" and
+            raise StandardError.new "symbol #{s} is not unique in #{v}: already used for #{m[s]}"
+          m[s] = v
+        end
+        v[:unit_symbols]&.each { |s| validate_unit_symbol_cardinality(s, k) }
+      end
+      hash
+    end
+
+    def validate_unit_symbol_cardinality(us, k)
+      return true if us.nil?
+      !us[:id].nil? && !us[:ascii].nil? && !us[:html].nil? && !us[:mathml].nil? && !us[:latex].nil? &&
+        !us[:unicode].nil? and return true
+      raise StandardError.new "malformed unit_symbol for #{k}: #{us}"
+    end
+
+    def symbol_key(v)
+      symbol = v[:unit_symbols]&.each_with_object([]) { |s, m| m << (s["id"] || s[:id]) } || 
+        v.dig(:symbol, :ascii) || v[:symbol] || v[:short]
+      symbol = [symbol] if !symbol.nil? && v[:unit_symbols] && !symbol.is_a?(Array)
+      symbol
+    end
+
     def symbolize_keys(hash)
-      hash.inject({})do |result, (key, value)|
+      return hash if hash.is_a? String
+      hash.inject({}) do |result, (key, value)|
         new_key = case key
                   when String then key.to_sym
                   else key
                   end
         new_value = case value
                     when Hash then symbolize_keys(value)
+                    when Array then value.map { |m| symbolize_keys(m) }
                     else value
                     end
         result[new_key] = new_value
@@ -34,7 +67,7 @@ module Asciimath2UnitsML
     def parser
       prefix = /#{@prefixes.keys.join("|")}/.r
       unit_keys = @units.keys.reject do |k|
-        @units[k][:type]&.include?("buildable") || /\*|\^/.match(k)
+        @units[k]&.dig(:root_units, :enumerated_root_units)&.any? { |x| x[:prefix] } || /\*|\^|\//.match(k)
       end.map { |k| Regexp.escape(k) }
       unit1 = /#{unit_keys.sort_by(&:length).reverse.join("|")}/.r
       exponent = /\^\(-?\d+\)/.r.map { |m| m.sub(/\^/, "").gsub(/[()]/, "") } |
@@ -85,6 +118,7 @@ module Asciimath2UnitsML
       "s" => { dimension: "Time", order: 3, symbol: "T" },
       "A" => { dimension: "ElectricCurrent", order: 4, symbol: "I" },
       "K" => { dimension: "ThermodynamicTemperature", order: 5, symbol: "Theta" },
+      "degK" => { dimension: "ThermodynamicTemperature", order: 5, symbol: "Theta" },
       "mol" => { dimension: "AmountOfSubstance", order: 6, symbol: "N" },
       "cd" => { dimension: "LuminousIntensity", order: 7, symbol: "J" },
     }
@@ -102,7 +136,7 @@ module Asciimath2UnitsML
         text = x.text.sub(%r{^unitsml\((.+)\)$}m, "\\1")
         units, origtext, normtext = parse(text)
         delim = x&.previous_element&.name == "mn" ? "<mo rspace='thickmathspace'>&#x2062;</mo>" : ""
-        x.replace("#{delim}<mrow xref='#{unit_id(text)}'>#{mathmlsymbol(units)}</mrow>\n"\
+        x.replace("#{delim}<mrow xref='#{unit_id(text)}'>#{mathmlsymbol(units, false)}</mrow>\n"\
                   "#{unitsml(units, origtext, normtext)}")
       end
       xml

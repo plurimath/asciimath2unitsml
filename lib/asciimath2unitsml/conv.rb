@@ -17,10 +17,9 @@ module Asciimath2UnitsML
       @quantities = read_yaml("../unitsdb/quantities.yaml")
       @units_id = read_yaml("../unitsdb/units.yaml")
       @units = flip_name_and_id(@units_id)
-      #temporary
-      @units[:degC][:render] = "&#xB0;C"
-      @units[:degF][:render] = "&#xB0;F"
-      @units[:Ohm][:render] = "&#x3A9;"
+      @symbols = @units.each_with_object({}) do |(k, v), m|
+        v[:unit_symbols]&.each { |s| m[s[:id]] = s }
+      end
       @parser = parser
       @multiplier = multiplier(options[:multiplier] || "\u00b7")
     end
@@ -48,30 +47,42 @@ module Asciimath2UnitsML
 
     def unit(units, origtext, normtext, dims)
       dimid = dim_id(dims)
+      norm_units = normalise_units(units)
       <<~END
       <Unit xmlns='#{UNITSML_NS}' xml:id='#{unit_id(origtext)}'#{dimid ? " dimensionURL='##{dimid}'" : ""}>
       #{unitsystem(units)}
-      #{unitname(units, normtext)}
-      #{unitsymbol(units)}
+      #{unitname(norm_units, normtext)}
+      #{unitsymbol(norm_units)}
       #{rootunits(units)}
       </Unit>
       END
     end
 
+    def normalise_units(units)
+      units.map do |u|
+        u1 = u.dup
+        u1[:multiplier] and u1[:multiplier] = "*"
+        u1[:exponent] and u1[:display_exponent] = u1[:exponent]
+        u1
+      end
+    end
+
+    # kg exception
     def unitsystem(units)
       ret = []
       units = units_only(units)
-      units.any? { |x| @units[x[:unit].to_sym][:si] != true } and
+      units.any? { |x| @units[x[:unit].to_sym][:unit_system][:name] != "SI" } and
         ret << "<UnitSystem name='not_SI' type='not_SI' xml:lang='en-US'/>"
-      if units.any? { |x| @units[x[:unit].to_sym][:si] == true }
-        base = units.size == 1 && @units[units[0][:unit].to_sym][:type].include?("si-base")
+      if units.any? { |x| @units[x[:unit].to_sym][:unit_system][:name] == "SI" }
+        base = units.size == 1 && @units[units[0][:unit].to_sym][:unit_system][:type] == "SI-base"
+        base = true if units.size == 1 && units[0][:unit] == "g" && units[0][:prefix] == "k"
         ret << "<UnitSystem name='SI' type='#{base ? "SI_base" : "SI_derived"}' xml:lang='en-US'/>"
       end
       ret.join("\n")
     end
 
     def unitname(units, text)
-      name = @units[text.to_sym] ? @units[text.to_sym][:name] : compose_name(units, text)
+      name = @units[text.to_sym] ? @units[text.to_sym][:unit_name][0] : compose_name(units, text)
       "<UnitName xml:lang='en'>#{name}</UnitName>"
     end
 
@@ -82,46 +93,48 @@ module Asciimath2UnitsML
 
     def unitsymbol(units)
       <<~END
-      <UnitSymbol type="HTML">#{htmlsymbol(units)}</UnitSymbol>
-      <UnitSymbol type="MathML">#{mathmlsymbolwrap(units)}</UnitSymbol>
+      <UnitSymbol type="HTML">#{htmlsymbol(units, true)}</UnitSymbol>
+      <UnitSymbol type="MathML">#{mathmlsymbolwrap(units, true)}</UnitSymbol>
       END
     end
 
-    def render(unit)
-      #require "byebug"; byebug if unit == "degC"
-      @units[unit.to_sym][:render] || unit
+    def render(unit, style)
+      @symbols[unit][style] || unit
     end
 
-    def htmlsymbol(units)
+    def htmlsymbol(units, normalise)
       units.map do |u|
         if u[:multiplier] then u[:multiplier] == "*" ? @multiplier[:html] : u[:multiplier]
         else
           u[:display_exponent] and exp = "<sup>#{u[:display_exponent].sub(/-/, "&#x2212;")}</sup>"
-          "#{u[:prefix]}#{render(u[:unit])}#{exp}"
+          base = render(normalise ? @units[u[:unit].to_sym][:unit_symbols][0][:id] : u[:unit], :html)
+          "#{u[:prefix]}#{base}#{exp}"
         end
       end.join("")
     end
 
-    def mathmlsymbol(units)
+    def mathmlsymbol(units, normalise)
       exp = units.map do |u|
         if u[:multiplier] then u[:multiplier] == "*" ? @multiplier[:mathml] : "<mo>#{u[:multiplier]}</mo>"
         else
-          base = "<mi mathvariant='normal'>#{u[:prefix]}#{render(u[:unit])}</mi>"
+          base = render(normalise ? @units[u[:unit].to_sym][:unit_symbols][0][:id] : u[:unit], :mathml)
+          if u[:prefix]
+            base = base.match(/<mi mathvariant='normal'>/) ?
+              base.sub(/<mi mathvariant='normal'>/, "<mi mathvariant='normal'>#{u[:prefix]}") :
+              "<mrow><mi mathvariant='normal'>#{u[:prefix]}#{base}</mrow>"
+          end
           if u[:display_exponent]
             exp = "<mn>#{u[:display_exponent]}</mn>".sub(/<mn>-/, "<mo>&#x2212;</mo><mn>")
-            "<msup><mrow>#{base}</mrow><mrow>#{exp}</mrow></msup>"
-          else
-            base
+            base = "<msup><mrow>#{base}</mrow><mrow>#{exp}</mrow></msup>"
           end
+          base
         end
       end.join("")
     end
 
-    def mathmlsymbolwrap(units)
+    def mathmlsymbolwrap(units, normalise)
       <<~END
-      <math xmlns='#{MATHML_NS}'>
-      <mrow>#{mathmlsymbol(units)}</mrow>
-      </math>
+      <math xmlns='#{MATHML_NS}'><mrow>#{mathmlsymbol(units, normalise)}</mrow></math>
       END
     end
 
@@ -130,7 +143,7 @@ module Asciimath2UnitsML
       exp = units_only(units).map do |u|
         prefix = " prefix='#{u[:prefix]}'" if u[:prefix]
         exponent = " powerNumerator='#{u[:exponent]}'" if u[:exponent] && u[:exponent] != "1"
-        "<EnumeratedRootUnit unit='#{@units[u[:unit].to_sym][:name]}'#{prefix}#{exponent}/>"
+        "<EnumeratedRootUnit unit='#{@units[u[:unit].to_sym][:unit_name][0]}'#{prefix}#{exponent}/>"
       end.join("\n")
       <<~END
       <RootUnits>#{exp}</RootUnits>
@@ -160,7 +173,7 @@ module Asciimath2UnitsML
     end
 
     def units2dimensions(units)
-      norm = normalise_units(units)
+      norm = decompose_units(units)
       return if norm.any? { |u| u[:unit] == "unknown" || u[:prefix] == "unknown" }
       norm.map do |u|
         { dimension: U2D[u[:unit]][:dimension],
@@ -179,8 +192,8 @@ module Asciimath2UnitsML
       "D_" + dims.map { |d| U2D[d[:unit]][:symbol] + (d[:exponent] == 1 ? "" : d[:exponent].to_s) }.join("")
     end
 
-    def normalise_units(units)
-      gather_units(units_only(units).map { |u| normalise_unit(u) }.flatten)
+    def decompose_units(units)
+      gather_units(units_only(units).map { |u| decompose_unit(u) }.flatten)
     end
 
     def gather_units(units)
@@ -194,15 +207,19 @@ module Asciimath2UnitsML
       end
     end
 
-    def normalise_unit(u)
-      if @units[u[:unit].to_sym][:type]&.include?("si-base") then u
-      elsif !@units[u[:unit].to_sym][:bases] then { prefix: u[:prefix], unit: "unknown", exponent: u[:exponent] }
+    # treat g not kg as base unit: we have stripped the prefix k in parsing
+    # reduce units down to basic units
+    def decompose_unit(u)
+      if u[:unit] == "g" then u
+      elsif @units[u[:unit].to_sym][:unit_system][:type] == "SI_base" then u
+      elsif !@units[u[:unit].to_sym][:si_derived_bases]
+        { prefix: u[:prefix], unit: "unknown", exponent: u[:exponent] }
       else
-        @units[u[:unit].to_sym][:bases].each_with_object([]) do |k, m|
-          m << { prefix: k["prefix"] ?
-                 combine_prefixes(@prefixes_id[k["prefix"]], @prefixes[u[:prefix]]) : u[:prefix],
-                 unit: @units_id[k["id"].to_sym][:symbol],
-                 exponent: (k["power"]&.to_i || 1) * (u[:exponent]&.to_i || 1) }
+        @units[u[:unit].to_sym][:si_derived_bases].each_with_object([]) do |k, m|
+          m << { prefix: !k[:prefix].nil? && !k[:prefix].empty? ? 
+                 combine_prefixes(@prefixes_id[k[:prefix]], @prefixes[u[:prefix]]) : u[:prefix],
+                 unit: @units_id[k[:id].to_sym][:symbol].first,
+                 exponent: (k[:power]&.to_i || 1) * (u[:exponent]&.to_i || 1) }
         end
       end
     end
