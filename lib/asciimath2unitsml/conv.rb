@@ -49,7 +49,7 @@ module Asciimath2UnitsML
       dimid = dim_id(dims)
       norm_units = normalise_units(units)
       <<~END
-      <Unit xmlns='#{UNITSML_NS}' xml:id='#{unit_id(origtext)}'#{dimid ? " dimensionURL='##{dimid}'" : ""}>
+      <Unit xmlns='#{UNITSML_NS}' xml:id='#{unit_id(normtext)}'#{dimid ? " dimensionURL='##{dimid}'" : ""}>
       #{unitsystem(units)}
       #{unitname(norm_units, normtext)}
       #{unitsymbol(norm_units)}

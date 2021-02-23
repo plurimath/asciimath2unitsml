@@ -308,12 +308,14 @@ OUTPUT
 
   it "deals with units division" do
     expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
-    9 "unitsml(C^3*A)" + 13 "unitsml(A/C^-3)"
+    9 "unitsml(A*C^3)" + 13 "unitsml(A/C^-3)"
 INPUT
 <math xmlns='http://www.w3.org/1998/Math/MathML'>
          <mn>9</mn>
          <mo rspace='thickmathspace'>&#x2062;</mo>
-         <mrow xref='U_C3.A'>
+         <mrow xref='U_A.C3'>
+           <mi mathvariant='normal'>A</mi>
+           <mo>&#xB7;</mo>
            <msup>
              <mrow>
                <mi mathvariant='normal'>C</mi>
@@ -322,20 +324,19 @@ INPUT
                <mn>3</mn>
              </mrow>
            </msup>
-           <mo>&#xB7;</mo>
-           <mi mathvariant='normal'>A</mi>
          </mrow>
-         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_C3.A' dimensionURL='#D_M3I4'>
+         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_A.C3' dimensionURL='#D_M3I4'>
            <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
-           <UnitName xml:lang='en'>C^3*A</UnitName>
+           <UnitName xml:lang='en'>A*C^3</UnitName>
            <UnitSymbol type='HTML'>
-             C
+             A&#xB7;C
              <sup>3</sup>
-             &#xB7;A
            </UnitSymbol>
            <UnitSymbol type='MathML'>
              <math xmlns='http://www.w3.org/1998/Math/MathML'>
                <mrow>
+                 <mi mathvariant='normal'>A</mi>
+                 <mo>&#xB7;</mo>
                  <msup>
                    <mrow>
                      <mi mathvariant='normal'>C</mi>
@@ -344,14 +345,12 @@ INPUT
                      <mn>3</mn>
                    </mrow>
                  </msup>
-                 <mo>&#xB7;</mo>
-                 <mi mathvariant='normal'>A</mi>
                </mrow>
              </math>
            </UnitSymbol>
            <RootUnits>
-             <EnumeratedRootUnit unit='coulomb' powerNumerator='3'/>
              <EnumeratedRootUnit unit='ampere'/>
+             <EnumeratedRootUnit unit='coulomb' powerNumerator='3'/>
            </RootUnits>
          </Unit>
          <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_M3I4'>
@@ -374,7 +373,7 @@ INPUT
              </mrow>
            </msup>
          </mrow>
-         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_A/C-3' dimensionURL='#D_M3I4'>
+         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_A.C3' dimensionURL='#D_M3I4'>
            <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
            <UnitName xml:lang='en'>A*C^3</UnitName>
            <UnitSymbol type='HTML'>
