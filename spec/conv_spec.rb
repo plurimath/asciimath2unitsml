@@ -3,13 +3,14 @@ require "spec_helper"
 RSpec.describe Asciimath2UnitsML do
   it "converts an AsciiMath string to MathML + UnitsML" do
     expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
-    1 "unitsml(kg*s^-2)"
+    1 "unitsml(mm*s^-2)"
     INPUT
-    <math xmlns='http://www.w3.org/1998/Math/MathML'>
+    <?xml version='1.0'?>
+       <math xmlns='http://www.w3.org/1998/Math/MathML'>
          <mn>1</mn>
          <mo rspace='thickmathspace'>&#x2062;</mo>
-         <mrow xref='U_kg.s-2'>
-           <mi mathvariant='normal'>kg</mi>
+         <mrow xref='U_mm.s-2'>
+           <mi mathvariant='normal'>mm</mi>
            <mo>&#xB7;</mo>
            <msup>
              <mrow>
@@ -21,17 +22,17 @@ RSpec.describe Asciimath2UnitsML do
              </mrow>
            </msup>
          </mrow>
-         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_kg.s-2' dimensionURL='#D_MT-2'>
+         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_mm.s-2' dimensionURL='#D_LT-2'>
            <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
-           <UnitName xml:lang='en'>kg*s^-2</UnitName>
+           <UnitName xml:lang='en'>mm*s^-2</UnitName>
            <UnitSymbol type='HTML'>
-             kg&#xB7;s
+             mm&#xB7;s
              <sup>&#x2212;2</sup>
            </UnitSymbol>
            <UnitSymbol type='MathML'>
              <math xmlns='http://www.w3.org/1998/Math/MathML'>
                <mrow>
-                 <mi mathvariant='normal'>kg</mi>
+                 <mi mathvariant='normal'>mm</mi>
                  <mo>&#xB7;</mo>
                  <msup>
                    <mrow>
@@ -46,21 +47,61 @@ RSpec.describe Asciimath2UnitsML do
              </math>
            </UnitSymbol>
            <RootUnits>
-             <EnumeratedRootUnit unit='gram' prefix='k'/>
+             <EnumeratedRootUnit unit='meter' prefix='m'/>
              <EnumeratedRootUnit unit='second' powerNumerator='-2'/>
            </RootUnits>
          </Unit>
-         <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
-           <PrefixName xml:lang='en'>kilo</PrefixName>
-           <PrefixSymbol type='ASCII'>k</PrefixSymbol>
+         <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='-3' xml:id='NISTp10_-3'>
+           <PrefixName xml:lang='en'>milli</PrefixName>
+           <PrefixSymbol type='ASCII'>m</PrefixSymbol>
+           <PrefixSymbol type='unicode'>m</PrefixSymbol>
+           <PrefixSymbol type='LaTeX'>m</PrefixSymbol>
+           <PrefixSymbol type='HTML'>m</PrefixSymbol>
          </Prefix>
-         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_MT-2'>
-           <Mass symbol='M' powerNumerator='1'/>
+         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_LT-2'>
+           <Length symbol='L' powerNumerator='1'/>
            <Time symbol='T' powerNumerator='-2'/>
          </Dimension>
        </math>
     OUTPUT
   end
+
+    it "deals with non-Ascii units and prefixes" do
+    expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
+    1 "unitsml(um)"
+    INPUT
+    <?xml version='1.0'?>
+    <math xmlns='http://www.w3.org/1998/Math/MathML'>
+  <mn>1</mn>
+  <mo rspace='thickmathspace'>&#x2062;</mo>
+  <mrow xref='U_um'>
+    <mi mathvariant='normal'>um</mi>
+  </mrow>
+  <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_um' dimensionURL='#D_L'>
+    <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
+    <UnitName xml:lang='en'>um</UnitName>
+    <UnitSymbol type='HTML'>um</UnitSymbol>
+    <UnitSymbol type='MathML'>
+      <math xmlns='http://www.w3.org/1998/Math/MathML'>
+        <mrow>
+          <mi mathvariant='normal'>um</mi>
+        </mrow>
+      </math>
+    </UnitSymbol>
+  </Unit>
+  <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='-6' xml:id='NISTp10_-6'>
+    <PrefixName xml:lang='en'>micro</PrefixName>
+    <PrefixSymbol type='ASCII'>u</PrefixSymbol>
+    <PrefixSymbol type='unicode'>&#x3BC;</PrefixSymbol>
+    <PrefixSymbol type='LaTeX'>$mu$</PrefixSymbol>
+    <PrefixSymbol type='HTML'>&amp;micro;</PrefixSymbol>
+  </Prefix>
+  <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_L'>
+    <Length symbol='L' powerNumerator='1'/>
+  </Dimension>
+</math>
+OUTPUT
+    end
 
   it "deals with kg and g" do
     expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
@@ -87,6 +128,9 @@ RSpec.describe Asciimath2UnitsML do
          <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
            <PrefixName xml:lang='en'>kilo</PrefixName>
            <PrefixSymbol type='ASCII'>k</PrefixSymbol>
+    <PrefixSymbol type='unicode'>k</PrefixSymbol>
+    <PrefixSymbol type='LaTeX'>k</PrefixSymbol>
+    <PrefixSymbol type='HTML'>k</PrefixSymbol>
          </Prefix>
          <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_M'>
            <Mass symbol='M' powerNumerator='1'/>
@@ -194,6 +238,9 @@ RSpec.describe Asciimath2UnitsML do
          <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
            <PrefixName xml:lang='en'>kilo</PrefixName>
            <PrefixSymbol type='ASCII'>k</PrefixSymbol>
+    <PrefixSymbol type='unicode'>k</PrefixSymbol>
+    <PrefixSymbol type='LaTeX'>k</PrefixSymbol>
+    <PrefixSymbol type='HTML'>k</PrefixSymbol>
          </Prefix>
          <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_MT-2'>
            <Mass symbol='M' powerNumerator='1'/>
@@ -247,6 +294,9 @@ RSpec.describe Asciimath2UnitsML do
          <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
            <PrefixName xml:lang='en'>kilo</PrefixName>
            <PrefixSymbol type='ASCII'>k</PrefixSymbol>
+    <PrefixSymbol type='unicode'>k</PrefixSymbol>
+    <PrefixSymbol type='LaTeX'>k</PrefixSymbol>
+    <PrefixSymbol type='HTML'>k</PrefixSymbol>
          </Prefix>
          <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_MT-2'>
            <Mass symbol='M' powerNumerator='1'/>
@@ -465,6 +515,9 @@ OUTPUT
  <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
    <PrefixName xml:lang='en'>kilo</PrefixName>
    <PrefixSymbol type='ASCII'>k</PrefixSymbol>
+    <PrefixSymbol type='unicode'>k</PrefixSymbol>
+    <PrefixSymbol type='LaTeX'>k</PrefixSymbol>
+    <PrefixSymbol type='HTML'>k</PrefixSymbol>
  </Prefix>
  <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_M-2'>
    <Mass symbol='M' powerNumerator='-2'/>
@@ -533,6 +586,9 @@ OUTPUT
   <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
     <PrefixName xml:lang='en'>kilo</PrefixName>
     <PrefixSymbol type='ASCII'>k</PrefixSymbol>
+    <PrefixSymbol type='unicode'>k</PrefixSymbol>
+    <PrefixSymbol type='LaTeX'>k</PrefixSymbol>
+    <PrefixSymbol type='HTML'>k</PrefixSymbol>
   </Prefix>
   <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_MT-2'>
     <Mass symbol='M' powerNumerator='1'/>
@@ -591,6 +647,9 @@ OUTPUT
          <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
            <PrefixName xml:lang='en'>kilo</PrefixName>
            <PrefixSymbol type='ASCII'>k</PrefixSymbol>
+    <PrefixSymbol type='unicode'>k</PrefixSymbol>
+    <PrefixSymbol type='LaTeX'>k</PrefixSymbol>
+    <PrefixSymbol type='HTML'>k</PrefixSymbol>
          </Prefix>
          <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_MT-2'>
            <Mass symbol='M' powerNumerator='1'/>
@@ -649,6 +708,9 @@ OUTPUT
   <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
     <PrefixName xml:lang='en'>kilo</PrefixName>
     <PrefixSymbol type='ASCII'>k</PrefixSymbol>
+    <PrefixSymbol type='unicode'>k</PrefixSymbol>
+    <PrefixSymbol type='LaTeX'>k</PrefixSymbol>
+    <PrefixSymbol type='HTML'>k</PrefixSymbol>
   </Prefix>
   <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_MT-2'>
     <Mass symbol='M' powerNumerator='1'/>

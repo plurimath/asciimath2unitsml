@@ -18,8 +18,23 @@ module Asciimath2UnitsML
       end
     end
 
+    def flip_name_and_symbol(hash)
+      hash.each_with_object({}) do |(k, v), m|
+        next if v.name.nil? || v.name.empty?
+        m[v.symbolid] = v
+      end
+    end
+
+    def flip_name_and_symbols(hash)
+      hash.each_with_object({}) do |(k, v), m|
+        next if v.name.nil? || v.name.empty?
+        v.symbolids.each { |s| m[s] = v }
+      end
+    end
+
     def validate_yaml(hash, path)
       return hash if path == "../unitsdb/quantities.yaml"
+      return hash if path == "../unitsdb/dimensions.yaml"
       hash.each_with_object({}) do |(k, v), m|
         symbol = symbol_key(v)
         !symbol.nil? or raise StandardError.new "No symbol provided for unit: #{v}"
@@ -65,23 +80,26 @@ module Asciimath2UnitsML
     end
 
     def parser
-      prefix = /#{@prefixes.keys.join("|")}/.r
+      prefix2 = /#{@prefixes.keys.select { |x| x.size == 2 }.join("|")}/.r
+      prefix1 = /#{@prefixes.keys.select { |x| x.size == 1 }.join("|")}/.r
       unit_keys = @units.keys.reject do |k|
-        @units[k]&.dig(:root_units, :enumerated_root_units)&.any? { |x| x[:prefix] } || /\*|\^|\//.match(k)
+        @units[k].root&.any? { |x| x[:prefix] } || /\*|\^|\//.match(k)
       end.map { |k| Regexp.escape(k) }
       unit1 = /#{unit_keys.sort_by(&:length).reverse.join("|")}/.r
       exponent = /\^\(-?\d+\)/.r.map { |m| m.sub(/\^/, "").gsub(/[()]/, "") } |
         /\^-?\d+/.r.map { |m| m.sub(/\^/, "") }
       multiplier = %r{\*|//|/}.r.map { |x| { multiplier: x[0] } }
-      unit = seq(unit1, exponent._?) { |x| { prefix: nil, unit: x[0], display_exponent: (x[1][0] )} } |
-        seq(prefix, unit1, exponent._?) { |x| { prefix: x[0][0], unit: x[1], display_exponent: (x[2][0] ) } }
-      units_tail = seq(multiplier, unit) { |x| [x[0], x[1]] }
-      units = seq(unit, units_tail.star) { |x| [x[0], x[1]].flatten }
+      unit = 
+        seq(unit1, exponent._? & multiplier) { |x| { prefix: nil, unit: x[0], display_exponent: (x[1][0] )} } |
+        seq(unit1, exponent._?).eof { |x| { prefix: nil, unit: x[0], display_exponent: (x[1][0] )} } |
+        seq(prefix1, unit1, exponent._? ) { |x| { prefix: x[0], unit: x[1], display_exponent: (x[2][0] ) } } |
+        seq(prefix2, unit1, exponent._? ) { |x| { prefix: x[0], unit: x[1], display_exponent: (x[2][0] ) } }
+      units = unit.join(multiplier)
       parser = units.eof
     end
 
     def parse(x)
-      units = @parser.parse(x)
+      units = @parser.parse!(x)
       if !units || Rsec::INVALID[units]
         raise Rsec::SyntaxError.new "error parsing UnitsML expression", x, 1, 0
       end
