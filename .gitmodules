@@ -1,3 +1,4 @@
 [submodule "lib/unitsdb"]
+	branch = master
 	path = lib/unitsdb
 	url = https://github.com/unitsml/unitsdb.git
