@@ -5,6 +5,7 @@ require "yaml"
 require "rsec"
 require_relative "string"
 require_relative "parse"
+require_relative "render"
 
 module Asciimath2UnitsML
   MATHML_NS = "http://www.w3.org/1998/Math/MathML".freeze
@@ -31,17 +32,6 @@ module Asciimath2UnitsML
       end
       @parser = parser
       @multiplier = multiplier(options[:multiplier] || "\u00b7")
-    end
-
-    def multiplier(x)
-      case x
-      when :space
-        { html: "&#xA0;", mathml: "<mo rspace='thickmathspace'>&#x2062;</mo>" }
-      when :nospace
-        { html: "", mathml: "<mo>&#x2062;</mo>" }
-      else
-        { html: HTMLEntities.new.encode(x), mathml: "<mo>#{HTMLEntities.new.encode(x)}</mo>" }
-      end
     end
 
     def units_only(units)
@@ -107,48 +97,8 @@ module Asciimath2UnitsML
       END
     end
 
-    def render(unit, style)
-      @symbols[unit][style] || unit
-    end
-
-    def htmlsymbol(units, normalise)
-      units.map do |u|
-        if u[:multiplier] then u[:multiplier] == "*" ? @multiplier[:html] : u[:multiplier]
-        else
-          u[:display_exponent] and exp = "<sup>#{u[:display_exponent].sub(/-/, "&#x2212;")}</sup>"
-          base = render(normalise ? @units[u[:unit]].symbolid : u[:unit], :html)
-          "#{u[:prefix]}#{base}#{exp}"
-        end
-      end.join("")
-    end
-
-    def mathmlsymbol(units, normalise)
-      exp = units.map do |u|
-        if u[:multiplier] then u[:multiplier] == "*" ? @multiplier[:mathml] : "<mo>#{u[:multiplier]}</mo>"
-        else
-          base = render(normalise ? @units[u[:unit]].symbolid : u[:unit], :mathml)
-          if u[:prefix]
-            base = base.match(/<mi mathvariant='normal'>/) ?
-              base.sub(/<mi mathvariant='normal'>/, "<mi mathvariant='normal'>#{u[:prefix]}") :
-              "<mrow><mi mathvariant='normal'>#{u[:prefix]}#{base}</mrow>"
-          end
-          if u[:display_exponent]
-            exp = "<mn>#{u[:display_exponent]}</mn>".sub(/<mn>-/, "<mo>&#x2212;</mo><mn>")
-            base = "<msup><mrow>#{base}</mrow><mrow>#{exp}</mrow></msup>"
-          end
-          base
-        end
-      end.join("")
-    end
-
-    def mathmlsymbolwrap(units, normalise)
-      <<~END
-      <math xmlns='#{MATHML_NS}'><mrow>#{mathmlsymbol(units, normalise)}</mrow></math>
-      END
-    end
-
     def rootunits(units)
-      return if units.size == 1
+      return if units.size == 1 && !units[0][:prefix]
       exp = units_only(units).map do |u|
         prefix = " prefix='#{u[:prefix]}'" if u[:prefix]
         exponent = " powerNumerator='#{u[:exponent]}'" if u[:exponent] && u[:exponent] != "1"

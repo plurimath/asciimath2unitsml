@@ -88,6 +88,9 @@ RSpec.describe Asciimath2UnitsML do
         </mrow>
       </math>
     </UnitSymbol>
+    <RootUnits>
+  <EnumeratedRootUnit unit='meter' prefix='u'/>
+</RootUnits>
   </Unit>
   <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='-6' xml:id='NISTp10_-6'>
     <PrefixName xml:lang='en'>micro</PrefixName>
@@ -124,6 +127,9 @@ OUTPUT
                </mrow>
              </math>
            </UnitSymbol>
+           <RootUnits>
+  <EnumeratedRootUnit unit='gram' prefix='k'/>
+</RootUnits>
          </Unit>
          <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
            <PrefixName xml:lang='en'>kilo</PrefixName>
@@ -153,9 +159,6 @@ OUTPUT
              </math>
            </UnitSymbol>
          </Unit>
-         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_M'>
-           <Mass symbol='M' powerNumerator='1'/>
-         </Dimension>
        </math>
     OUTPUT
   end
@@ -262,46 +265,6 @@ OUTPUT
              </mrow>
            </msup>
          </mrow>
-         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_kg.s-2' dimensionURL='#D_MT-2'>
-           <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
-           <UnitName xml:lang='en'>kg*s^-2</UnitName>
-           <UnitSymbol type='HTML'>
-             kg&#xB7;s
-             <sup>&#x2212;2</sup>
-           </UnitSymbol>
-           <UnitSymbol type='MathML'>
-             <math xmlns='http://www.w3.org/1998/Math/MathML'>
-               <mrow>
-                 <mi mathvariant='normal'>kg</mi>
-                 <mo>&#xB7;</mo>
-                 <msup>
-                   <mrow>
-                     <mi mathvariant='normal'>s</mi>
-                   </mrow>
-                   <mrow>
-                     <mo>&#x2212;</mo>
-                     <mn>2</mn>
-                   </mrow>
-                 </msup>
-               </mrow>
-             </math>
-           </UnitSymbol>
-           <RootUnits>
-             <EnumeratedRootUnit unit='gram' prefix='k'/>
-             <EnumeratedRootUnit unit='second' powerNumerator='-2'/>
-           </RootUnits>
-         </Unit>
-         <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
-           <PrefixName xml:lang='en'>kilo</PrefixName>
-           <PrefixSymbol type='ASCII'>k</PrefixSymbol>
-    <PrefixSymbol type='unicode'>k</PrefixSymbol>
-    <PrefixSymbol type='LaTeX'>k</PrefixSymbol>
-    <PrefixSymbol type='HTML'>k</PrefixSymbol>
-         </Prefix>
-         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_MT-2'>
-           <Mass symbol='M' powerNumerator='1'/>
-           <Time symbol='T' powerNumerator='-2'/>
-         </Dimension>
        </math>
     OUTPUT
   end
@@ -337,24 +300,46 @@ INPUT
   <mrow xref='U_NISTu5'>
     <mi mathvariant='normal'>K</mi>
   </mrow>
-  <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu5' dimensionURL='#D_Theta'>
-    <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
-    <UnitName xml:lang='en'>kelvin</UnitName>
-    <UnitSymbol type='HTML'>K</UnitSymbol>
-    <UnitSymbol type='MathML'>
-      <math xmlns='http://www.w3.org/1998/Math/MathML'>
-        <mrow>
-          <mi mathvariant='normal'>K</mi>
-        </mrow>
-      </math>
-    </UnitSymbol>
-  </Unit>
-  <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_Theta'>
-    <ThermodynamicTemperature symbol='Theta' powerNumerator='1'/>
-  </Dimension>
 </math>
 OUTPUT
   end
+
+  it "deals with prefixed units" do
+    expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
+    9 "unitsml(mbar)"
+INPUT
+<math xmlns='http://www.w3.org/1998/Math/MathML'>
+  <mn>9</mn>
+  <mo rspace='thickmathspace'>&#x2062;</mo>
+  <mrow xref='U_NISTu362'>
+    <mi mathvariant='normal'>mbar</mi>
+  </mrow>
+  <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu362'>
+    <UnitSystem name='not_SI' type='not_SI' xml:lang='en-US'/>
+    <UnitName xml:lang='en'>millibar</UnitName>
+    <UnitSymbol type='HTML'>mbar</UnitSymbol>
+    <UnitSymbol type='MathML'>
+      <math xmlns='http://www.w3.org/1998/Math/MathML'>
+        <mrow>
+          <mi mathvariant='normal'>mbar</mi>
+        </mrow>
+      </math>
+    </UnitSymbol>
+    <RootUnits>
+      <EnumeratedRootUnit unit='bar' prefix='m'/>
+    </RootUnits>
+  </Unit>
+  <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='-3' xml:id='NISTp10_-3'>
+    <PrefixName xml:lang='en'>milli</PrefixName>
+    <PrefixSymbol type='ASCII'>m</PrefixSymbol>
+    <PrefixSymbol type='unicode'>m</PrefixSymbol>
+    <PrefixSymbol type='LaTeX'>m</PrefixSymbol>
+    <PrefixSymbol type='HTML'>m</PrefixSymbol>
+  </Prefix>
+</math>
+OUTPUT
+  end
+
 
   it "deals with units division" do
     expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
@@ -423,38 +408,6 @@ INPUT
              </mrow>
            </msup>
          </mrow>
-         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_A.C3' dimensionURL='#D_M3I4'>
-           <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
-           <UnitName xml:lang='en'>A*C^3</UnitName>
-           <UnitSymbol type='HTML'>
-             A&#xB7;C
-             <sup>3</sup>
-           </UnitSymbol>
-           <UnitSymbol type='MathML'>
-             <math xmlns='http://www.w3.org/1998/Math/MathML'>
-               <mrow>
-                 <mi mathvariant='normal'>A</mi>
-                 <mo>&#xB7;</mo>
-                 <msup>
-                   <mrow>
-                     <mi mathvariant='normal'>C</mi>
-                   </mrow>
-                   <mrow>
-                     <mn>3</mn>
-                   </mrow>
-                 </msup>
-               </mrow>
-             </math>
-           </UnitSymbol>
-           <RootUnits>
-             <EnumeratedRootUnit unit='ampere'/>
-             <EnumeratedRootUnit unit='coulomb' powerNumerator='3'/>
-           </RootUnits>
-         </Unit>
-         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_M3I4'>
-           <Mass symbol='M' powerNumerator='3'/>
-           <ElectricCurrent symbol='I' powerNumerator='4'/>
-         </Dimension>
        </math>
 OUTPUT
   end
@@ -511,6 +464,9 @@ OUTPUT
        </mrow>
      </math>
    </UnitSymbol>
+   <RootUnits>
+  <EnumeratedRootUnit unit='gram' prefix='k' powerNumerator='-2'/>
+</RootUnits>
  </Unit>
  <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
    <PrefixName xml:lang='en'>kilo</PrefixName>

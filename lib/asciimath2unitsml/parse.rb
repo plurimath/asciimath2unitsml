@@ -6,18 +6,6 @@ module Asciimath2UnitsML
       validate_yaml(symbolize_keys(YAML.load_file(File.join(File.join(File.dirname(__FILE__), path)))), path)
     end
 
-    def flip_name_and_id(yaml)
-      yaml.each_with_object({}) do |(k, v), m|
-        next if (v[:name].nil? || v[:name].empty?) && (v[:unit_name].nil? || v[:unit_name].empty?)
-        symbol = symbol_key(v)
-        Array(symbol).each do |s|
-          m[s.to_sym] = v
-          m[s.to_sym][:symbol] = symbol
-          m[s.to_sym][:id] = k.to_s
-        end
-      end
-    end
-
     def flip_name_and_symbol(hash)
       hash.each_with_object({}) do |(k, v), m|
         next if v.name.nil? || v.name.empty?
@@ -57,7 +45,7 @@ module Asciimath2UnitsML
 
     def symbol_key(v)
       symbol = v[:unit_symbols]&.each_with_object([]) { |s, m| m << (s["id"] || s[:id]) } || 
-        v.dig(:symbol, :ascii) || v[:symbol] || v[:short]
+        v.dig(:symbol, :ascii) || v[:symbol] #|| v[:short]
       symbol = [symbol] if !symbol.nil? && v[:unit_symbols] && !symbol.is_a?(Array)
       symbol
     end
@@ -83,7 +71,7 @@ module Asciimath2UnitsML
       prefix2 = /#{@prefixes.keys.select { |x| x.size == 2 }.join("|")}/.r
       prefix1 = /#{@prefixes.keys.select { |x| x.size == 1 }.join("|")}/.r
       unit_keys = @units.keys.reject do |k|
-        @units[k].root&.any? { |x| x[:prefix] } || /\*|\^|\//.match(k)
+        @units[k].root&.any? { |x| x[:prefix] } || /\*|\^|\//.match(k) || @units[k].prefixed
       end.map { |k| Regexp.escape(k) }
       unit1 = /#{unit_keys.sort_by(&:length).reverse.join("|")}/.r
       exponent = /\^\(-?\d+\)/.r.map { |m| m.sub(/\^/, "").gsub(/[()]/, "") } |
@@ -156,6 +144,18 @@ module Asciimath2UnitsML
         delim = x&.previous_element&.name == "mn" ? "<mo rspace='thickmathspace'>&#x2062;</mo>" : ""
         x.replace("#{delim}<mrow xref='#{unit_id(text)}'>#{mathmlsymbol(units, false)}</mrow>\n"\
                   "#{unitsml(units, origtext, normtext)}")
+      end
+      dedup_ids(xml)
+    end
+
+    def dedup_ids(xml)
+      %w(Unit Dimension Prefix Quantity).each do |t|
+        xml.xpath(".//m:#{t}/@xml:id", "m" => UNITSML_NS).map { |a| a.text }.uniq.each do |v|
+          xml.xpath(".//*[@xml:id = '#{v}']").each_with_index do |n, i|
+            next if i == 0
+            n.remove
+          end
+        end
       end
       xml
     end

@@ -88,7 +88,7 @@ module UnitsDB
 
   class Unit
     attr_reader :id, :dimension, :short, :root, :unit_system, :names, :symbols, :symbols_hash, :root_units, :quantities,
-      :si_derived_bases
+      :si_derived_bases, :prefixed
 
     def initialize(id, hash)
       begin
