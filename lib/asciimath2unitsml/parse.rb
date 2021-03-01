@@ -24,16 +24,32 @@ module Asciimath2UnitsML
       return hash if path == "../unitsdb/quantities.yaml"
       return hash if path == "../unitsdb/dimensions.yaml"
       hash.each_with_object({}) do |(k, v), m|
-        symbol = symbol_key(v)
-        !symbol.nil? or raise StandardError.new "No symbol provided for unit: #{v}"
-        Array(symbol)&.each do |s|
-          m[s] && s != "1" and
-            raise StandardError.new "symbol #{s} is not unique in #{v}: already used for #{m[s]}"
-          m[s] = v
-        end
+        path == "../unitsdb/units.yaml" and validate_unit(v)
+        m = validate_symbols(m, v)
         v[:unit_symbols]&.each { |s| validate_unit_symbol_cardinality(s, k) }
       end
       hash
+    end
+
+    def validate_unit(v)
+      if v[:quantity_reference]
+        v[:quantity_reference].is_a?(Array) or
+          raise StandardError.new "No quantity_reference array provided for unit: #{v}"
+      end
+      if v[:unit_name]
+        v[:unit_name].is_a?(Array) or raise StandardError.new "No unit_name array provided for unit: #{v}"
+      end
+    end
+
+    def validate_symbols(m, v)
+      symbol = symbol_key(v)
+      !symbol.nil? or raise StandardError.new "No symbol provided for unit: #{v}"
+      Array(symbol)&.each do |s|
+        m[s] && s != "1" and
+          raise StandardError.new "symbol #{s} is not unique in #{v}: already used for #{m[s]}"
+        m[s] = v
+      end
+      m 
     end
 
     def validate_unit_symbol_cardinality(us, k)
@@ -87,21 +103,23 @@ module Asciimath2UnitsML
     end
 
     def parse(x)
-      units = @parser.parse!(x)
+      text = Array(x.split(/,\s*/))
+      units = @parser.parse!(text[0])
       if !units || Rsec::INVALID[units]
         raise Rsec::SyntaxError.new "error parsing UnitsML expression", x, 1, 0
       end
       Rsec::Fail.reset
-      postprocess(units, x)
+      postprocess(units, text)
     end
 
     def postprocess(units, text)
       units = postprocess1(units)
+      quantity = text[1..-1]&.select { |x| /^quantity:/.match(x) }&.first&.sub(/^quantity:\s*/, "")
       normtext = units_only(units).each.map do |u|
         exp = u[:exponent] && u[:exponent] != "1" ? "^#{u[:exponent]}" : ""
         "#{u[:prefix]}#{u[:unit]}#{exp}"
       end.join("*")
-      [units, text, normtext]
+      [units, text[0], normtext, quantity]
     end
 
     def postprocess1(units)
@@ -127,6 +145,7 @@ module Asciimath2UnitsML
       "degK" => { dimension: "ThermodynamicTemperature", order: 5, symbol: "Theta" },
       "mol" => { dimension: "AmountOfSubstance", order: 6, symbol: "N" },
       "cd" => { dimension: "LuminousIntensity", order: 7, symbol: "J" },
+      "deg" => { dimension: "PlaneAngle", order: 8, symbol: "Phi" },
     }
 
     def Asciimath2UnitsML(expression)
@@ -140,10 +159,10 @@ module Asciimath2UnitsML
       xml.xpath(".//m:mtext", "m" => MATHML_NS).each do |x|
         next unless %r{^unitsml\(.+\)$}.match(x.text)
         text = x.text.sub(%r{^unitsml\((.+)\)$}m, "\\1")
-        units, origtext, normtext = parse(text)
+        units, origtext, normtext, quantity = parse(text)
         delim = x&.previous_element&.name == "mn" ? "<mo rspace='thickmathspace'>&#x2062;</mo>" : ""
-        x.replace("#{delim}<mrow xref='#{unit_id(text)}'>#{mathmlsymbol(units, false)}</mrow>\n"\
-                  "#{unitsml(units, origtext, normtext)}")
+        x.replace("#{delim}<mrow xref='#{unit_id(origtext)}'>#{mathmlsymbol(units, false)}</mrow>\n"\
+                  "#{unitsml(units, origtext, normtext, quantity)}")
       end
       dedup_ids(xml)
     end
@@ -164,6 +183,38 @@ module Asciimath2UnitsML
       AsciiMath::MathMLBuilder.new(:msword => true).append_expression(
         AsciiMath.parse(HTMLEntities.new.decode(expression)).ast).to_s.
       gsub(/<math>/, "<math xmlns='#{MATHML_NS}'>")
+    end
+
+    def ambig_units
+      u = @units_id.each_with_object({}) do |(k, v), m|
+        v.symbolids.each do |x|
+          next if %r{[*/^]}.match(x)
+          next unless v.symbols_hash[x][:html] != x
+          m[v.symbols_hash[x][:html]] ||= []
+          m[v.symbols_hash[x][:html]] << x
+        end
+      end
+      u.keys.each { |k| u[k] = u[k].unshift(k) if @symbols.dig(k, :html) == k }
+      render_ambig_units(u)
+    end
+
+    def render_ambig_units(u)
+      maxcols = 0
+      u.each { |_, v| maxcols = v.size if maxcols < v.size }
+      puts %([cols="#{maxcols + 1}*"]\n|===\n|Symbol | Unit + ID #{"| " * (maxcols - 1)}\n)
+      puts "\n\n"
+      u.keys.sort_by { |a| [-u[a].size, a.gsub(%r{\&[^;]+;}, "").gsub(/[^A-Za-z]/, "").downcase] }.each do |k|
+        print "| #{html2adoc(k)} "
+        u[k].each { |v1| print "| #{@units[v1].name}: `#{v1}` " }
+        puts "#{"| " * (maxcols - u[k].size) }\n"
+      end
+      puts "|===\n"
+    end
+
+    def html2adoc(k)
+      k.gsub(%r{<i>}, "__").gsub(%r{</i>}, "__")
+        .gsub(%r{<sup>}, "^").gsub(%r{</sup>}, "^")
+        .gsub(%r{<sub>}, "~").gsub(%r{</sub>}, "~")
     end
   end
 end

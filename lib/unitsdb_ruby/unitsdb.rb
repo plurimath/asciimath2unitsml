@@ -20,6 +20,37 @@ module UnitsDB
         raise StandardError.new "Parse fail on Dimension #{id}: #{hash}"
       end
     end
+
+    def keys
+      ret = []
+      @length and ret << "Length"
+      @mass and ret << "Mass"
+      @time and ret << "Time"
+      @electric_current and ret << "ElectricCurrent"
+      @thermodynamic_temperature and ret << "ThermodynamicTemperature"
+      @amount_of_substance and ret << "AmountOfSubstance"
+      @luminous_intensity and ret << "LuminousIntensity"
+      @plane_angle and ret << "PlaneAngle"
+      ret
+    end
+
+    def exponent(key)
+      case key
+      when "Length" then @length
+      when "Mass" then @mass
+      when "Time" then @time
+      when "ElectricCurrent" then @electric_current
+      when "ThermodynamicTemperature" then @thermodynamic_temperature
+      when "AmountOfSubstance" then @amount_of_substance
+      when "LuminousIntensity" then @luminous_intensity
+      when "PlaneAngle" then @plane_angle
+      end
+    end
+
+    def vector
+      "#{@length}:#{@mass}:#{@time}:#{@electric_current}:#{@thermodynamic_temperature}:#{@amount_of_substance}:"\
+        "#{@luminous_intensity}:#{@plane_angle}"
+    end
   end
 
   class Prefix

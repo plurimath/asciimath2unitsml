@@ -6,6 +6,7 @@ require "rsec"
 require_relative "string"
 require_relative "parse"
 require_relative "render"
+require_relative "unit"
 
 module Asciimath2UnitsML
   MATHML_NS = "http://www.w3.org/1998/Math/MathML".freeze
@@ -14,14 +15,14 @@ module Asciimath2UnitsML
   class Conv
     def initialize(options = {})
       @dimensions_id = read_yaml("../unitsdb/dimensions.yaml").each_with_object({}) do |(k, v), m|
-        m[k] = UnitsDB::Dimension.new(k, v)
+        m[k.to_s] = UnitsDB::Dimension.new(k, v)
       end
       @prefixes_id = read_yaml("../unitsdb/prefixes.yaml").each_with_object({}) do |(k, v), m|
         m[k] = UnitsDB::Prefix.new(k, v)
       end
       @prefixes = flip_name_and_symbol(@prefixes_id)
       @quantities = read_yaml("../unitsdb/quantities.yaml").each_with_object({}) do |(k, v), m|
-        m[k] = UnitsDB::Quantity.new(k, v)
+        m[k.to_s] = UnitsDB::Quantity.new(k, v)
       end
       @units_id = read_yaml("../unitsdb/units.yaml").each_with_object({}) do |(k, v), m|
         m[k.to_s] = UnitsDB::Unit.new(k.to_s, v)
@@ -32,81 +33,6 @@ module Asciimath2UnitsML
       end
       @parser = parser
       @multiplier = multiplier(options[:multiplier] || "\u00b7")
-    end
-
-    def units_only(units)
-      units.reject { |u| u[:multiplier] }
-    end
-
-    def unit_id(text)
-      text = text.gsub(/[()]/, "")
-      "U_" +
-        (@units[text] ? @units[text].id : text.gsub(/\*/, ".").gsub(/\^/, ""))
-    end
-
-    def unit(units, origtext, normtext, dims)
-      dimid = dim_id(dims)
-      norm_units = normalise_units(units)
-      <<~END
-      <Unit xmlns='#{UNITSML_NS}' xml:id='#{unit_id(normtext)}'#{dimid ? " dimensionURL='##{dimid}'" : ""}>
-      #{unitsystem(units)}
-      #{unitname(norm_units, normtext)}
-      #{unitsymbol(norm_units)}
-      #{rootunits(units)}
-      </Unit>
-      END
-    end
-
-    def normalise_units(units)
-      units.map do |u|
-        u1 = u.dup
-        u1[:multiplier] and u1[:multiplier] = "*"
-        u1[:exponent] and u1[:display_exponent] = u1[:exponent]
-        u1
-      end
-    end
-
-    # kg exception
-    def unitsystem(units)
-      ret = []
-      units = units_only(units)
-      units.any? { |x| @units[x[:unit]].system_name != "SI" } and
-        ret << "<UnitSystem name='not_SI' type='not_SI' xml:lang='en-US'/>"
-      if units.any? { |x| @units[x[:unit]].system_name == "SI" }
-        base = units.size == 1 && @units[units[0][:unit]].system_type == "SI-base"
-        base = true if units.size == 1 && units[0][:unit] == "g" && units[0][:prefix] == "k"
-        ret << "<UnitSystem name='SI' type='#{base ? "SI_base" : "SI_derived"}' xml:lang='en-US'/>"
-      end
-      ret.join("\n")
-    end
-
-    def unitname(units, text)
-      name = @units[text] ? @units[text].name : compose_name(units, text)
-      "<UnitName xml:lang='en'>#{name}</UnitName>"
-    end
-
-    # TODO: compose name from the component units
-    def compose_name(units, text)
-      text
-    end
-
-    def unitsymbol(units)
-      <<~END
-      <UnitSymbol type="HTML">#{htmlsymbol(units, true)}</UnitSymbol>
-      <UnitSymbol type="MathML">#{mathmlsymbolwrap(units, true)}</UnitSymbol>
-      END
-    end
-
-    def rootunits(units)
-      return if units.size == 1 && !units[0][:prefix]
-      exp = units_only(units).map do |u|
-        prefix = " prefix='#{u[:prefix]}'" if u[:prefix]
-        exponent = " powerNumerator='#{u[:exponent]}'" if u[:exponent] && u[:exponent] != "1"
-        "<EnumeratedRootUnit unit='#{@units[u[:unit]].name}'#{prefix}#{exponent}/>"
-      end.join("\n")
-      <<~END
-      <RootUnits>#{exp}</RootUnits>
-      END
     end
 
     def prefix(units)
@@ -124,7 +50,7 @@ module Asciimath2UnitsML
       end.join("\n")
     end
 
-    def dimension(dims)
+    def dimension_components(dims)
       return if dims.nil? || dims.empty?
       <<~END
       <Dimension xmlns='#{UNITSML_NS}' xml:id="#{dim_id(dims)}">
@@ -150,6 +76,11 @@ module Asciimath2UnitsML
 
     def dim_id(dims)
       return nil if dims.nil? || dims.empty?
+      dimhash = dims.each_with_object({}) { |h, m| m[h[:dimension]] = h }
+      dimsvector = %w(Length Mass Time ElectricCurrent ThermodynamicTemperature 
+                      AmountOfSubstance LuminousIntensity PlaneAngle)
+        .map { |h| dimhash.dig(h, :exponent) }.join(":")
+      id = @dimensions_id&.values&.select { |d| d.vector == dimsvector }&.first&.id and return id.to_s
       "D_" + dims.map { |d| U2D[d[:unit]][:symbol] + (d[:exponent] == 1 ? "" : d[:exponent].to_s) }.join("")
     end
 
@@ -196,12 +127,51 @@ module Asciimath2UnitsML
       "unknown"
     end
 
-    def unitsml(units, origtext, normtext)
+    def quantityname(id)
+      ret = ""
+      @quantities[id].names.each do |q|
+        ret += %(<QuantityName xml:lang="en-US">#{q}</QuantityName>)
+      end
+      ret
+    end
+
+    def quantity(normtext, quantity)
+      return unless @units[normtext] && @units[normtext].quantities.size == 1 || @quantities[quantity]
+      id = quantity || @units[normtext].quantities.first
+      dim = %( dimensionURL="##{@units[normtext].dimension}") if @units[normtext]&.dimension
+      <<~END
+      <Quantity xmlns='#{UNITSML_NS}' xml:id="#{id}"#{dim} quantityType="base">
+      #{quantityname(id)}
+      </Quantity>
+      END
+    end
+
+    def dimid2dimensions(normtext)
+      @dimensions_id[normtext].keys.map do |k|
+        { dimension: k,
+          symbol: U2D.values.select { |v| v[:dimension] == k }.first[:symbol],
+          exponent: @dimensions_id[normtext].exponent(k) }
+      end
+    end
+
+    def dimension(normtext)
+      return unless @units[normtext]&.dimension 
+      dims = dimid2dimensions(@units[normtext]&.dimension)
+      <<~END
+      <Dimension xmlns='#{UNITSML_NS}' xml:id="#{@units[normtext]&.dimension}">
+      #{dims.map { |u| dimension1(u) }.join("\n") }
+      </Dimension>
+      END
+    end
+
+    def unitsml(units, origtext, normtext, quantity)
       dims = units2dimensions(units)
       <<~END
       #{unit(units, origtext, normtext, dims)}
       #{prefix(units)}
-      #{dimension(dims)}
+      #{dimension(normtext)}
+      #{dimension_components(dims)}
+      #{quantity(normtext, quantity)}
       END
     end
   end

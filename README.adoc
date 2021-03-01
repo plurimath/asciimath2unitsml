@@ -13,12 +13,34 @@ The consuming document is meant to deduplicate the instances of UnitsML markup
 with the same identifier, and potentially remove them to elsewhere in the document
 or another document.
 
+== Notation
+
+The `unitsml()` expression consists of a unit string.
+The units used in `unitsml()` are taken from the UnitsDB database as updated by Ribose:
+https://github.com/unitsml/unitsdb[]. Units are given as an ASCII based code, consisting of
+multiplication or division of single units, each of which is defined as a Prefix
+(taken from https://github.com/unitsml/unitsdb/blob/master/prefixes.yaml[]),
+unit (taken from https://github.com/unitsml/unitsdb/blob/master/units.yaml[]),
+and exponent; e.g. `mm*s^-2`. 
+
 The conventions used for writing units are:
 
 * `^` for exponents, e.g. `m^-2`
 * `*` to combine two units by multiplication; e.g. `m*s^-2`. 
 * `/` to combine two units by division;
 * `u` for μ (micro-)
+
+For more on units notation, see <<units_notation,Units Notation>>.
+
+The `unitsml()` can take additional optional parameters, giving further information for the UnitsML
+to be generated:
+
+* `unitsml(unit-string, quantity: ID)` provides the UnitsDB identifier for the quantity being measured
+(taken from https://github.com/unitsml/unitsdb/blob/master/quantities.yaml[]). For example,
+`unitsml(s, quantity: NISTq109)` indicates that the second is used to measure period duration.
+If a single quantity is associated with the unit in UnitsDB (as given in
+https://github.com/unitsml/unitsdb/blob/master/units.yaml[]), that quantity is added automatically;
+otherwise, no quantity is added unless explicitly nominated in this way.
 
 The gem follows the MathML Units convention of inserting a spacing invisible times operator
 (`<mo rspace='thickmathspace'>&#x2062;</mo>`) between any numbers (`<mn>`) and unit expressions
@@ -109,6 +131,7 @@ as a spacing invisible times in MathML (`<mo rspace='thickmathspace'>&#x2062;</m
 and as a non-breaking space in HTML. The value `:nospace` is rendered as a non-spacing
 invisible times in MathML (`<mo>&#x2062;</mo>`), and is not rendered in HTML.
 
+[[units_notation]]
 == Units Notation
 
 The units used in `unitsml()` are taken from the UnitsDB database as updated by Ribose:
