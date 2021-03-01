@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = "Convert Asciimath via MathML to UnitsML"
   spec.description   = <<~DESCRIPTION
-  Convert Asciimath via MathML to UnitsML
+    Convert Asciimath via MathML to UnitsML
   DESCRIPTION
 
   spec.homepage      = "https://github.com/plurimath/asciimath2unitsml"
@@ -23,6 +23,27 @@ Gem::Specification.new do |spec|
   spec.files         = `git ls-files`.split("\n")
   spec.test_files    = `git ls-files -- {spec}/*`.split("\n")
   spec.required_ruby_version = Gem::Requirement.new(">= 2.4.0")
+
+  # get an array of submodule dirs relatively to root repo
+  `git config --file .gitmodules --get-regexp '\\.path$'`
+    .split("\n")
+    .map { |kv_str| kv_str.split(" ") }
+    .each do |(_, submodule_path)|
+
+      # for each submodule, change working directory to that submodule
+      Dir.chdir(submodule_path) do
+
+        # issue git ls-files in submodule's directory
+        submodule_files = `git ls-files | grep -i '.yaml$'`.split($\)
+
+        submodule_files_paths = submodule_files.map do |filename|
+          File.join submodule_path, filename
+        end
+
+        # add relative paths to gem.files
+        spec.files += submodule_files_paths
+      end
+  end
 
   spec.add_dependency "asciimath"
   spec.add_dependency "htmlentities"
