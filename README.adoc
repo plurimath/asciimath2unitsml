@@ -4,9 +4,11 @@ Convert Units expressions via MathML to UnitsML
 This gem converts 
 MathML incorporating UnitsML expressions (based on the Ascii representation provided by NIST)
 into MathML complying with https://www.w3.org/TR/mathml-units/[], with
-UnitsML markup embedded in it, and with unique identifiers for each distinct unit and dimension. 
+UnitsML markup embedded in it, and with unique identifiers for each distinct unit, prefix, and dimension. 
+Dimensions are automatically inserted corresponding to each unit.
 Units expressions are identified in MathML as `<mtext>unitsml(...)</mtext>`, which in turn
 can be identified in AsciiMath  as `"unitsml(...)"`. 
+
 The consuming document is meant to deduplicate the instances of UnitsML markup
 with the same identifier, and potentially remove them to elsewhere in the document
 or another document.
@@ -14,14 +16,15 @@ or another document.
 The conventions used for writing units are:
 
 * `^` for exponents, e.g. `m^-2`
-* `*` to combine two units by multiplication; e.g. `m*s^-2`. Division is not supported, use negative exponents instead
+* `*` to combine two units by multiplication; e.g. `m*s^-2`. 
+* `/` to combine two units by division;
 * `u` for μ (micro-)
 
 The gem follows the MathML Units convention of inserting a spacing invisible times operator
 (`<mo rspace='thickmathspace'>&#x2062;</mo>`) between any numbers (`<mn>`) and unit expressions
 in MathML, and representing units in MathML as non-italic variables (`<mi mathvariant='normal'>`).
 
-So:
+== Example
 
 [source]
 ----
@@ -83,14 +86,18 @@ is converted into:
 </math>
 ----
 
+== Usage
+
 The converter is run as:
 
 [source,ruby]
 ----
 c = Asciimath2UnitsML::Conv.new()
-c.Asciimath2UnitsML({Asciimath string containing "unitsml()"})
-c.MathML2UnitsML({MathML document containing <mtext>unitsml()</mtext>})
-c.MathML2UnitsML({Nokogiri parse of MathML document containing <mtext>unitsml()</mtext>})
+c.Asciimath2UnitsML(1 "unitsml(mm*s^-2)") # AsciiMath string containing UnitsML
+c.MathML2UnitsML("<math xmlns='http://www.w3.org/1998/Math/MathML'><mn>7</mn>"\
+  "<mtext>unitsml(kg^-2)</mtext></math>") # AsciiMath string containing <mtext>unitsml()</mtext>
+c.MathML2UnitsML(Nokogiri::XML("<math xmlns='http://www.w3.org/1998/Math/MathML'><mn>7</mn>"\
+  "<mtext>unitsml(kg^-2)</mtext></math>")) # Nokogiri parse of MathML document containing <mtext>unitsml()</mtext>
 ----
 
 The converter class may be initialised with options:
@@ -101,3 +108,107 @@ supplied instead; it will be encoded as XML entities. The value `:space` is rend
 as a spacing invisible times in MathML (`<mo rspace='thickmathspace'>&#x2062;</mo>`),
 and as a non-breaking space in HTML. The value `:nospace` is rendered as a non-spacing
 invisible times in MathML (`<mo>&#x2062;</mo>`), and is not rendered in HTML.
+
+== Units Notation
+
+The units used in `unitsml()` are taken from the UnitsDB database as updated by Ribose:
+https://github.com/unitsml/unitsdb[]. Units are given as an ASCII based code, consisting of
+multiplication or division of single units, each of which is defined as a Prefix 
+(taken from https://github.com/unitsml/unitsdb/blob/master/prefixes.yaml[]),
+unit (taken from https://github.com/unitsml/unitsdb/blob/master/units.yaml[]),
+and exponent; e.g. `mm*s^-2`. 
+
+In case of ambiguity, the interpretation with no prefix is prioritised over the interpretation
+as a unit; so `ct` is interpreted as _hundredweight_, rather than _centi-ton_. Exceptionally,
+`kg` is decomposed into kilo-gram rather than treated as a basic unit, for consistency with
+other prefixes of grams. (Prefixed units appear in UnitsDB, and are indicated as `prefixed: true`.)
+
+A unit may have multiple symbols; these are registered separately in 
+https://github.com/unitsml/unitsdb/units.yaml[units.yaml], as entries under `unit_symbols`.
+These different symbols will be recognised as the same Unit in the UnitsML markup, but
+the original symbol will be retained in the MathML expression. So an expression like `1 unitsml(mL)`
+will be recognised as referring to microlitres; the expression will be given under its canonical
+rendering `ml` in UnitsML markup, but the MathML rendering referencing that UnitsML expression
+will keep the notation `mL`.
+
+The symbols used for units can be highly ambiguous; in order to guarantee accurate parsing,
+the symbols used to data enter units are unambiguous in https://github.com/unitsml/unitsdb/units.yaml[units.yaml].
+They may be found as the entries for `unit_symbols/id` under each unit. For example, `B` is ambiguous between
+_bel_ (as in decibel) and _byte_; they are kept unambiguous by using `bel_B` and `byte_B` to refer to them,
+although they will still both be rendered as `B`.
+
+The following table is the current list of ambiguous symbols, which are disambiguated in the symbol ids used.
+This table can be generated (in Asciidoc format) through `Asciimath2UnitsML::Conv.new().ambig_units`:
+
+[cols="7*"]
+|===
+|Symbol | Unit + ID | | | | | 
+
+
+| hp | horsepower: `hp` | horsepower, electric: `hp_electric` | horsepower, metric: `hp_metric` | horsepower, boiler: `hp_boiler` | horsepower, water: `hp_water` | horsepower (UK): `hp_UK` 
+| Btu | British thermal unit_IT: `Btu` | British thermal unit (mean): `Btu_mean` | British thermal unit (39 degF): `Btu_39degF` | British thermal unit (59 degF): `Btu_59degF` | British thermal unit (60 degF): `Btu_60degF` | 
+| a | are: `a` | year (365 days): `a_year` | year, tropical: `a_tropical_year` | year, sidereal: `a_sidereal_year` | | 
+| d | day: `d` | darcy: `darcy` | day, sidereal: `d_sidereal` | | | 
+| &#8243;Hg | inch of mercury (32 degF): `"Hg_32degF` | inch of mercury (60 degF): `"Hg_60degF` | conventional inch of mercury: `"Hg` | | | 
+| inHg | conventional inch of mercury: `inHg` | inch of mercury (32 degF): `inHg_32degF` | inch of mercury (60 degF): `inHg_60degF` | | | 
+| inH~2~O | conventional inch of water: `inH_2O` | inch of water (39.2 degF): `inH_2O_39degF` | inch of water (60 degF): `inH_2O_60degF` | | | 
+| min | minute: `min` | minute, sidereal: `min_sidereal` | minim: `minim` | | | 
+| pc | parsec: `pc` | pica (computer): `pica_computer` | pica (printer's): `pica_printer` | | | 
+| t | metric ton: `t` | short ton: `ton_short` | long ton: `ton_long` | | | 
+| B | bel: `bel_B` | byte: `byte_B` | | | | 
+| cmHg | conventional centimeter of mercury: `cmHg` | centimeter of mercury (0 degC): `cmHg_0degC` | | | | 
+| cmH~2~O | centimeter of water (4 degC): `cmH_2O_4degC` | conventional centimeter of water: `cmH_2O` | | | | 
+| cup | cup (US): `cup` | cup (FDA): `cup_label` | | | | 
+| D | debye: `D` | darcy: `Darcy` | | | | 
+| ft | foot: `ft` | foot (based on US survey foot): `ft_US_survey` | | | | 
+| ftH~2~O | conventional foot of water: `ftH_2O` | foot of water (39.2 degF): `ftH_2O_39degF` | | | | 
+| gi | gill (US): `gi` | gill [Canadian and UK (Imperial)]: `gi_imperial` | | | | 
+| h | hour: `h` | hour, sidereal: `h_sidereal` | | | | 
+| __&#295;__ | natural unit of action: `h-bar` | atomic unit of action: `h-bar_atomic` | | | | 
+| __m__~e~ | natural unit of mass: `m_e` | atomic unit of mass: `m_e_atomic` | | | | 
+| in | inch: `in` | inch (based on US survey foot): `in_US_survey` | | | | 
+| K | kelvin: `K` | kayser: `kayser` | | | | 
+| L | liter: `L` | lambert: `Lambert` | | | | 
+| lb | pound (avoirdupois): `lb` | pound (troy or apothecary): `lb_troy` | | | | 
+| mi | mile: `mi` | mile (based on US survey foot): `mi_US_survey` | | | | 
+| mil | mil (length): `mil` | angular mil (NATO): `mil_nato` | | | | 
+| oz | ounce (avoirdupois): `oz` | ounce (troy or apothecary): `oz_troy` | | | | 
+| pt | point (computer): `pt_computer` | point (printer's): `pt_printer` | | | | 
+| rad | radian: `rad` | rad (absorbed dose): `rad_radiation` | | | | 
+| s | second: `s` | second, sidereal: `s_sidereal` | | | | 
+| tbsp | tablespoon: `tbsp` | tablespoon (FDA): `tbsp_label` | | | | 
+| ton | ton of TNT (energy equivalent): `ton_TNT` | ton of refrigeration (12 000 Btu_IT/h): `ton_refrigeration` | | | | 
+| tsp | teaspoon: `tsp` | teaspoon (FDA): `tsp_label` | | | | 
+| yd | yard: `yd` | yard (based on US survey foot): `yd_US_survey` | | | | 
+| &#8486; | ohm: `Ohm` | | | | | 
+| &#8242; | minute (minute of arc): `'` | | | | | 
+| &#8243; | second (second of arc): `"` | | | | | 
+| &#186; | degree (degree of arc): `deg` | | | | | 
+| &#956; | micron: `micron` | | | | | 
+| &#295; | natural unit of action in eV s: `h-bar_eV_s` | | | | | 
+| &#947; | gamma: `gamma` | | | | | 
+| &#197; | angstrom: `Aring` | | | | | 
+| ab&#937; | abohm: `abohm` | | | | | 
+| (ab&#937;)^-1^ | abmho: `abS` | | | | | 
+| aW | abwatt: `aW (Cardelli)` | | | | | 
+| b | barn: `barn` | | | | | 
+| Btu~th~ | British thermal unit_th: `Btu_th` | | | | | 
+| &#176;C | degree Celsius: `degC` | | | | | 
+| cal~IT~ | I.T. calorie: `cal_IT` | | | | | 
+| cal~th~ | thermochemical calorie: `cal_th` | | | | | 
+| &#176;F | degree Fahrenheit: `degF` | | | | | 
+| &#8242;Hg | conventional foot of mercury: `'Hg` | | | | | 
+| __a__~0~ | atomic unit of length: `a_0` | | | | | 
+| __c__ | natural unit of velocity: `c` | | | | | 
+| __c__~0~ | natural unit of velocity: `c_0` | | | | | 
+| __e__ | atomic unit of charge: `e` | | | | | 
+| __E__~h~ | atomic unit of energy: `e_h` | | | | | 
+| &#956;in | microinch: `uin` | | | | | 
+| &#176;K | kelvin: `degK` | | | | | 
+| kcal~IT~ | kilocalorie_IT: `kcal_IT` | | | | | 
+| kcal~th~ | kilocalorie_th: `kcal_th` | | | | | 
+| mmH~2~O | conventional millimeter of water: `mmH_2O` | | | | | 
+| &#176;R | degree Rankine: `degR` | | | | | 
+| &#x19b;~C~ | natural unit of length: `lambda-bar_C` | | | | | 
+|===
+
