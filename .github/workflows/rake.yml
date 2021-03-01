@@ -31,6 +31,8 @@ jobs:
             experimental: true
     steps:
       - uses: actions/checkout@master
+        with:
+          submodules: true
 
       - uses: ruby/setup-ruby@v1
         with:
