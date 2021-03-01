@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = "Convert Asciimath via MathML to UnitsML"
   spec.description   = <<~DESCRIPTION
-  Convert Asciimath via MathML to UnitsML
+    Convert Asciimath via MathML to UnitsML
   DESCRIPTION
 
   spec.homepage      = "https://github.com/plurimath/asciimath2unitsml"
@@ -24,30 +24,25 @@ Gem::Specification.new do |spec|
   spec.test_files    = `git ls-files -- {spec}/*`.split("\n")
   spec.required_ruby_version = Gem::Requirement.new(">= 2.4.0")
 
-  pwd = `pwd`.strip
+  # get an array of submodule dirs relatively to root repo
+  `git config --file .gitmodules --get-regexp '\\.path$'`
+    .split("\n")
+    .map { |kv_str| kv_str.split(" ") }
+    .each do |(_, submodule_path)|
 
-  # get an array of submodule dirs by executing 'pwd' inside each submodule
-  `git submodule --quiet foreach pwd`.split($\).each do |submodule_path|
-    # for each submodule, change working directory to that submodule
-    Dir.chdir(submodule_path) do
+      # for each submodule, change working directory to that submodule
+      Dir.chdir(submodule_path) do
 
-      # issue git ls-files in submodule's directory
-      submodule_files = `git ls-files | grep -i '.yaml$'`.split($\)
+        # issue git ls-files in submodule's directory
+        submodule_files = `git ls-files | grep -i '.yaml$'`.split($\)
 
-      # prepend the submodule path to create absolute file paths
-      submodule_files_fullpaths = submodule_files.map do |filename|
-        "#{submodule_path}/#{filename}"
+        submodule_files_paths = submodule_files.map do |filename|
+          File.join submodule_path, filename
+        end
+
+        # add relative paths to gem.files
+        spec.files += submodule_files_paths
       end
-
-      # remove leading path parts to get paths relative to the gem's root dir
-      # (this assumes, that the gemspec resides in the gem's root dir)
-      submodule_files_paths = submodule_files_fullpaths.map do |filename|
-        filename.gsub "#{pwd}/", ""
-      end
-
-      # add relative paths to gem.files
-      spec.files += submodule_files_paths
-    end
   end
 
   spec.add_dependency "asciimath"
