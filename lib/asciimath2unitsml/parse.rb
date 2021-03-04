@@ -87,7 +87,7 @@ module Asciimath2UnitsML
       prefix2 = /#{@prefixes.keys.select { |x| x.size == 2 }.join("|")}/.r
       prefix1 = /#{@prefixes.keys.select { |x| x.size == 1 }.join("|")}/.r
       unit_keys = @units.keys.reject do |k|
-        @units[k].root&.any? { |x| x[:prefix] } || /\*|\^|\//.match(k) || @units[k].prefixed
+        @units[k].root&.any? { |x| x[:prefix] } || /\*|\^|\/|^1$/.match(k) || @units[k].prefixed
       end.map { |k| Regexp.escape(k) }
       unit1 = /#{unit_keys.sort_by(&:length).reverse.join("|")}/.r
       exponent = /\^\(-?\d+\)/.r.map { |m| m.sub(/\^/, "").gsub(/[()]/, "") } |
@@ -97,7 +97,8 @@ module Asciimath2UnitsML
         seq(unit1, exponent._? & multiplier) { |x| { prefix: nil, unit: x[0], display_exponent: (x[1][0] )} } |
         seq(unit1, exponent._?).eof { |x| { prefix: nil, unit: x[0], display_exponent: (x[1][0] )} } |
         seq(prefix1, unit1, exponent._? ) { |x| { prefix: x[0], unit: x[1], display_exponent: (x[2][0] ) } } |
-        seq(prefix2, unit1, exponent._? ) { |x| { prefix: x[0], unit: x[1], display_exponent: (x[2][0] ) } }
+        seq(prefix2, unit1, exponent._? ) { |x| { prefix: x[0], unit: x[1], display_exponent: (x[2][0] ) } } |
+        "1".r.map { |_| { prefix: nil, unit: "1", display_exponent: nil } }
       units = unit.join(multiplier)
       parser = units.eof
     end
