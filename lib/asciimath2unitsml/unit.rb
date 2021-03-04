@@ -10,13 +10,13 @@ module Asciimath2UnitsML
         (@units[text] ? @units[text].id : text.gsub(/\*/, ".").gsub(/\^/, ""))
     end
 
-    def unit(units, origtext, normtext, dims)
+    def unit(units, origtext, normtext, dims, name)
       dimid = dim_id(dims)
       norm_units = normalise_units(units)
       <<~END
       <Unit xmlns='#{UNITSML_NS}' xml:id='#{unit_id(normtext)}'#{dimid ? " dimensionURL='##{dimid}'" : ""}>
       #{unitsystem(units)}
-      #{unitname(norm_units, normtext)}
+      #{unitname(norm_units, normtext, name)}
       #{unitsymbol(norm_units)}
       #{rootunits(units)}
       </Unit>
@@ -46,8 +46,8 @@ module Asciimath2UnitsML
       ret.join("\n")
     end
 
-    def unitname(units, text)
-      name = @units[text] ? @units[text].name : compose_name(units, text)
+    def unitname(units, text, name)
+      name ||= @units[text] ? @units[text].name : compose_name(units, text)
       "<UnitName xml:lang='en'>#{name}</UnitName>"
     end
 

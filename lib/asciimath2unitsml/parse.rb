@@ -116,11 +116,12 @@ module Asciimath2UnitsML
     def postprocess(units, text)
       units = postprocess1(units)
       quantity = text[1..-1]&.select { |x| /^quantity:/.match(x) }&.first&.sub(/^quantity:\s*/, "")
+      name = text[1..-1]&.select { |x| /^name:/.match(x) }&.first&.sub(/^name:\s*/, "")
       normtext = units_only(units).each.map do |u|
         exp = u[:exponent] && u[:exponent] != "1" ? "^#{u[:exponent]}" : ""
         "#{u[:prefix]}#{u[:unit]}#{exp}"
       end.join("*")
-      [units, text[0], normtext, quantity]
+      [units, text[0], normtext, quantity, name]
     end
 
     def postprocess1(units)
@@ -160,10 +161,10 @@ module Asciimath2UnitsML
       xml.xpath(".//m:mtext", "m" => MATHML_NS).each do |x|
         next unless %r{^unitsml\(.+\)$}.match(x.text)
         text = x.text.sub(%r{^unitsml\((.+)\)$}m, "\\1")
-        units, origtext, normtext, quantity = parse(text)
+        units, origtext, normtext, quantity, name = parse(text)
         delim = x&.previous_element&.name == "mn" ? "<mo rspace='thickmathspace'>&#x2062;</mo>" : ""
         x.replace("#{delim}<mrow xref='#{unit_id(origtext)}'>#{mathmlsymbol(units, false)}</mrow>\n"\
-                  "#{unitsml(units, origtext, normtext, quantity)}")
+                  "#{unitsml(units, origtext, normtext, quantity, name)}")
       end
       dedup_ids(xml)
     end

@@ -695,7 +695,7 @@ OUTPUT
     OUTPUT
   end
 
-  it "deals with quanity input" do
+  it "deals with quantity input" do
     expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
     9 "unitsml(m, quantity: NISTq103)"
 INPUT
@@ -726,5 +726,82 @@ INPUT
 </math>
 OUTPUT
     end
+
+  it "deals with name input" do
+    expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
+    9 "unitsml(cal_th/cm^2, name: langley)"
+INPUT
+<math xmlns='http://www.w3.org/1998/Math/MathML'>
+         <mn>9</mn>
+         <mo rspace='thickmathspace'>&#x2062;</mo>
+         <mrow xref='U_cal_th/cm2'>
+           <msub>
+             <mrow>
+               <mi mathvariant='normal'>cal</mi>
+             </mrow>
+             <mrow>
+               <mi mathvariant='normal'>th</mi>
+             </mrow>
+           </msub>
+           <mo>/</mo>
+           <msup>
+             <mrow>
+               <mi mathvariant='normal'>cm</mi>
+             </mrow>
+             <mrow>
+               <mn>2</mn>
+             </mrow>
+           </msup>
+         </mrow>
+         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_cal_th.cm-2'>
+           <UnitSystem name='not_SI' type='not_SI' xml:lang='en-US'/>
+           <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
+           <UnitName xml:lang='en'>langley</UnitName>
+           <UnitSymbol type='HTML'>
+             cal
+             <sub>th</sub>
+             &#xB7;cm
+             <sup>&#x2212;2</sup>
+           </UnitSymbol>
+           <UnitSymbol type='MathML'>
+             <math xmlns='http://www.w3.org/1998/Math/MathML'>
+               <mrow>
+                 <msub>
+                   <mrow>
+                     <mi mathvariant='normal'>cal</mi>
+                   </mrow>
+                   <mrow>
+                     <mi mathvariant='normal'>th</mi>
+                   </mrow>
+                 </msub>
+                 <mo>&#xB7;</mo>
+                 <msup>
+                   <mrow>
+                     <mi mathvariant='normal'>cm</mi>
+                   </mrow>
+                   <mrow>
+                     <mo>&#x2212;</mo>
+                     <mn>2</mn>
+                   </mrow>
+                 </msup>
+               </mrow>
+             </math>
+           </UnitSymbol>
+           <RootUnits>
+             <EnumeratedRootUnit unit='thermochemical calorie'/>
+             <EnumeratedRootUnit unit='meter' prefix='c' powerNumerator='-2'/>
+           </RootUnits>
+         </Unit>
+         <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='-2' xml:id='NISTp10_-2'>
+           <PrefixName xml:lang='en'>centi</PrefixName>
+           <PrefixSymbol type='ASCII'>c</PrefixSymbol>
+           <PrefixSymbol type='unicode'>c</PrefixSymbol>
+           <PrefixSymbol type='LaTeX'>c</PrefixSymbol>
+           <PrefixSymbol type='HTML'>c</PrefixSymbol>
+         </Prefix>
+       </math>
+OUTPUT
+    end
+
 
 end

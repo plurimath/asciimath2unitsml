@@ -164,10 +164,10 @@ module Asciimath2UnitsML
       END
     end
 
-    def unitsml(units, origtext, normtext, quantity)
+    def unitsml(units, origtext, normtext, quantity, name)
       dims = units2dimensions(units)
       <<~END
-      #{unit(units, origtext, normtext, dims)}
+      #{unit(units, origtext, normtext, dims, name)}
       #{prefix(units)}
       #{dimension(normtext)}
       #{dimension_components(dims)}
