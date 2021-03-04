@@ -176,25 +176,28 @@ This table can be generated (in Asciidoc format) through `Asciimath2UnitsML::Con
 |Symbol | Unit + ID | | | | | 
 
 
-| hp | horsepower: `hp` | horsepower, electric: `hp_electric` | horsepower, metric: `hp_metric` | horsepower, boiler: `hp_boiler` | horsepower, water: `hp_water` | horsepower (UK): `hp_UK` 
+| &#8242; | minute (minute of arc): `'` | foot: `'_ft` | minute: `'_min` | minute (minute of arc): `prime` | foot: `prime_ft` | minute: `prime_min` 
+| &#8243; | second (second of arc): `"` | second: `"_s` | inch: `"_in` | second (second of arc): `dprime` | second: `dprime_s` | inch: `dprime_in` 
+| &#8243;Hg | conventional inch of mercury: `"Hg` | conventional inch of mercury: `dprime_Hg` | inch of mercury (32 degF): `"Hg_32degF` | inch of mercury (60 degF): `"Hg_60degF` | inch of mercury (32 degF): `dprime_Hg_32degF` | inch of mercury (60 degF): `dprime_Hg_60degF` 
+| hp | horsepower: `hp` | horsepower (UK): `hp_UK` | horsepower, water: `hp_water` | horsepower, metric: `hp_metric` | horsepower, boiler: `hp_boiler` | horsepower, electric: `hp_electric` 
 | Btu | British thermal unit_IT: `Btu` | British thermal unit (mean): `Btu_mean` | British thermal unit (39 degF): `Btu_39degF` | British thermal unit (59 degF): `Btu_59degF` | British thermal unit (60 degF): `Btu_60degF` | 
 | a | are: `a` | year (365 days): `a_year` | year, tropical: `a_tropical_year` | year, sidereal: `a_sidereal_year` | | 
 | d | day: `d` | darcy: `darcy` | day, sidereal: `d_sidereal` | | | 
-| &#8243;Hg | inch of mercury (32 degF): `"Hg_32degF` | inch of mercury (60 degF): `"Hg_60degF` | conventional inch of mercury: `"Hg` | | | 
 | inHg | conventional inch of mercury: `inHg` | inch of mercury (32 degF): `inHg_32degF` | inch of mercury (60 degF): `inHg_60degF` | | | 
 | inH~2~O | conventional inch of water: `inH_2O` | inch of water (39.2 degF): `inH_2O_39degF` | inch of water (60 degF): `inH_2O_60degF` | | | 
-| min | minute: `min` | minute, sidereal: `min_sidereal` | minim: `minim` | | | 
-| pc | parsec: `pc` | pica (computer): `pica_computer` | pica (printer's): `pica_printer` | | | 
-| t | metric ton: `t` | short ton: `ton_short` | long ton: `ton_long` | | | 
+| min | minute: `min` | minim: `minim` | minute, sidereal: `min_sidereal` | | | 
+| pc | parsec: `pc` | pica (printer's): `pica_printer` | pica (computer): `pica_computer` | | | 
+| t | metric ton: `t` | long ton: `ton_long` | short ton: `ton_short` | | | 
 | B | bel: `bel_B` | byte: `byte_B` | | | | 
 | cmHg | conventional centimeter of mercury: `cmHg` | centimeter of mercury (0 degC): `cmHg_0degC` | | | | 
-| cmH~2~O | centimeter of water (4 degC): `cmH_2O_4degC` | conventional centimeter of water: `cmH_2O` | | | | 
+| cmH~2~O | conventional centimeter of water: `cmH_2O` | centimeter of water (4 degC): `cmH_2O_4degC` | | | | 
 | cup | cup (US): `cup` | cup (FDA): `cup_label` | | | | 
 | D | debye: `D` | darcy: `Darcy` | | | | 
 | ft | foot: `ft` | foot (based on US survey foot): `ft_US_survey` | | | | 
 | ftH~2~O | conventional foot of water: `ftH_2O` | foot of water (39.2 degF): `ftH_2O_39degF` | | | | 
 | gi | gill (US): `gi` | gill [Canadian and UK (Imperial)]: `gi_imperial` | | | | 
 | h | hour: `h` | hour, sidereal: `h_sidereal` | | | | 
+| &#8242;Hg | conventional foot of mercury: `'Hg` | conventional foot of mercury: `prime_Hg` | | | | 
 | __&#295;__ | natural unit of action: `h-bar` | atomic unit of action: `h-bar_atomic` | | | | 
 | __m__~e~ | natural unit of mass: `m_e` | atomic unit of mass: `m_e_atomic` | | | | 
 | in | inch: `in` | inch (based on US survey foot): `in_US_survey` | | | | 
@@ -204,21 +207,19 @@ This table can be generated (in Asciidoc format) through `Asciimath2UnitsML::Con
 | mi | mile: `mi` | mile (based on US survey foot): `mi_US_survey` | | | | 
 | mil | mil (length): `mil` | angular mil (NATO): `mil_nato` | | | | 
 | oz | ounce (avoirdupois): `oz` | ounce (troy or apothecary): `oz_troy` | | | | 
-| pt | point (computer): `pt_computer` | point (printer's): `pt_printer` | | | | 
+| pt | point (printer's): `pt_printer` | point (computer): `pt_computer` | | | | 
 | rad | radian: `rad` | rad (absorbed dose): `rad_radiation` | | | | 
 | s | second: `s` | second, sidereal: `s_sidereal` | | | | 
 | tbsp | tablespoon: `tbsp` | tablespoon (FDA): `tbsp_label` | | | | 
 | ton | ton of TNT (energy equivalent): `ton_TNT` | ton of refrigeration (12 000 Btu_IT/h): `ton_refrigeration` | | | | 
 | tsp | teaspoon: `tsp` | teaspoon (FDA): `tsp_label` | | | | 
 | yd | yard: `yd` | yard (based on US survey foot): `yd_US_survey` | | | | 
-| &#8486; | ohm: `Ohm` | | | | | 
-| &#8242; | minute (minute of arc): `'` | | | | | 
-| &#8243; | second (second of arc): `"` | | | | | 
 | &#186; | degree (degree of arc): `deg` | | | | | 
-| &#956; | micron: `micron` | | | | | 
-| &#295; | natural unit of action in eV s: `h-bar_eV_s` | | | | | 
 | &#947; | gamma: `gamma` | | | | | 
+| &#956; | micron: `micron` | | | | | 
+| &#8486; | ohm: `Ohm` | | | | | 
 | &#197; | angstrom: `Aring` | | | | | 
+| &#295; | natural unit of action in eV s: `h-bar_eV_s` | | | | | 
 | ab&#937; | abohm: `abohm` | | | | | 
 | (ab&#937;)^-1^ | abmho: `abS` | | | | | 
 | aW | abwatt: `aW (Cardelli)` | | | | | 
@@ -228,7 +229,6 @@ This table can be generated (in Asciidoc format) through `Asciimath2UnitsML::Con
 | cal~IT~ | I.T. calorie: `cal_IT` | | | | | 
 | cal~th~ | thermochemical calorie: `cal_th` | | | | | 
 | &#176;F | degree Fahrenheit: `degF` | | | | | 
-| &#8242;Hg | conventional foot of mercury: `'Hg` | | | | | 
 | __a__~0~ | atomic unit of length: `a_0` | | | | | 
 | __c__ | natural unit of velocity: `c` | | | | | 
 | __c__~0~ | natural unit of velocity: `c_0` | | | | | 
@@ -242,4 +242,3 @@ This table can be generated (in Asciidoc format) through `Asciimath2UnitsML::Con
 | &#176;R | degree Rankine: `degR` | | | | | 
 | &#x19b;~C~ | natural unit of length: `lambda-bar_C` | | | | | 
 |===
-

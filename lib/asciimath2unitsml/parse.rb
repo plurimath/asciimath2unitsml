@@ -207,7 +207,7 @@ module Asciimath2UnitsML
       puts "\n\n"
       u.keys.sort_by { |a| [-u[a].size, a.gsub(%r{\&[^;]+;}, "").gsub(/[^A-Za-z]/, "").downcase] }.each do |k|
         print "| #{html2adoc(k)} "
-        u[k].each { |v1| print "| #{@units[v1].name}: `#{v1}` " }
+        u[k].sort_by { |v1| v1.size }.each { |v1| print "| #{@units[v1].name}: `#{v1}` " }
         puts "#{"| " * (maxcols - u[k].size) }\n"
       end
       puts "|===\n"
