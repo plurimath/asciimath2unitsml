@@ -10,6 +10,7 @@ module Asciimath2UnitsML
         { html: HTMLEntities.new.encode(x), mathml: "<mo>#{HTMLEntities.new.encode(x)}</mo>" }
       end
     end
+
     def render(unit, style)
       @symbols[unit][style] || unit
     end
@@ -17,6 +18,8 @@ module Asciimath2UnitsML
     def htmlsymbol(units, normalise)
       units.map do |u|
         if u[:multiplier] then u[:multiplier] == "*" ? @multiplier[:html] : u[:multiplier]
+        elsif u[:unit].nil? && u[:prefix]
+          @prefixes[u[:prefix]].html
         else
           u[:display_exponent] and exp = "<sup>#{u[:display_exponent].sub(/-/, "&#x2212;")}</sup>"
           base = render(normalise ? @units[u[:unit]].symbolid : u[:unit], :html)
@@ -28,6 +31,8 @@ module Asciimath2UnitsML
     def mathmlsymbol(units, normalise)
       exp = units.map do |u|
         if u[:multiplier] then u[:multiplier] == "*" ? @multiplier[:mathml] : "<mo>#{u[:multiplier]}</mo>"
+        elsif u[:unit].nil? && u[:prefix]
+          %(<mi mathvariant='normal'>#{@prefixes[u[:prefix]].html}</mi>)
         else
           base = render(normalise ? @units[u[:unit]].symbolid : u[:unit], :mathml)
           if u[:prefix]

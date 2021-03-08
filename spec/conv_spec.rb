@@ -359,6 +359,24 @@ INPUT
 OUTPUT
   end
 
+  it "deals with standalone prefixes" do
+    expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
+    "unitsml(p-)"
+    INPUT
+    <math xmlns='http://www.w3.org/1998/Math/MathML'>
+  <mrow xref='NISTp10_-12'>
+    <mi mathvariant='normal'>p</mi>
+  </mrow>
+  <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='-12' xml:id='NISTp10_-12'>
+    <PrefixName xml:lang='en'>pico</PrefixName>
+    <PrefixSymbol type='ASCII'>p</PrefixSymbol>
+    <PrefixSymbol type='unicode'>p</PrefixSymbol>
+    <PrefixSymbol type='LaTeX'>p</PrefixSymbol>
+    <PrefixSymbol type='HTML'>p</PrefixSymbol>
+  </Prefix>
+</math>
+    OUTPUT
+  end
 
   it "deals with units division" do
     expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)

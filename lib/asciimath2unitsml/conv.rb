@@ -61,7 +61,7 @@ module Asciimath2UnitsML
 
     def units2dimensions(units)
       norm = decompose_units(units)
-      return if norm.any? { |u| u[:unit] == "unknown" || u[:prefix] == "unknown" }
+      return if norm.any? { |u| u[:unit] == "unknown" || u[:prefix] == "unknown" || u[:unit].nil? }
       norm.map do |u|
         { dimension: U2D[u[:unit]][:dimension],
           unit: u[:unit],
@@ -102,7 +102,8 @@ module Asciimath2UnitsML
     # treat g not kg as base unit: we have stripped the prefix k in parsing
     # reduce units down to basic units
     def decompose_unit(u)
-      if u[:unit] == "g" then u
+      if u[:unit].nil? then u
+      elsif u[:unit] == "g" then u
       elsif @units[u[:unit]].system_type == "SI_base" then u
       elsif !@units[u[:unit]].si_derived_bases
         { prefix: u[:prefix], unit: "unknown", exponent: u[:exponent] }

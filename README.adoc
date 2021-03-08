@@ -44,6 +44,9 @@ otherwise, no quantity is added unless explicitly nominated in this way.
 * `unitsml(unit-string, name: NAME)` provides a name for the unit, if one is not already available
 from UnitsDB. For example, `unitsml(cal_th/cm^2, name: langley)`.
 
+Standalone prefixes can be recognised by replacing the unit with hyphen; so `unitsml(p-)` corresponds
+to the standalone prefix "pico" (and is rendered as "p").
+
 == Rendering
 
 The output of the gem is MathML, with MathML unit expressions (expressed as `<mi>`, 

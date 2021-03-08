@@ -6,11 +6,12 @@ module Asciimath2UnitsML
 
     def unit_id(text)
       text = text.gsub(/[()]/, "")
-      "U_" +
-        (@units[text] ? @units[text].id : text.gsub(/\*/, ".").gsub(/\^/, ""))
+      /-$/.match(text) and return @prefixes[text.sub(/-$/, "")].id
+      "U_" + (@units[text] ? @units[text].id : text.gsub(/\*/, ".").gsub(/\^/, ""))
     end
 
     def unit(units, origtext, normtext, dims, name)
+      return if units_only(units).any? { |x| x[:unit].nil? }
       dimid = dim_id(dims)
       norm_units = normalise_units(units)
       <<~END
@@ -34,6 +35,7 @@ module Asciimath2UnitsML
 
     # kg exception
     def unitsystem(units)
+      return if units_only(units).any? { |x| x[:unit].nil? }
       ret = []
       units = units_only(units)
       units.any? { |x| @units[x[:unit]].system_name != "SI" } and
@@ -64,6 +66,7 @@ module Asciimath2UnitsML
     end
 
     def rootunits(units)
+      return if units_only(units).any? { |x| x[:unit].nil? }
       return if units.size == 1 && !units[0][:prefix]
       exp = units_only(units).map do |u|
         prefix = " prefix='#{u[:prefix]}'" if u[:prefix]
