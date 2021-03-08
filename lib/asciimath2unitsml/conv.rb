@@ -121,7 +121,7 @@ module Asciimath2UnitsML
       return p1.symbolid if p2.nil?
       return p2.symbolid if p1.nil?
       return "unknown" if p1.base != p2.base
-      @prefixes.each do |p|
+      @prefixes.each do |_, p|
         return p.symbolid if p.base == p1.base && p.power == p1.power + p2.power
       end
       "unknown"

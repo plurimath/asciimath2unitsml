@@ -695,6 +695,73 @@ OUTPUT
     OUTPUT
   end
 
+  it "deals with dimension decomposition with like units" do
+    expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
+    9 "unitsml(mW*cm^(-2))"
+INPUT
+<math xmlns='http://www.w3.org/1998/Math/MathML'>
+         <mn>9</mn>
+         <mo rspace='thickmathspace'>&#x2062;</mo>
+         <mrow xref='U_mW.cm-2'>
+           <mi mathvariant='normal'>mW</mi>
+           <mo>&#xB7;</mo>
+           <msup>
+             <mrow>
+               <mi mathvariant='normal'>cm</mi>
+             </mrow>
+             <mrow>
+               <mo>&#x2212;</mo>
+               <mn>2</mn>
+             </mrow>
+           </msup>
+         </mrow>
+         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_mW.cm-2'>
+           <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
+           <UnitName xml:lang='en'>mW*cm^-2</UnitName>
+           <UnitSymbol type='HTML'>
+             mW&#xB7;cm
+             <sup>&#x2212;2</sup>
+           </UnitSymbol>
+           <UnitSymbol type='MathML'>
+             <math xmlns='http://www.w3.org/1998/Math/MathML'>
+               <mrow>
+                 <mi mathvariant='normal'>mW</mi>
+                 <mo>&#xB7;</mo>
+                 <msup>
+                   <mrow>
+                     <mi mathvariant='normal'>cm</mi>
+                   </mrow>
+                   <mrow>
+                     <mo>&#x2212;</mo>
+                     <mn>2</mn>
+                   </mrow>
+                 </msup>
+               </mrow>
+             </math>
+           </UnitSymbol>
+           <RootUnits>
+             <EnumeratedRootUnit unit='watt' prefix='m'/>
+             <EnumeratedRootUnit unit='meter' prefix='c' powerNumerator='-2'/>
+           </RootUnits>
+         </Unit>
+         <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='-3' xml:id='NISTp10_-3'>
+           <PrefixName xml:lang='en'>milli</PrefixName>
+           <PrefixSymbol type='ASCII'>m</PrefixSymbol>
+           <PrefixSymbol type='unicode'>m</PrefixSymbol>
+           <PrefixSymbol type='LaTeX'>m</PrefixSymbol>
+           <PrefixSymbol type='HTML'>m</PrefixSymbol>
+         </Prefix>
+         <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='-2' xml:id='NISTp10_-2'>
+           <PrefixName xml:lang='en'>centi</PrefixName>
+           <PrefixSymbol type='ASCII'>c</PrefixSymbol>
+           <PrefixSymbol type='unicode'>c</PrefixSymbol>
+           <PrefixSymbol type='LaTeX'>c</PrefixSymbol>
+           <PrefixSymbol type='HTML'>c</PrefixSymbol>
+         </Prefix>
+       </math>
+OUTPUT
+  end
+
   it "deals with quantity input" do
     expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
     9 "unitsml(m, quantity: NISTq103)"
