@@ -361,7 +361,7 @@ OUTPUT
 
   it "deals with standalone prefixes" do
     expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
-    "unitsml(p-)"
+    "unitsml(p-)" "unitsml(da-)"
     INPUT
     <math xmlns='http://www.w3.org/1998/Math/MathML'>
   <mrow xref='NISTp10_-12'>
@@ -374,6 +374,16 @@ OUTPUT
     <PrefixSymbol type='LaTeX'>p</PrefixSymbol>
     <PrefixSymbol type='HTML'>p</PrefixSymbol>
   </Prefix>
+   <mrow xref='NISTp10_1'>
+   <mi mathvariant='normal'>da</mi>
+ </mrow>
+ <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='1' xml:id='NISTp10_1'>
+   <PrefixName xml:lang='en'>deka</PrefixName>
+   <PrefixSymbol type='ASCII'>da</PrefixSymbol>
+   <PrefixSymbol type='unicode'>da</PrefixSymbol>
+   <PrefixSymbol type='LaTeX'>da</PrefixSymbol>
+   <PrefixSymbol type='HTML'>da</PrefixSymbol>
+ </Prefix>
 </math>
     OUTPUT
   end

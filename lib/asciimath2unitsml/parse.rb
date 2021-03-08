@@ -99,8 +99,9 @@ module Asciimath2UnitsML
         seq(prefix1, unit1, exponent._? ) { |x| { prefix: x[0], unit: x[1], display_exponent: (x[2][0] ) } } |
         seq(prefix2, unit1, exponent._? ) { |x| { prefix: x[0], unit: x[1], display_exponent: (x[2][0] ) } } |
         "1".r.map { |_| { prefix: nil, unit: "1", display_exponent: nil } }
-      units = unit.join(multiplier) | seq(prefix2, "-") { |x| [{ prefix: x[0], unit: nil, display_exponent: nil }] } |
-        seq(prefix1, "-") { |x| [{ prefix: x[0], unit: nil, display_exponent: nil }] }
+      units = seq(prefix2, "-") { |x| [{ prefix: x[0], unit: nil, display_exponent: nil }] } |
+        seq(prefix1, "-") { |x| [{ prefix: x[0], unit: nil, display_exponent: nil }] } |
+        unit.join(multiplier)
       parser = units.eof
     end
 
