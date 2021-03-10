@@ -35,6 +35,10 @@ module Asciimath2UnitsML
       @multiplier = multiplier(options[:multiplier] || "\u00b7")
     end
 
+    def float_to_display(f)
+      ret = f.to_f.round(1).to_s.sub(/\.0$/, "")
+    end
+
     def prefix(units)
       units.map { |u| u[:prefix] }.reject { |u| u.nil? }.uniq.map do |p|
         <<~END
@@ -71,7 +75,7 @@ module Asciimath2UnitsML
     end
 
     def dimension1(u)
-      %(<#{u[:dimension]} symbol="#{u[:symbol]}" powerNumerator="#{u[:exponent]}"/>)
+      %(<#{u[:dimension]} symbol="#{u[:symbol]}" powerNumerator="#{float_to_display(u[:exponent])}"/>)
     end
 
     def dim_id(dims)
@@ -81,7 +85,9 @@ module Asciimath2UnitsML
                       AmountOfSubstance LuminousIntensity PlaneAngle)
         .map { |h| dimhash.dig(h, :exponent) }.join(":")
       id = @dimensions_id&.values&.select { |d| d.vector == dimsvector }&.first&.id and return id.to_s
-      "D_" + dims.map { |d| U2D[d[:unit]][:symbol] + (d[:exponent] == 1 ? "" : d[:exponent].to_s) }.join("")
+      "D_" + dims.map do |d|
+        U2D[d[:unit]][:symbol] + (d[:exponent] == 1 ? "" : float_to_display(d[:exponent]))
+      end.join("")
     end
 
     def decompose_units(units)
@@ -94,7 +100,7 @@ module Asciimath2UnitsML
         else
           m[-1] = { prefix: combine_prefixes(@prefixes[m[-1][:prefix]], @prefixes[k[:prefix]]),
                     unit: m[-1][:unit],
-                    exponent: (k[:exponent]&.to_i || 1) + (m[-1][:exponent]&.to_i || 1) }
+                    exponent: (k[:exponent]&.to_f || 1) + (m[-1][:exponent]&.to_f || 1) }
         end
       end
     end
@@ -112,7 +118,7 @@ module Asciimath2UnitsML
           m << { prefix: !k[:prefix].nil? && !k[:prefix].empty? ? 
                  combine_prefixes(@prefixes_id[k[:prefix]], @prefixes[u[:prefix]]) : u[:prefix],
                  unit: @units_id[k[:id]].symbolid,
-                 exponent: (k[:power]&.to_i || 1) * (u[:exponent]&.to_i || 1) }
+                 exponent: (k[:power]&.to_i || 1) * (u[:exponent]&.to_f || 1) }
         end
       end
     end

@@ -106,6 +106,39 @@ RSpec.describe Asciimath2UnitsML do
 OUTPUT
     end
 
+  it "deals with sqrt units" do
+    expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
+    1 "unitsml(sqrt(Hz))"
+    INPUT
+    <math xmlns='http://www.w3.org/1998/Math/MathML'>
+  <mn>1</mn>
+  <mo rspace='thickmathspace'>&#x2062;</mo>
+  <mrow xref='U_sqrtHz'>
+    <msqrt>
+      <mi mathvariant='normal'>Hz</mi>
+    </msqrt>
+  </mrow>
+  <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_Hz0.5' dimensionURL='#D_T-0.5'>
+    <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
+    <UnitName xml:lang='en'>Hz^0.5</UnitName>
+    <UnitSymbol type='HTML'>&#x221A;Hz</UnitSymbol>
+    <UnitSymbol type='MathML'>
+      <math xmlns='http://www.w3.org/1998/Math/MathML'>
+        <mrow>
+          <msqrt>
+            <mi mathvariant='normal'>Hz</mi>
+          </msqrt>
+        </mrow>
+      </math>
+    </UnitSymbol>
+  </Unit>
+  <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_T-0.5'>
+    <Time symbol='T' powerNumerator='-0.5'/>
+  </Dimension>
+</math>
+    OUTPUT
+  end
+
   it "deals with kg and g" do
     expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
     1 "unitsml(kg)" + 1 "unitsml(g)"
