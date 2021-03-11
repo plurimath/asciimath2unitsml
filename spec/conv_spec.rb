@@ -931,5 +931,12 @@ INPUT
 OUTPUT
     end
 
+    it "deals with symbol input" do
+    expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
+    9 "unitsml(m, symbol: La)" + 10 "unitsml(cm*s^-2, symbol: cm cdot s^-2)"
+INPUT
+OUTPUT
+    end
+
 
 end

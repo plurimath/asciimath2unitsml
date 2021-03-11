@@ -43,6 +43,9 @@ https://github.com/unitsml/unitsdb/blob/master/units.yaml[]), that quantity is a
 otherwise, no quantity is added unless explicitly nominated in this way.
 * `unitsml(unit-string, name: NAME)` provides a name for the unit, if one is not already available
 from UnitsDB. For example, `unitsml(cal_th/cm^2, name: langley)`.
+* `unitsml(unit-string, symbol: SYMBOL)` provides an alternate symbol for the unit, in AsciiMath.
+The unit-string gives the canonical representation of the unit, but SYMBOL is what will be rendered.
+For example, `unitsml(cal_th/cm^2, name: langley, symbol: La)`, or `unitsml(mm*s^-2, symbol: mm cdot s^-2)`.
 
 Standalone prefixes can be recognised by replacing the unit with hyphen; so `unitsml(p-)` corresponds
 to the standalone prefix "pico" (and is rendered as "p").

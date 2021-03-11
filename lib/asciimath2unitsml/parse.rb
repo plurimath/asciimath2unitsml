@@ -122,11 +122,12 @@ module Asciimath2UnitsML
       units = postprocess1(units)
       quantity = text[1..-1]&.select { |x| /^quantity:/.match(x) }&.first&.sub(/^quantity:\s*/, "")
       name = text[1..-1]&.select { |x| /^name:/.match(x) }&.first&.sub(/^name:\s*/, "")
+      symbol = text[1..-1]&.select { |x| /^symbol:/.match(x) }&.first&.sub(/^symbol:\s*/, "")
       normtext = units_only(units).each.map do |u|
         exp = u[:exponent] && u[:exponent] != "1" ? "^#{u[:exponent]}" : ""
         "#{u[:prefix]}#{u[:unit]}#{exp}"
       end.join("*")
-      [units, text[0], normtext, quantity, name]
+      [units, text[0], normtext, quantity, name, symbol]
     end
 
     def postprocess1(units)
@@ -153,7 +154,7 @@ module Asciimath2UnitsML
       "mol" => { dimension: "AmountOfSubstance", order: 6, symbol: "N" },
       "cd" => { dimension: "LuminousIntensity", order: 7, symbol: "J" },
       "deg" => { dimension: "PlaneAngle", order: 8, symbol: "Phi" },
-    }
+    }.freeze
 
     def Asciimath2UnitsML(expression)
       xml = Nokogiri::XML(asciimath2mathml(expression))
@@ -166,9 +167,10 @@ module Asciimath2UnitsML
       xml.xpath(".//m:mtext", "m" => MATHML_NS).each do |x|
         next unless %r{^unitsml\(.+\)$}.match(x.text)
         text = x.text.sub(%r{^unitsml\((.+)\)$}m, "\\1")
-        units, origtext, normtext, quantity, name = parse(text)
+        units, origtext, normtext, quantity, name, symbol = parse(text)
+        rendering = symbol ? embeddedmathml(asciimath2mathml(symbol)) : mathmlsymbol(units, false)
         delim = x&.previous_element&.name == "mn" ? "<mo rspace='thickmathspace'>&#x2062;</mo>" : ""
-        x.replace("#{delim}<mrow xref='#{unit_id(origtext)}'>#{mathmlsymbol(units, false)}</mrow>\n"\
+        x.replace("#{delim}<mrow xref='#{unit_id(origtext)}'>#{rendering}</mrow>\n"\
                   "#{unitsml(units, origtext, normtext, quantity, name)}")
       end
       dedup_ids(xml)
@@ -190,6 +192,12 @@ module Asciimath2UnitsML
       AsciiMath::MathMLBuilder.new(:msword => true).append_expression(
         AsciiMath.parse(HTMLEntities.new.decode(expression)).ast).to_s.
       gsub(/<math>/, "<math xmlns='#{MATHML_NS}'>")
+    end
+
+    def embeddedmathml(mathml)
+      x = Nokogiri::XML(mathml)
+      x.xpath(".//m:mi", "m" => MATHML_NS).each { |mi| mi["mathvariant"] = "normal" }
+      x.children.to_xml
     end
 
     def ambig_units
