@@ -35,6 +35,10 @@ module Asciimath2UnitsML
       @multiplier = multiplier(options[:multiplier] || "\u00b7")
     end
 
+    def float_to_display(f)
+      ret = f.to_f.round(1).to_s.sub(/\.0$/, "")
+    end
+
     def prefix(units)
       units.map { |u| u[:prefix] }.reject { |u| u.nil? }.uniq.map do |p|
         <<~END
@@ -61,7 +65,7 @@ module Asciimath2UnitsML
 
     def units2dimensions(units)
       norm = decompose_units(units)
-      return if norm.any? { |u| u[:unit] == "unknown" || u[:prefix] == "unknown" }
+      return if norm.any? { |u| u[:unit] == "unknown" || u[:prefix] == "unknown" || u[:unit].nil? }
       norm.map do |u|
         { dimension: U2D[u[:unit]][:dimension],
           unit: u[:unit],
@@ -71,7 +75,7 @@ module Asciimath2UnitsML
     end
 
     def dimension1(u)
-      %(<#{u[:dimension]} symbol="#{u[:symbol]}" powerNumerator="#{u[:exponent]}"/>)
+      %(<#{u[:dimension]} symbol="#{u[:symbol]}" powerNumerator="#{float_to_display(u[:exponent])}"/>)
     end
 
     def dim_id(dims)
@@ -81,7 +85,9 @@ module Asciimath2UnitsML
                       AmountOfSubstance LuminousIntensity PlaneAngle)
         .map { |h| dimhash.dig(h, :exponent) }.join(":")
       id = @dimensions_id&.values&.select { |d| d.vector == dimsvector }&.first&.id and return id.to_s
-      "D_" + dims.map { |d| U2D[d[:unit]][:symbol] + (d[:exponent] == 1 ? "" : d[:exponent].to_s) }.join("")
+      "D_" + dims.map do |d|
+        U2D[d[:unit]][:symbol] + (d[:exponent] == 1 ? "" : float_to_display(d[:exponent]))
+      end.join("")
     end
 
     def decompose_units(units)
@@ -94,7 +100,7 @@ module Asciimath2UnitsML
         else
           m[-1] = { prefix: combine_prefixes(@prefixes[m[-1][:prefix]], @prefixes[k[:prefix]]),
                     unit: m[-1][:unit],
-                    exponent: (k[:exponent]&.to_i || 1) + (m[-1][:exponent]&.to_i || 1) }
+                    exponent: (k[:exponent]&.to_f || 1) + (m[-1][:exponent]&.to_f || 1) }
         end
       end
     end
@@ -102,7 +108,8 @@ module Asciimath2UnitsML
     # treat g not kg as base unit: we have stripped the prefix k in parsing
     # reduce units down to basic units
     def decompose_unit(u)
-      if u[:unit] == "g" then u
+      if u[:unit].nil? then u
+      elsif u[:unit] == "g" then u
       elsif @units[u[:unit]].system_type == "SI_base" then u
       elsif !@units[u[:unit]].si_derived_bases
         { prefix: u[:prefix], unit: "unknown", exponent: u[:exponent] }
@@ -111,7 +118,7 @@ module Asciimath2UnitsML
           m << { prefix: !k[:prefix].nil? && !k[:prefix].empty? ? 
                  combine_prefixes(@prefixes_id[k[:prefix]], @prefixes[u[:prefix]]) : u[:prefix],
                  unit: @units_id[k[:id]].symbolid,
-                 exponent: (k[:power]&.to_i || 1) * (u[:exponent]&.to_i || 1) }
+                 exponent: (k[:power]&.to_i || 1) * (u[:exponent]&.to_f || 1) }
         end
       end
     end
@@ -121,7 +128,7 @@ module Asciimath2UnitsML
       return p1.symbolid if p2.nil?
       return p2.symbolid if p1.nil?
       return "unknown" if p1.base != p2.base
-      @prefixes.each do |p|
+      @prefixes.each do |_, p|
         return p.symbolid if p.base == p1.base && p.power == p1.power + p2.power
       end
       "unknown"

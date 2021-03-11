@@ -94,12 +94,17 @@ module Asciimath2UnitsML
         /\^-?\d+/.r.map { |m| m.sub(/\^/, "") }
       multiplier = %r{\*|//|/}.r.map { |x| { multiplier: x[0] } }
       unit = 
+        seq("sqrt(", unit1, ")") { |x| { prefix: nil, unit: x[1], display_exponent: "0.5" } } |
+        seq("sqrt(", prefix1, unit1, ")") { |x| { prefix: x[1], unit: x[2], display_exponent: "0.5" } } |
+        seq("sqrt(", prefix2, unit1, ")") { |x| { prefix: x[1], unit: x[2], display_exponent: "0.5" } } |
         seq(unit1, exponent._? & multiplier) { |x| { prefix: nil, unit: x[0], display_exponent: (x[1][0] )} } |
         seq(unit1, exponent._?).eof { |x| { prefix: nil, unit: x[0], display_exponent: (x[1][0] )} } |
         seq(prefix1, unit1, exponent._? ) { |x| { prefix: x[0], unit: x[1], display_exponent: (x[2][0] ) } } |
         seq(prefix2, unit1, exponent._? ) { |x| { prefix: x[0], unit: x[1], display_exponent: (x[2][0] ) } } |
-        "1".r.map { |_| { prefix: nil, unit: "1", display_exponent: nil } }
-      units = unit.join(multiplier)
+        "1".r.map { |_| { prefix: nil, unit: "1", display_exponent: nil } } 
+      units = seq(prefix2, "-") { |x| [{ prefix: x[0], unit: nil, display_exponent: nil }] } |
+        seq(prefix1, "-") { |x| [{ prefix: x[0], unit: nil, display_exponent: nil }] } |
+        unit.join(multiplier)
       parser = units.eof
     end
 
@@ -117,11 +122,12 @@ module Asciimath2UnitsML
       units = postprocess1(units)
       quantity = text[1..-1]&.select { |x| /^quantity:/.match(x) }&.first&.sub(/^quantity:\s*/, "")
       name = text[1..-1]&.select { |x| /^name:/.match(x) }&.first&.sub(/^name:\s*/, "")
+      symbol = text[1..-1]&.select { |x| /^symbol:/.match(x) }&.first&.sub(/^symbol:\s*/, "")
       normtext = units_only(units).each.map do |u|
         exp = u[:exponent] && u[:exponent] != "1" ? "^#{u[:exponent]}" : ""
         "#{u[:prefix]}#{u[:unit]}#{exp}"
       end.join("*")
-      [units, text[0], normtext, quantity, name]
+      [units, text[0], normtext, quantity, name, symbol]
     end
 
     def postprocess1(units)
@@ -148,7 +154,7 @@ module Asciimath2UnitsML
       "mol" => { dimension: "AmountOfSubstance", order: 6, symbol: "N" },
       "cd" => { dimension: "LuminousIntensity", order: 7, symbol: "J" },
       "deg" => { dimension: "PlaneAngle", order: 8, symbol: "Phi" },
-    }
+    }.freeze
 
     def Asciimath2UnitsML(expression)
       xml = Nokogiri::XML(asciimath2mathml(expression))
@@ -161,12 +167,19 @@ module Asciimath2UnitsML
       xml.xpath(".//m:mtext", "m" => MATHML_NS).each do |x|
         next unless %r{^unitsml\(.+\)$}.match(x.text)
         text = x.text.sub(%r{^unitsml\((.+)\)$}m, "\\1")
-        units, origtext, normtext, quantity, name = parse(text)
-        delim = x&.previous_element&.name == "mn" ? "<mo rspace='thickmathspace'>&#x2062;</mo>" : ""
-        x.replace("#{delim}<mrow xref='#{unit_id(origtext)}'>#{mathmlsymbol(units, false)}</mrow>\n"\
+        units, origtext, normtext, quantity, name, symbol = parse(text)
+        rendering = symbol ? embeddedmathml(asciimath2mathml(symbol)) : mathmlsymbol(units, false)
+        delim = x&.previous_element&.name == "mn" ? delimspace(rendering) : ""
+        x.replace("#{delim}<mrow xref='#{unit_id(origtext)}'>#{rendering}</mrow>\n"\
                   "#{unitsml(units, origtext, normtext, quantity, name)}")
       end
       dedup_ids(xml)
+    end
+
+    def delimspace(x)
+      text = HTMLEntities.new.encode(Nokogiri::XML("<mrow>#{x}</mrow>").text.strip)
+      /[[:alnum:]]/.match(text) ?
+        "<mo rspace='thickmathspace'>&#x2062;</mo>" : "<mo>&#x2062;</mo>"
     end
 
     def dedup_ids(xml)
@@ -185,6 +198,12 @@ module Asciimath2UnitsML
       AsciiMath::MathMLBuilder.new(:msword => true).append_expression(
         AsciiMath.parse(HTMLEntities.new.decode(expression)).ast).to_s.
       gsub(/<math>/, "<math xmlns='#{MATHML_NS}'>")
+    end
+
+    def embeddedmathml(mathml)
+      x = Nokogiri::XML(mathml)
+      x.xpath(".//m:mi", "m" => MATHML_NS).each { |mi| mi["mathvariant"] = "normal" }
+      x.children.to_xml
     end
 
     def ambig_units
