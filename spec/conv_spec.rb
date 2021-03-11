@@ -106,6 +106,63 @@ RSpec.describe Asciimath2UnitsML do
 OUTPUT
     end
 
+     it "does not insert space before non-alphabetic units" do
+    expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
+    1 "unitsml(degK)" + 1 "unitsml(prime)"
+INPUT
+<math xmlns='http://www.w3.org/1998/Math/MathML'>
+  <mn>1</mn>
+  <mo rspace='thickmathspace'>&#x2062;</mo>
+  <mrow xref='U_NISTu5'>
+    <mi mathvariant='normal'>&#xB0;K</mi>
+  </mrow>
+  <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu5' dimensionURL='#NISTd5'>
+    <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
+    <UnitName xml:lang='en'>kelvin</UnitName>
+    <UnitSymbol type='HTML'>K</UnitSymbol>
+    <UnitSymbol type='MathML'>
+      <math xmlns='http://www.w3.org/1998/Math/MathML'>
+        <mrow>
+          <mi mathvariant='normal'>K</mi>
+        </mrow>
+      </math>
+    </UnitSymbol>
+  </Unit>
+  <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd5'>
+    <ThermodynamicTemperature symbol='Theta' powerNumerator='1'/>
+  </Dimension>
+  <Quantity xmlns='http://unitsml.nist.gov/2005' xml:id='NISTq5' dimensionURL='#NISTd5' quantityType='base'>
+    <QuantityName xml:lang='en-US'>thermodynamic temperature</QuantityName>
+  </Quantity>
+  <mo>+</mo>
+  <mn>1</mn>
+  <mo>&#x2062;</mo>
+  <mrow xref='U_NISTu147'>
+    <mi mathvariant='normal'>&#x2032;</mi>
+  </mrow>
+  <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu147'>
+    <UnitSystem name='not_SI' type='not_SI' xml:lang='en-US'/>
+    <UnitName xml:lang='en'>minute (minute of arc)</UnitName>
+    <UnitSymbol type='HTML'>&#x2032;</UnitSymbol>
+    <UnitSymbol type='MathML'>
+      <math xmlns='http://www.w3.org/1998/Math/MathML'>
+        <mrow>
+          <mi mathvariant='normal'>&#x2032;</mi>
+        </mrow>
+      </math>
+    </UnitSymbol>
+  </Unit>
+  <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd9'>
+    <PlaneAngle symbol='Phi' powerNumerator='1'/>
+  </Dimension>
+  <Quantity xmlns='http://unitsml.nist.gov/2005' xml:id='NISTq9' dimensionURL='#NISTd9' quantityType='base'>
+    <QuantityName xml:lang='en-US'>plane angle</QuantityName>
+    <QuantityName xml:lang='en-US'>angle</QuantityName>
+  </Quantity>
+</math>
+OUTPUT
+     end
+
   it "deals with sqrt units" do
     expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
     1 "unitsml(sqrt(Hz))"
@@ -935,6 +992,90 @@ OUTPUT
     expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
     9 "unitsml(m, symbol: La)" + 10 "unitsml(cm*s^-2, symbol: cm cdot s^-2)"
 INPUT
+<math xmlns='http://www.w3.org/1998/Math/MathML'>
+         <mn>9</mn>
+         <mo rspace='thickmathspace'>&#x2062;</mo>
+         <mrow xref='U_NISTu1'>
+           <math>
+             <mi mathvariant='normal'>L</mi>
+             <mi mathvariant='normal'>a</mi>
+           </math>
+         </mrow>
+         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu1' dimensionURL='#NISTd1'>
+           <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
+           <UnitName xml:lang='en'>meter</UnitName>
+           <UnitSymbol type='HTML'>m</UnitSymbol>
+           <UnitSymbol type='MathML'>
+             <math xmlns='http://www.w3.org/1998/Math/MathML'>
+               <mrow>
+                 <mi mathvariant='normal'>m</mi>
+               </mrow>
+             </math>
+           </UnitSymbol>
+         </Unit>
+         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd1'>
+           <Length symbol='L' powerNumerator='1'/>
+         </Dimension>
+         <mo>+</mo>
+         <mn>10</mn>
+         <mo rspace='thickmathspace'>&#x2062;</mo>
+         <mrow xref='U_cm.s-2'>
+           <math>
+             <mi mathvariant='normal'>c</mi>
+             <mi mathvariant='normal'>m</mi>
+             <mo>&#x22C5;</mo>
+             <msup>
+               <mrow>
+                 <mi mathvariant='normal'>s</mi>
+               </mrow>
+               <mrow>
+                 <mo>&#x2212;</mo>
+               </mrow>
+             </msup>
+             <mn>2</mn>
+           </math>
+         </mrow>
+         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_cm.s-2' dimensionURL='#NISTd28'>
+           <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
+           <UnitName xml:lang='en'>cm*s^-2</UnitName>
+           <UnitSymbol type='HTML'>
+             cm&#xB7;s
+             <sup>&#x2212;2</sup>
+           </UnitSymbol>
+           <UnitSymbol type='MathML'>
+             <math xmlns='http://www.w3.org/1998/Math/MathML'>
+               <mrow>
+                 <mi mathvariant='normal'>cm</mi>
+                 <mo>&#xB7;</mo>
+                 <msup>
+                   <mrow>
+                     <mi mathvariant='normal'>s</mi>
+                   </mrow>
+                   <mrow>
+                     <mo>&#x2212;</mo>
+                     <mn>2</mn>
+                   </mrow>
+                 </msup>
+               </mrow>
+             </math>
+           </UnitSymbol>
+           <RootUnits>
+             <EnumeratedRootUnit unit='meter' prefix='c'/>
+             <EnumeratedRootUnit unit='second' powerNumerator='-2'/>
+           </RootUnits>
+         </Unit>
+         <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='-2' xml:id='NISTp10_-2'>
+           <PrefixName xml:lang='en'>centi</PrefixName>
+           <PrefixSymbol type='ASCII'>c</PrefixSymbol>
+           <PrefixSymbol type='unicode'>c</PrefixSymbol>
+           <PrefixSymbol type='LaTeX'>c</PrefixSymbol>
+           <PrefixSymbol type='HTML'>c</PrefixSymbol>
+         </Prefix>
+         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd28'>
+           <Length symbol='L' powerNumerator='1'/>
+           <Time symbol='T' powerNumerator='-2'/>
+         </Dimension>
+       </math>
 OUTPUT
     end
 
