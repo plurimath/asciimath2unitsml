@@ -63,6 +63,19 @@ module Asciimath2UnitsML
       END
     end
 
+        U2D = {
+      "m" => { dimension: "Length", order: 1, symbol: "L" },
+      "g" => { dimension: "Mass", order: 2, symbol: "M" },
+      "kg" => { dimension: "Mass", order: 2, symbol: "M" },
+      "s" => { dimension: "Time", order: 3, symbol: "T" },
+      "A" => { dimension: "ElectricCurrent", order: 4, symbol: "I" },
+      "K" => { dimension: "ThermodynamicTemperature", order: 5, symbol: "Theta" },
+      "degK" => { dimension: "ThermodynamicTemperature", order: 5, symbol: "Theta" },
+      "mol" => { dimension: "AmountOfSubstance", order: 6, symbol: "N" },
+      "cd" => { dimension: "LuminousIntensity", order: 7, symbol: "J" },
+      "deg" => { dimension: "PlaneAngle", order: 8, symbol: "Phi" },
+    }.freeze
+
     def units2dimensions(units)
       norm = decompose_units(units)
       return if norm.any? { |u| u[:unit] == "unknown" || u[:prefix] == "unknown" || u[:unit].nil? }

@@ -143,19 +143,6 @@ module Asciimath2UnitsML
       end
     end
 
-    U2D = {
-      "m" => { dimension: "Length", order: 1, symbol: "L" },
-      "g" => { dimension: "Mass", order: 2, symbol: "M" },
-      "kg" => { dimension: "Mass", order: 2, symbol: "M" },
-      "s" => { dimension: "Time", order: 3, symbol: "T" },
-      "A" => { dimension: "ElectricCurrent", order: 4, symbol: "I" },
-      "K" => { dimension: "ThermodynamicTemperature", order: 5, symbol: "Theta" },
-      "degK" => { dimension: "ThermodynamicTemperature", order: 5, symbol: "Theta" },
-      "mol" => { dimension: "AmountOfSubstance", order: 6, symbol: "N" },
-      "cd" => { dimension: "LuminousIntensity", order: 7, symbol: "J" },
-      "deg" => { dimension: "PlaneAngle", order: 8, symbol: "Phi" },
-    }.freeze
-
     def Asciimath2UnitsML(expression)
       xml = Nokogiri::XML(asciimath2mathml(expression))
       MathML2UnitsML(xml).to_xml
@@ -169,7 +156,7 @@ module Asciimath2UnitsML
         text = x.text.sub(%r{^unitsml\((.+)\)$}m, "\\1")
         units, origtext, normtext, quantity, name, symbol = parse(text)
         rendering = symbol ? embeddedmathml(asciimath2mathml(symbol)) : mathmlsymbol(units, false)
-        delim = x&.previous_element&.name == "mn" ? delimspace(rendering) : ""
+        delim = x&.previous_element ? delimspace(rendering) : ""
         x.replace("#{delim}<mrow xref='#{unit_id(origtext)}'>#{rendering}</mrow>\n"\
                   "#{unitsml(units, origtext, normtext, quantity, name)}")
       end

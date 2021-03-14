@@ -464,6 +464,7 @@ OUTPUT
     <PrefixSymbol type='LaTeX'>p</PrefixSymbol>
     <PrefixSymbol type='HTML'>p</PrefixSymbol>
   </Prefix>
+  <mo rspace='thickmathspace'>&#x2062;</mo>
    <mrow xref='NISTp10_1'>
    <mi mathvariant='normal'>da</mi>
  </mrow>
@@ -500,6 +501,7 @@ INPUT
     <QuantityName xml:lang='en-US'>mass</QuantityName>
   </Quantity>
   <mo>+</mo>
+  <mo rspace='thickmathspace'>&#x2062;</mo>
   <mrow xref='U_um'>
     <mi mathvariant='normal'>&#xB5;m</mi>
   </mrow>
