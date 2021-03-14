@@ -15,6 +15,11 @@ module Asciimath2UnitsML
       @symbols[unit][style] || unit
     end
 
+    def htmlent(x)
+      HTMLEntities.new.decode(x).split(/([<>&])/)
+        .map { |c| /[<>'"]/.match(c) ? c : HTMLEntities.new.encode(c, :hexadecimal) }.join
+    end
+
     def htmlsymbol(units, normalise)
       units.map do |u|
         if u[:multiplier] then u[:multiplier] == "*" ? @multiplier[:html] : u[:multiplier]
@@ -41,7 +46,7 @@ module Asciimath2UnitsML
       exp = units.map do |u|
         if u[:multiplier] then u[:multiplier] == "*" ? @multiplier[:mathml] : "<mo>#{u[:multiplier]}</mo>"
         elsif u[:unit].nil? && u[:prefix]
-          %(<mi mathvariant='normal'>#{@prefixes[u[:prefix]].html}</mi>)
+          %(<mi mathvariant='normal'>#{htmlent(@prefixes[u[:prefix]].html)}</mi>)
         else
           mathmlsymbol1(u, normalise)
         end
@@ -51,9 +56,10 @@ module Asciimath2UnitsML
     def mathmlsymbol1(u, normalise)
       base = render(normalise ? @units[u[:unit]].symbolid : u[:unit], :mathml)
       if u[:prefix]
+        prefix = htmlent(@prefixes[u[:prefix]].html)
         base = base.match(/<mi mathvariant='normal'>/) ?
-          base.sub(/<mi mathvariant='normal'>/, "<mi mathvariant='normal'>#{u[:prefix]}") :
-          "<mrow><mi mathvariant='normal'>#{u[:prefix]}#{base}</mrow>"
+          base.sub(/<mi mathvariant='normal'>/, "<mi mathvariant='normal'>#{prefix}") :
+          "<mrow><mi mathvariant='normal'>#{prefix}#{base}</mrow>"
       end
       mathmlsymbol_exponent(u, base)
     end

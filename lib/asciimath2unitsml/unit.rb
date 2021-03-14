@@ -7,7 +7,7 @@ module Asciimath2UnitsML
     def unit_id(text)
       text = text.gsub(/[()]/, "")
       /-$/.match(text) and return @prefixes[text.sub(/-$/, "")].id
-      "U_" + (@units[text] ? @units[text].id : text.gsub(/\*/, ".").gsub(/\^/, ""))
+      "U_" + (@units[text] ? @units[text].id.gsub(/'/, "_") : text.gsub(/\*/, ".").gsub(/\^/, ""))
     end
 
     def unit(units, origtext, normtext, dims, name)

@@ -48,7 +48,7 @@ module Asciimath2UnitsML
           <PrefixSymbol type="ASCII">#{@prefixes[p].ascii}</PrefixSymbol>
           <PrefixSymbol type="unicode">#{@prefixes[p].unicode}</PrefixSymbol>
           <PrefixSymbol type="LaTeX">#{@prefixes[p].latex}</PrefixSymbol>
-          <PrefixSymbol type="HTML">#{HTMLEntities.new.encode(@prefixes[p].html, :basic)}</PrefixSymbol>
+          <PrefixSymbol type="HTML">#{htmlent @prefixes[p].html}</PrefixSymbol>
         </Prefix>
         END
       end.join("\n")
