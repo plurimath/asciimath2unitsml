@@ -75,7 +75,7 @@ RSpec.describe Asciimath2UnitsML do
   <mn>1</mn>
   <mo rspace='thickmathspace'>&#x2062;</mo>
   <mrow xref='U_um'>
-    <mi mathvariant='normal'>um</mi>
+    <mi mathvariant='normal'>&#xB5;m</mi>
   </mrow>
   <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_um' dimensionURL='#NISTd1'>
     <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
@@ -84,7 +84,7 @@ RSpec.describe Asciimath2UnitsML do
     <UnitSymbol type='MathML'>
       <math xmlns='http://www.w3.org/1998/Math/MathML'>
         <mrow>
-          <mi mathvariant='normal'>um</mi>
+          <mi mathvariant='normal'>&#xB5;m</mi>
         </mrow>
       </math>
     </UnitSymbol>
@@ -97,7 +97,7 @@ RSpec.describe Asciimath2UnitsML do
     <PrefixSymbol type='ASCII'>u</PrefixSymbol>
     <PrefixSymbol type='unicode'>&#x3BC;</PrefixSymbol>
     <PrefixSymbol type='LaTeX'>$mu$</PrefixSymbol>
-    <PrefixSymbol type='HTML'>&amp;micro;</PrefixSymbol>
+    <PrefixSymbol type='HTML'>&#xB5;</PrefixSymbol>
   </Prefix>
   <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd1'>
     <Length symbol='L' powerNumerator='1'/>
@@ -474,6 +474,53 @@ OUTPUT
    <PrefixSymbol type='LaTeX'>da</PrefixSymbol>
    <PrefixSymbol type='HTML'>da</PrefixSymbol>
  </Prefix>
+</math>
+    OUTPUT
+  end
+
+  it "deals with HTML entities in UnitsDB" do
+    expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
+    "unitsml(u-)" + "unitsml(um)"
+INPUT
+<math xmlns='http://www.w3.org/1998/Math/MathML'>
+  <mrow xref='NISTp10_-6'>
+    <mi mathvariant='normal'>&#xB5;</mi>
+  </mrow>
+  <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='-6' xml:id='NISTp10_-6'>
+    <PrefixName xml:lang='en'>micro</PrefixName>
+    <PrefixSymbol type='ASCII'>u</PrefixSymbol>
+    <PrefixSymbol type='unicode'>&#x3BC;</PrefixSymbol>
+    <PrefixSymbol type='LaTeX'>$mu$</PrefixSymbol>
+    <PrefixSymbol type='HTML'>&#xB5;</PrefixSymbol>
+  </Prefix>
+  <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd2'>
+    <Mass symbol='M' powerNumerator='1'/>
+  </Dimension>
+  <Quantity xmlns='http://unitsml.nist.gov/2005' xml:id='NISTq2' dimensionURL='#NISTd2' quantityType='base'>
+    <QuantityName xml:lang='en-US'>mass</QuantityName>
+  </Quantity>
+  <mo>+</mo>
+  <mrow xref='U_um'>
+    <mi mathvariant='normal'>&#xB5;m</mi>
+  </mrow>
+  <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_um' dimensionURL='#NISTd1'>
+    <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
+    <UnitName xml:lang='en'>um</UnitName>
+    <UnitSymbol type='HTML'>um</UnitSymbol>
+    <UnitSymbol type='MathML'>
+      <math xmlns='http://www.w3.org/1998/Math/MathML'>
+        <mrow>
+          <mi mathvariant='normal'>&#xB5;m</mi>
+        </mrow>
+      </math>
+    </UnitSymbol>
+    <RootUnits>
+      <EnumeratedRootUnit unit='meter' prefix='u'/>
+    </RootUnits>
+  </Unit>
+  <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd1'>
+    <Length symbol='L' powerNumerator='1'/>
+  </Dimension>
 </math>
     OUTPUT
   end
