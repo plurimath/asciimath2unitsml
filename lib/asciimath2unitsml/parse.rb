@@ -89,7 +89,6 @@ module Asciimath2UnitsML
       unit_keys = @units.keys.reject do |k|
         /\*|\^|\/|^1$/.match(k) || @units[k].prefixed
       end.map { |k| Regexp.escape(k) }
-      require "byebug"; byebug
       unit1 = /#{unit_keys.sort_by(&:length).reverse.join("|")}/.r
       exponent = /\^\(-?\d+\)/.r.map { |m| m.sub(/\^/, "").gsub(/[()]/, "") } |
         /\^-?\d+/.r.map { |m| m.sub(/\^/, "") }
