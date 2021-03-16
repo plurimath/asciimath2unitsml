@@ -135,6 +135,7 @@ module UnitsDB
           @root = hash[:root_units][:enumerated_root_units]
         hash[:quantity_reference] and @quantities = hash[:quantity_reference].map { |x| x[:url].sub(/^#/, "") }
         hash[:si_derived_bases] and @si_derived_bases = hash[:si_derived_bases]
+        @prefixed = (hash[:prefixed] == true)
       rescue
         raise StandardError.new "Parse fail on Unit #{id}: #{hash}"
       end

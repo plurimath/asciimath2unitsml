@@ -87,8 +87,9 @@ module Asciimath2UnitsML
       prefix2 = /#{@prefixes.keys.select { |x| x.size == 2 }.join("|")}/.r
       prefix1 = /#{@prefixes.keys.select { |x| x.size == 1 }.join("|")}/.r
       unit_keys = @units.keys.reject do |k|
-        @units[k].root&.any? { |x| x[:prefix] } || /\*|\^|\/|^1$/.match(k) || @units[k].prefixed
+        /\*|\^|\/|^1$/.match(k) || @units[k].prefixed
       end.map { |k| Regexp.escape(k) }
+      require "byebug"; byebug
       unit1 = /#{unit_keys.sort_by(&:length).reverse.join("|")}/.r
       exponent = /\^\(-?\d+\)/.r.map { |m| m.sub(/\^/, "").gsub(/[()]/, "") } |
         /\^-?\d+/.r.map { |m| m.sub(/\^/, "") }
