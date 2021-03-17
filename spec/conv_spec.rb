@@ -106,7 +106,7 @@ RSpec.describe Asciimath2UnitsML do
 OUTPUT
     end
 
-     it "does not insert space before non-alphabetic units" do
+  it "does not insert space before non-alphabetic units" do
     expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
     1 "unitsml(degK)" + 1 "unitsml(prime)"
 INPUT
@@ -162,6 +162,67 @@ INPUT
 </math>
 OUTPUT
      end
+
+  it "does not insert space before operators" do
+    expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
+    8 "unitsml(kg)" cdot "unitsml(m)"
+INPUT
+<math xmlns='http://www.w3.org/1998/Math/MathML'>
+         <mn>8</mn>
+         <mo rspace='thickmathspace'>&#x2062;</mo>
+         <mrow xref='U_NISTu2'>
+           <mi mathvariant='normal'>kg</mi>
+         </mrow>
+         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu2' dimensionURL='#NISTd2'>
+           <UnitSystem name='SI' type='SI_base' xml:lang='en-US'/>
+           <UnitName xml:lang='en'>kilogram</UnitName>
+           <UnitSymbol type='HTML'>kg</UnitSymbol>
+           <UnitSymbol type='MathML'>
+             <math xmlns='http://www.w3.org/1998/Math/MathML'>
+               <mrow>
+                 <mi mathvariant='normal'>kg</mi>
+               </mrow>
+             </math>
+           </UnitSymbol>
+           <RootUnits>
+             <EnumeratedRootUnit unit='gram' prefix='k'/>
+           </RootUnits>
+         </Unit>
+         <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
+           <PrefixName xml:lang='en'>kilo</PrefixName>
+           <PrefixSymbol type='ASCII'>k</PrefixSymbol>
+           <PrefixSymbol type='unicode'>k</PrefixSymbol>
+           <PrefixSymbol type='LaTeX'>k</PrefixSymbol>
+           <PrefixSymbol type='HTML'>k</PrefixSymbol>
+         </Prefix>
+         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd2'>
+           <Mass symbol='M' powerNumerator='1'/>
+         </Dimension>
+         <Quantity xmlns='http://unitsml.nist.gov/2005' xml:id='NISTq2' dimensionURL='#NISTd2' quantityType='base'>
+           <QuantityName xml:lang='en-US'>mass</QuantityName>
+         </Quantity>
+         <mo>&#x22C5;</mo>
+         <mrow xref='U_NISTu1'>
+           <mi mathvariant='normal'>m</mi>
+         </mrow>
+         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu1' dimensionURL='#NISTd1'>
+           <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
+           <UnitName xml:lang='en'>meter</UnitName>
+           <UnitSymbol type='HTML'>m</UnitSymbol>
+           <UnitSymbol type='MathML'>
+             <math xmlns='http://www.w3.org/1998/Math/MathML'>
+               <mrow>
+                 <mi mathvariant='normal'>m</mi>
+               </mrow>
+             </math>
+           </UnitSymbol>
+         </Unit>
+         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd1'>
+           <Length symbol='L' powerNumerator='1'/>
+         </Dimension>
+       </math>
+OUTPUT
+  end
 
   it "deals with sqrt units" do
     expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
