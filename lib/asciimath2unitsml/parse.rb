@@ -165,7 +165,7 @@ module Asciimath2UnitsML
     def delimspace(rendering, elem)
       return "" if elem&.previous_element && elem&.previous_element.name != "mn"
       text = HTMLEntities.new.encode(Nokogiri::XML("<mrow>#{rendering}</mrow>").text.strip)
-      /[[:alnum:]]/.match(text) ?
+      /\p{L}|\p{N}/.match(text) ?
         "<mo rspace='thickmathspace'>&#x2062;</mo>" : "<mo>&#x2062;</mo>"
     end
 
