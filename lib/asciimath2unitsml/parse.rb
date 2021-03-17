@@ -156,15 +156,15 @@ module Asciimath2UnitsML
         text = x.text.sub(%r{^unitsml\((.+)\)$}m, "\\1")
         units, origtext, normtext, quantity, name, symbol = parse(text)
         rendering = symbol ? embeddedmathml(asciimath2mathml(symbol)) : mathmlsymbol(units, false)
-        delim = x&.previous_element ? delimspace(rendering) : ""
-        x.replace("#{delim}<mrow xref='#{unit_id(origtext)}'>#{rendering}</mrow>\n"\
+        x.replace("#{delimspace(rendering, x)}<mrow xref='#{unit_id(origtext)}'>#{rendering}</mrow>\n"\
                   "#{unitsml(units, origtext, normtext, quantity, name)}")
       end
       dedup_ids(xml)
     end
 
-    def delimspace(x)
-      text = HTMLEntities.new.encode(Nokogiri::XML("<mrow>#{x}</mrow>").text.strip)
+    def delimspace(rendering, elem)
+      return "" if elem&.previous_element && elem&.previous_element.name != "mn"
+      text = HTMLEntities.new.encode(Nokogiri::XML("<mrow>#{rendering}</mrow>").text.strip)
       /[[:alnum:]]/.match(text) ?
         "<mo rspace='thickmathspace'>&#x2062;</mo>" : "<mo>&#x2062;</mo>"
     end
