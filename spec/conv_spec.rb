@@ -108,7 +108,7 @@ OUTPUT
 
   it "does not insert space before non-alphabetic units" do
     expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
-    1 "unitsml(degK)" + 1 "unitsml(prime)"
+    1 "unitsml(degK)" + 1 "unitsml(prime)" + ii(theta) = s//r "unitsml(rad)"
 INPUT
 <math xmlns='http://www.w3.org/1998/Math/MathML'>
   <mn>1</mn>
@@ -159,6 +159,33 @@ INPUT
     <QuantityName xml:lang='en-US'>plane angle</QuantityName>
     <QuantityName xml:lang='en-US'>angle</QuantityName>
   </Quantity>
+  <mo>+</mo>
+<mstyle mathvariant='italic'>
+  <mi>&#x3B8;</mi>
+</mstyle>
+<mo>=</mo>
+<mi>s</mi>
+<mo>/</mo>
+<mi>r</mi>
+<mo rspace='thickmathspace'>&#x2062;</mo>
+<mrow xref='U_NISTu9'>
+  <mi mathvariant='normal'>rad</mi>
+</mrow>
+<Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu9' dimensionURL='#D_L0'>
+  <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
+  <UnitName xml:lang='en'>radian</UnitName>
+  <UnitSymbol type='HTML'>rad</UnitSymbol>
+  <UnitSymbol type='MathML'>
+    <math xmlns='http://www.w3.org/1998/Math/MathML'>
+      <mrow>
+        <mi mathvariant='normal'>rad</mi>
+      </mrow>
+    </math>
+  </UnitSymbol>
+</Unit>
+<Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_L0'>
+  <Length symbol='L' powerNumerator='0'/>
+</Dimension>
 </math>
 OUTPUT
      end
