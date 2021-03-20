@@ -66,7 +66,7 @@ RSpec.describe Asciimath2UnitsML do
     OUTPUT
   end
 
-    it "deals with non-Ascii units and prefixes" do
+  it "deals with non-Ascii units and prefixes" do
     expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
     1 "unitsml(um)"
     INPUT
@@ -108,85 +108,116 @@ OUTPUT
 
   it "does not insert space before non-alphabetic units" do
     expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
-    1 "unitsml(degK)" + 1 "unitsml(prime)" + ii(theta) = s//r "unitsml(rad)"
+    1 "unitsml(degK)" + 1 "unitsml(prime)" + ii(theta) = s//r "unitsml(rad)" + 10^(12) "unitsml(Hz)"
 INPUT
 <math xmlns='http://www.w3.org/1998/Math/MathML'>
-  <mn>1</mn>
-  <mo rspace='thickmathspace'>&#x2062;</mo>
-  <mrow xref='U_NISTu5'>
-    <mi mathvariant='normal'>&#xB0;K</mi>
-  </mrow>
-  <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu5' dimensionURL='#NISTd5'>
-    <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
-    <UnitName xml:lang='en'>kelvin</UnitName>
-    <UnitSymbol type='HTML'>K</UnitSymbol>
-    <UnitSymbol type='MathML'>
-      <math xmlns='http://www.w3.org/1998/Math/MathML'>
-        <mrow>
-          <mi mathvariant='normal'>K</mi>
-        </mrow>
-      </math>
-    </UnitSymbol>
-  </Unit>
-  <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd5'>
-    <ThermodynamicTemperature symbol='Theta' powerNumerator='1'/>
-  </Dimension>
-  <Quantity xmlns='http://unitsml.nist.gov/2005' xml:id='NISTq5' dimensionURL='#NISTd5' quantityType='base'>
-    <QuantityName xml:lang='en-US'>thermodynamic temperature</QuantityName>
-  </Quantity>
-  <mo>+</mo>
-  <mn>1</mn>
-  <mo>&#x2062;</mo>
-  <mrow xref='U_NISTu147'>
-    <mi mathvariant='normal'>&#x2032;</mi>
-  </mrow>
-  <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu147'>
-    <UnitSystem name='not_SI' type='not_SI' xml:lang='en-US'/>
-    <UnitName xml:lang='en'>minute (minute of arc)</UnitName>
-    <UnitSymbol type='HTML'>&#x2032;</UnitSymbol>
-    <UnitSymbol type='MathML'>
-      <math xmlns='http://www.w3.org/1998/Math/MathML'>
-        <mrow>
-          <mi mathvariant='normal'>&#x2032;</mi>
-        </mrow>
-      </math>
-    </UnitSymbol>
-  </Unit>
-  <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd9'>
-    <PlaneAngle symbol='Phi' powerNumerator='1'/>
-  </Dimension>
-  <Quantity xmlns='http://unitsml.nist.gov/2005' xml:id='NISTq9' dimensionURL='#NISTd9' quantityType='base'>
-    <QuantityName xml:lang='en-US'>plane angle</QuantityName>
-    <QuantityName xml:lang='en-US'>angle</QuantityName>
-  </Quantity>
-  <mo>+</mo>
-<mstyle mathvariant='italic'>
-  <mi>&#x3B8;</mi>
-</mstyle>
-<mo>=</mo>
-<mi>s</mi>
-<mo>/</mo>
-<mi>r</mi>
-<mo rspace='thickmathspace'>&#x2062;</mo>
-<mrow xref='U_NISTu9'>
-  <mi mathvariant='normal'>rad</mi>
-</mrow>
-<Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu9' dimensionURL='#D_L0'>
-  <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
-  <UnitName xml:lang='en'>radian</UnitName>
-  <UnitSymbol type='HTML'>rad</UnitSymbol>
-  <UnitSymbol type='MathML'>
-    <math xmlns='http://www.w3.org/1998/Math/MathML'>
-      <mrow>
-        <mi mathvariant='normal'>rad</mi>
-      </mrow>
-    </math>
-  </UnitSymbol>
-</Unit>
-<Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_L0'>
-  <Length symbol='L' powerNumerator='0'/>
-</Dimension>
-</math>
+         <mn>1</mn>
+         <mo rspace='thickmathspace'>&#x2062;</mo>
+         <mrow xref='U_NISTu5'>
+           <mi mathvariant='normal'>&#xB0;K</mi>
+         </mrow>
+         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu5' dimensionURL='#NISTd5'>
+           <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
+           <UnitName xml:lang='en'>kelvin</UnitName>
+           <UnitSymbol type='HTML'>K</UnitSymbol>
+           <UnitSymbol type='MathML'>
+             <math xmlns='http://www.w3.org/1998/Math/MathML'>
+               <mrow>
+                 <mi mathvariant='normal'>K</mi>
+               </mrow>
+             </math>
+           </UnitSymbol>
+         </Unit>
+         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd5'>
+           <ThermodynamicTemperature symbol='Theta' powerNumerator='1'/>
+         </Dimension>
+         <Quantity xmlns='http://unitsml.nist.gov/2005' xml:id='NISTq5' dimensionURL='#NISTd5' quantityType='base'>
+           <QuantityName xml:lang='en-US'>thermodynamic temperature</QuantityName>
+         </Quantity>
+         <mo>+</mo>
+         <mn>1</mn>
+         <mo>&#x2062;</mo>
+         <mrow xref='U_NISTu147'>
+           <mi mathvariant='normal'>&#x2032;</mi>
+         </mrow>
+         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu147'>
+           <UnitSystem name='not_SI' type='not_SI' xml:lang='en-US'/>
+           <UnitName xml:lang='en'>minute (minute of arc)</UnitName>
+           <UnitSymbol type='HTML'>&#x2032;</UnitSymbol>
+           <UnitSymbol type='MathML'>
+             <math xmlns='http://www.w3.org/1998/Math/MathML'>
+               <mrow>
+                 <mi mathvariant='normal'>&#x2032;</mi>
+               </mrow>
+             </math>
+           </UnitSymbol>
+         </Unit>
+         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd9'>
+           <PlaneAngle symbol='Phi' powerNumerator='1'/>
+         </Dimension>
+         <Quantity xmlns='http://unitsml.nist.gov/2005' xml:id='NISTq9' dimensionURL='#NISTd9' quantityType='base'>
+           <QuantityName xml:lang='en-US'>plane angle</QuantityName>
+           <QuantityName xml:lang='en-US'>angle</QuantityName>
+         </Quantity>
+         <mo>+</mo>
+         <mstyle mathvariant='italic'>
+           <mi>&#x3B8;</mi>
+         </mstyle>
+         <mo>=</mo>
+         <mi>s</mi>
+         <mo>/</mo>
+         <mi>r</mi>
+         <mo rspace='thickmathspace'>&#x2062;</mo>
+         <mrow xref='U_NISTu9'>
+           <mi mathvariant='normal'>rad</mi>
+         </mrow>
+         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu9' dimensionURL='#D_L0'>
+           <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
+           <UnitName xml:lang='en'>radian</UnitName>
+           <UnitSymbol type='HTML'>rad</UnitSymbol>
+           <UnitSymbol type='MathML'>
+             <math xmlns='http://www.w3.org/1998/Math/MathML'>
+               <mrow>
+                 <mi mathvariant='normal'>rad</mi>
+               </mrow>
+             </math>
+           </UnitSymbol>
+         </Unit>
+         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_L0'>
+           <Length symbol='L' powerNumerator='0'/>
+         </Dimension>
+         <mo>+</mo>
+         <msup>
+           <mrow>
+             <mn>10</mn>
+           </mrow>
+           <mrow>
+             <mn>12</mn>
+           </mrow>
+         </msup>
+         <mo rspace='thickmathspace'>&#x2062;</mo>
+         <mrow xref='U_NISTu31'>
+           <mi mathvariant='normal'>Hz</mi>
+         </mrow>
+         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu31' dimensionURL='#NISTd24'>
+           <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
+           <UnitName xml:lang='en'>hertz</UnitName>
+           <UnitSymbol type='HTML'>Hz</UnitSymbol>
+           <UnitSymbol type='MathML'>
+             <math xmlns='http://www.w3.org/1998/Math/MathML'>
+               <mrow>
+                 <mi mathvariant='normal'>Hz</mi>
+               </mrow>
+             </math>
+           </UnitSymbol>
+         </Unit>
+         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd24'>
+           <Time symbol='T' powerNumerator='-1'/>
+         </Dimension>
+         <Quantity xmlns='http://unitsml.nist.gov/2005' xml:id='NISTq45' dimensionURL='#NISTd24' quantityType='base'>
+           <QuantityName xml:lang='en-US'>frequency</QuantityName>
+         </Quantity>
+       </math>
 OUTPUT
      end
 
@@ -589,7 +620,6 @@ INPUT
     <QuantityName xml:lang='en-US'>mass</QuantityName>
   </Quantity>
   <mo>+</mo>
-  <mo rspace='thickmathspace'>&#x2062;</mo>
   <mrow xref='U_um'>
     <mi mathvariant='normal'>&#xB5;m</mi>
   </mrow>
@@ -1216,5 +1246,68 @@ INPUT
 OUTPUT
     end
 
+        it "deals with multiplier input" do
+    expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
+    10 "unitsml(cm*s^-2, multiplier: xx)"
+INPUT
+<math xmlns='http://www.w3.org/1998/Math/MathML'>
+  <mn>10</mn>
+  <mo rspace='thickmathspace'>&#x2062;</mo>
+  <mrow xref='U_cm.s-2'>
+    <mi mathvariant='normal'>cm</mi>
+    <mo>xx</mo>
+    <msup>
+      <mrow>
+        <mi mathvariant='normal'>s</mi>
+      </mrow>
+      <mrow>
+        <mo>&#x2212;</mo>
+        <mn>2</mn>
+      </mrow>
+    </msup>
+  </mrow>
+  <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_cm.s-2' dimensionURL='#NISTd28'>
+    <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
+    <UnitName xml:lang='en'>cm*s^-2</UnitName>
+    <UnitSymbol type='HTML'>
+      cm&#xB7;s
+      <sup>&#x2212;2</sup>
+    </UnitSymbol>
+    <UnitSymbol type='MathML'>
+      <math xmlns='http://www.w3.org/1998/Math/MathML'>
+        <mrow>
+          <mi mathvariant='normal'>cm</mi>
+          <mo>&#xB7;</mo>
+          <msup>
+            <mrow>
+              <mi mathvariant='normal'>s</mi>
+            </mrow>
+            <mrow>
+              <mo>&#x2212;</mo>
+              <mn>2</mn>
+            </mrow>
+          </msup>
+        </mrow>
+      </math>
+    </UnitSymbol>
+    <RootUnits>
+      <EnumeratedRootUnit unit='meter' prefix='c'/>
+      <EnumeratedRootUnit unit='second' powerNumerator='-2'/>
+    </RootUnits>
+  </Unit>
+  <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='-2' xml:id='NISTp10_-2'>
+    <PrefixName xml:lang='en'>centi</PrefixName>
+    <PrefixSymbol type='ASCII'>c</PrefixSymbol>
+    <PrefixSymbol type='unicode'>c</PrefixSymbol>
+    <PrefixSymbol type='LaTeX'>c</PrefixSymbol>
+    <PrefixSymbol type='HTML'>c</PrefixSymbol>
+  </Prefix>
+  <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd28'>
+    <Length symbol='L' powerNumerator='1'/>
+    <Time symbol='T' powerNumerator='-2'/>
+  </Dimension>
+</math>
+OUTPUT
+        end
 
 end
