@@ -42,9 +42,10 @@ module Asciimath2UnitsML
       base
     end
 
-    def mathmlsymbol(units, normalise)
+    def mathmlsymbol(units, normalise, multiplier = nil)
+      multiplier = multiplier ? "<mo>#{multiplier}</mo>" : @multiplier[:mathml]
       exp = units.map do |u|
-        if u[:multiplier] then u[:multiplier] == "*" ? @multiplier[:mathml] : "<mo>#{u[:multiplier]}</mo>"
+        if u[:multiplier] then u[:multiplier] == "*" ? multiplier : "<mo>#{u[:multiplier]}</mo>"
         elsif u[:unit].nil? && u[:prefix]
           %(<mi mathvariant='normal'>#{htmlent(@prefixes[u[:prefix]].html)}</mi>)
         else

@@ -123,11 +123,12 @@ module Asciimath2UnitsML
       quantity = text[1..-1]&.select { |x| /^quantity:/.match(x) }&.first&.sub(/^quantity:\s*/, "")
       name = text[1..-1]&.select { |x| /^name:/.match(x) }&.first&.sub(/^name:\s*/, "")
       symbol = text[1..-1]&.select { |x| /^symbol:/.match(x) }&.first&.sub(/^symbol:\s*/, "")
+      multiplier = text[1..-1]&.select { |x| /^multiplier:/.match(x) }&.first&.sub(/^multiplier:\s*/, "")
       normtext = units_only(units).each.map do |u|
         exp = u[:exponent] && u[:exponent] != "1" ? "^#{u[:exponent]}" : ""
         "#{u[:prefix]}#{u[:unit]}#{exp}"
       end.join("*")
-      [units, text[0], normtext, quantity, name, symbol]
+      [units, text[0], normtext, quantity, name, symbol, multiplier]
     end
 
     def postprocess1(units)
@@ -154,16 +155,20 @@ module Asciimath2UnitsML
       xml.xpath(".//m:mtext", "m" => MATHML_NS).each do |x|
         next unless %r{^unitsml\(.+\)$}.match(x.text)
         text = x.text.sub(%r{^unitsml\((.+)\)$}m, "\\1")
-        units, origtext, normtext, quantity, name, symbol = parse(text)
-        rendering = symbol ? embeddedmathml(asciimath2mathml(symbol)) : mathmlsymbol(units, false)
+        units, origtext, normtext, quantity, name, symbol, multiplier = parse(text)
+        rendering = symbol ? embeddedmathml(asciimath2mathml(symbol)) :
+          mathmlsymbol(units, false, multiplier)
         x.replace("#{delimspace(rendering, x)}<mrow xref='#{unit_id(origtext)}'>#{rendering}</mrow>\n"\
                   "#{unitsml(units, origtext, normtext, quantity, name)}")
       end
       dedup_ids(xml)
     end
 
+    # if previous sibling's last descendent non-whitespace is MathML and mn or mi, no space
     def delimspace(rendering, elem)
-      return "" if elem&.previous_element && !%w(mn mi).include?(elem&.previous_element.name)
+      prec_text_elem = elem.xpath("./preceding-sibling::*[namespace-uri() = '#{MATHML_NS}']/"\
+                                  "descendant::text()[normalize-space()!=''][last()]/parent::*").last
+      return "" if prec_text_elem.nil? || !%w(mn mi).include?(prec_text_elem&.name)
       text = HTMLEntities.new.encode(Nokogiri::XML("<mrow>#{rendering}</mrow>").text.strip)
       /\p{L}|\p{N}/.match(text) ?
         "<mo rspace='thickmathspace'>&#x2062;</mo>" : "<mo>&#x2062;</mo>"

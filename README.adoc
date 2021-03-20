@@ -53,6 +53,8 @@ from UnitsDB. For example, `unitsml(cal_th/cm^2, name: langley)`.
 The unit-string gives the canonical representation of the unit, but SYMBOL is what will be rendered.
 For example, `unitsml(cal_th/cm^2, name: langley, symbol: La)`, or `unitsml(mm*s^-2, symbol: mm cdot s^-2)`.
 (All variables in SYMBOL are rendered upright, as is the default for units.)
+* `unitsml(unit-string, multiplier: SYMBOL)` provides an alternate symbol for the multiliper of
+units. The options are an XML entity, or the values `space` or `nospace` (for which see discussion under _Usage_).
 
 Standalone prefixes can be recognised by replacing the unit with hyphen; so `unitsml(p-)` corresponds
 to the standalone prefix "pico" (and is rendered as "p").
@@ -230,7 +232,7 @@ This table can be generated (in Asciidoc format) through `Asciimath2UnitsML::Con
 | ton | ton of TNT (energy equivalent): `ton_TNT` | ton of refrigeration (12 000 Btu_IT/h): `ton_refrigeration` | | | | 
 | tsp | teaspoon: `tsp` | teaspoon (FDA): `tsp_label` | | | | 
 | yd | yard: `yd` | yard (based on US survey foot): `yd_US_survey` | | | | 
-| &#186; | degree (degree of arc): `deg` | | | | | 
+| &#176; | degree (degree of arc): `deg` | | | | | 
 | &#947; | gamma: `gamma` | | | | | 
 | &#956; | micron: `micron` | | | | | 
 | &#8486; | ohm: `Ohm` | | | | | 
@@ -258,3 +260,4 @@ This table can be generated (in Asciidoc format) through `Asciimath2UnitsML::Con
 | &#176;R | degree Rankine: `degR` | | | | | 
 | &#x19b;~C~ | natural unit of length: `lambda-bar_C` | | | | | 
 |===
+

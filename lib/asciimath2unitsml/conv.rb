@@ -63,7 +63,7 @@ module Asciimath2UnitsML
       END
     end
 
-        U2D = {
+    U2D = {
       "m" => { dimension: "Length", order: 1, symbol: "L" },
       "g" => { dimension: "Mass", order: 2, symbol: "M" },
       "kg" => { dimension: "Mass", order: 2, symbol: "M" },
