@@ -22,7 +22,7 @@ RSpec.describe Asciimath2UnitsML do
              </mrow>
            </msup>
          </mrow>
-         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_mm.s-2' dimensionURL='#NISTd28'>
+         <Unit xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='U_mm.s-2' dimensionURL='#NISTd28'>
            <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
            <UnitName xml:lang='en'>mm*s^-2</UnitName>
            <UnitSymbol type='HTML'>
@@ -51,14 +51,14 @@ RSpec.describe Asciimath2UnitsML do
              <EnumeratedRootUnit unit='second' powerNumerator='-2'/>
            </RootUnits>
          </Unit>
-         <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='-3' xml:id='NISTp10_-3'>
+         <Prefix xmlns='https://schema.unitsml.org/unitsml/1.0' prefixBase='10' prefixPower='-3' xml:id='NISTp10_-3'>
            <PrefixName xml:lang='en'>milli</PrefixName>
            <PrefixSymbol type='ASCII'>m</PrefixSymbol>
            <PrefixSymbol type='unicode'>m</PrefixSymbol>
            <PrefixSymbol type='LaTeX'>m</PrefixSymbol>
            <PrefixSymbol type='HTML'>m</PrefixSymbol>
          </Prefix>
-         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd28'>
+         <Dimension xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='NISTd28'>
            <Length symbol='L' powerNumerator='1'/>
            <Time symbol='T' powerNumerator='-2'/>
          </Dimension>
@@ -77,7 +77,7 @@ RSpec.describe Asciimath2UnitsML do
   <mrow xref='U_um'>
     <mi mathvariant='normal'>&#xB5;m</mi>
   </mrow>
-  <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_um' dimensionURL='#NISTd1'>
+  <Unit xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='U_um' dimensionURL='#NISTd1'>
     <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
     <UnitName xml:lang='en'>um</UnitName>
     <UnitSymbol type='HTML'>um</UnitSymbol>
@@ -92,14 +92,14 @@ RSpec.describe Asciimath2UnitsML do
   <EnumeratedRootUnit unit='meter' prefix='u'/>
 </RootUnits>
   </Unit>
-  <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='-6' xml:id='NISTp10_-6'>
+  <Prefix xmlns='https://schema.unitsml.org/unitsml/1.0' prefixBase='10' prefixPower='-6' xml:id='NISTp10_-6'>
     <PrefixName xml:lang='en'>micro</PrefixName>
     <PrefixSymbol type='ASCII'>u</PrefixSymbol>
     <PrefixSymbol type='unicode'>&#x3BC;</PrefixSymbol>
     <PrefixSymbol type='LaTeX'>$mu$</PrefixSymbol>
     <PrefixSymbol type='HTML'>&#xB5;</PrefixSymbol>
   </Prefix>
-  <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd1'>
+  <Dimension xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='NISTd1'>
     <Length symbol='L' powerNumerator='1'/>
   </Dimension>
 </math>
@@ -116,7 +116,7 @@ INPUT
          <mrow xref='U_NISTu5'>
            <mi mathvariant='normal'>&#xB0;K</mi>
          </mrow>
-         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu5' dimensionURL='#NISTd5'>
+         <Unit xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='U_NISTu5' dimensionURL='#NISTd5'>
            <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
            <UnitName xml:lang='en'>kelvin</UnitName>
            <UnitSymbol type='HTML'>K</UnitSymbol>
@@ -128,10 +128,10 @@ INPUT
              </math>
            </UnitSymbol>
          </Unit>
-         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd5'>
+         <Dimension xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='NISTd5'>
            <ThermodynamicTemperature symbol='Theta' powerNumerator='1'/>
          </Dimension>
-         <Quantity xmlns='http://unitsml.nist.gov/2005' xml:id='NISTq5' dimensionURL='#NISTd5' quantityType='base'>
+         <Quantity xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='NISTq5' dimensionURL='#NISTd5' quantityType='base'>
            <QuantityName xml:lang='en-US'>thermodynamic temperature</QuantityName>
          </Quantity>
          <mo>+</mo>
@@ -140,7 +140,7 @@ INPUT
          <mrow xref='U_NISTu147'>
            <mi mathvariant='normal'>&#x2032;</mi>
          </mrow>
-         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu147'>
+         <Unit xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='U_NISTu147'>
            <UnitSystem name='not_SI' type='not_SI' xml:lang='en-US'/>
            <UnitName xml:lang='en'>minute (minute of arc)</UnitName>
            <UnitSymbol type='HTML'>&#x2032;</UnitSymbol>
@@ -152,10 +152,10 @@ INPUT
              </math>
            </UnitSymbol>
          </Unit>
-         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd9'>
+         <Dimension xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='NISTd9'>
            <PlaneAngle symbol='Phi' powerNumerator='1'/>
          </Dimension>
-         <Quantity xmlns='http://unitsml.nist.gov/2005' xml:id='NISTq9' dimensionURL='#NISTd9' quantityType='base'>
+         <Quantity xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='NISTq9' dimensionURL='#NISTd9' quantityType='base'>
            <QuantityName xml:lang='en-US'>plane angle</QuantityName>
            <QuantityName xml:lang='en-US'>angle</QuantityName>
          </Quantity>
@@ -171,7 +171,7 @@ INPUT
          <mrow xref='U_NISTu9'>
            <mi mathvariant='normal'>rad</mi>
          </mrow>
-         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu9' dimensionURL='#D_L0'>
+         <Unit xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='U_NISTu9' dimensionURL='#D_L0'>
            <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
            <UnitName xml:lang='en'>radian</UnitName>
            <UnitSymbol type='HTML'>rad</UnitSymbol>
@@ -183,7 +183,7 @@ INPUT
              </math>
            </UnitSymbol>
          </Unit>
-         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_L0'>
+         <Dimension xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='D_L0'>
            <Length symbol='L' powerNumerator='0'/>
          </Dimension>
          <mo>+</mo>
@@ -199,7 +199,7 @@ INPUT
          <mrow xref='U_NISTu31'>
            <mi mathvariant='normal'>Hz</mi>
          </mrow>
-         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu31' dimensionURL='#NISTd24'>
+         <Unit xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='U_NISTu31' dimensionURL='#NISTd24'>
            <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
            <UnitName xml:lang='en'>hertz</UnitName>
            <UnitSymbol type='HTML'>Hz</UnitSymbol>
@@ -211,10 +211,10 @@ INPUT
              </math>
            </UnitSymbol>
          </Unit>
-         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd24'>
+         <Dimension xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='NISTd24'>
            <Time symbol='T' powerNumerator='-1'/>
          </Dimension>
-         <Quantity xmlns='http://unitsml.nist.gov/2005' xml:id='NISTq45' dimensionURL='#NISTd24' quantityType='base'>
+         <Quantity xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='NISTq45' dimensionURL='#NISTd24' quantityType='base'>
            <QuantityName xml:lang='en-US'>frequency</QuantityName>
          </Quantity>
        </math>
@@ -231,7 +231,7 @@ INPUT
          <mrow xref='U_NISTu2'>
            <mi mathvariant='normal'>kg</mi>
          </mrow>
-         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu2' dimensionURL='#NISTd2'>
+         <Unit xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='U_NISTu2' dimensionURL='#NISTd2'>
            <UnitSystem name='SI' type='SI_base' xml:lang='en-US'/>
            <UnitName xml:lang='en'>kilogram</UnitName>
            <UnitSymbol type='HTML'>kg</UnitSymbol>
@@ -246,24 +246,24 @@ INPUT
              <EnumeratedRootUnit unit='gram' prefix='k'/>
            </RootUnits>
          </Unit>
-         <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
+         <Prefix xmlns='https://schema.unitsml.org/unitsml/1.0' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
            <PrefixName xml:lang='en'>kilo</PrefixName>
            <PrefixSymbol type='ASCII'>k</PrefixSymbol>
            <PrefixSymbol type='unicode'>k</PrefixSymbol>
            <PrefixSymbol type='LaTeX'>k</PrefixSymbol>
            <PrefixSymbol type='HTML'>k</PrefixSymbol>
          </Prefix>
-         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd2'>
+         <Dimension xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='NISTd2'>
            <Mass symbol='M' powerNumerator='1'/>
          </Dimension>
-         <Quantity xmlns='http://unitsml.nist.gov/2005' xml:id='NISTq2' dimensionURL='#NISTd2' quantityType='base'>
+         <Quantity xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='NISTq2' dimensionURL='#NISTd2' quantityType='base'>
            <QuantityName xml:lang='en-US'>mass</QuantityName>
          </Quantity>
          <mo>&#x22C5;</mo>
          <mrow xref='U_NISTu1'>
            <mi mathvariant='normal'>m</mi>
          </mrow>
-         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu1' dimensionURL='#NISTd1'>
+         <Unit xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='U_NISTu1' dimensionURL='#NISTd1'>
            <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
            <UnitName xml:lang='en'>meter</UnitName>
            <UnitSymbol type='HTML'>m</UnitSymbol>
@@ -275,7 +275,7 @@ INPUT
              </math>
            </UnitSymbol>
          </Unit>
-         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd1'>
+         <Dimension xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='NISTd1'>
            <Length symbol='L' powerNumerator='1'/>
          </Dimension>
        </math>
@@ -294,7 +294,7 @@ OUTPUT
       <mi mathvariant='normal'>Hz</mi>
     </msqrt>
   </mrow>
-  <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_Hz0.5' dimensionURL='#D_T-0.5'>
+  <Unit xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='U_Hz0.5' dimensionURL='#D_T-0.5'>
     <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
     <UnitName xml:lang='en'>Hz^0.5</UnitName>
     <UnitSymbol type='HTML'>&#x221A;Hz</UnitSymbol>
@@ -308,7 +308,7 @@ OUTPUT
       </math>
     </UnitSymbol>
   </Unit>
-  <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_T-0.5'>
+  <Dimension xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='D_T-0.5'>
     <Time symbol='T' powerNumerator='-0.5'/>
   </Dimension>
 </math>
@@ -325,7 +325,7 @@ OUTPUT
          <mrow xref='U_NISTu2'>
            <mi mathvariant='normal'>kg</mi>
          </mrow>
-         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu2' dimensionURL='#NISTd2'>
+         <Unit xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='U_NISTu2' dimensionURL='#NISTd2'>
            <UnitSystem name='SI' type='SI_base' xml:lang='en-US'/>
            <UnitName xml:lang='en'>kilogram</UnitName>
            <UnitSymbol type='HTML'>kg</UnitSymbol>
@@ -340,17 +340,17 @@ OUTPUT
   <EnumeratedRootUnit unit='gram' prefix='k'/>
 </RootUnits>
          </Unit>
-         <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
+         <Prefix xmlns='https://schema.unitsml.org/unitsml/1.0' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
            <PrefixName xml:lang='en'>kilo</PrefixName>
            <PrefixSymbol type='ASCII'>k</PrefixSymbol>
     <PrefixSymbol type='unicode'>k</PrefixSymbol>
     <PrefixSymbol type='LaTeX'>k</PrefixSymbol>
     <PrefixSymbol type='HTML'>k</PrefixSymbol>
          </Prefix>
-         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd2'>
+         <Dimension xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='NISTd2'>
            <Mass symbol='M' powerNumerator='1'/>
          </Dimension>
-         <Quantity xmlns='http://unitsml.nist.gov/2005' xml:id='NISTq2' dimensionURL='#NISTd2' quantityType='base'>
+         <Quantity xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='NISTq2' dimensionURL='#NISTd2' quantityType='base'>
   <QuantityName xml:lang='en-US'>mass</QuantityName>
 </Quantity>
          <mo>+</mo>
@@ -359,7 +359,7 @@ OUTPUT
          <mrow xref='U_NISTu27'>
            <mi mathvariant='normal'>g</mi>
          </mrow>
-         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu27' dimensionURL='#NISTd2'>
+         <Unit xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='U_NISTu27' dimensionURL='#NISTd2'>
            <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
            <UnitName xml:lang='en'>gram</UnitName>
            <UnitSymbol type='HTML'>g</UnitSymbol>
@@ -385,7 +385,7 @@ OUTPUT
          <mrow xref='U_NISTu284'>
            <mi mathvariant='normal'>hp</mi>
          </mrow>
-         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu284'>
+         <Unit xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='U_NISTu284'>
            <UnitSystem name='not_SI' type='not_SI' xml:lang='en-US'/>
            <UnitName xml:lang='en'>horsepower</UnitName>
            <UnitSymbol type='HTML'>hp</UnitSymbol>
@@ -397,12 +397,12 @@ OUTPUT
              </math>
            </UnitSymbol>
          </Unit>
-         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd16'>
+         <Dimension xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='NISTd16'>
   <Length symbol='L' powerNumerator='2'/>
   <Mass symbol='M' powerNumerator='1'/>
   <Time symbol='T' powerNumerator='-3'/>
 </Dimension>
-<Quantity xmlns='http://unitsml.nist.gov/2005' xml:id='NISTq20' dimensionURL='#NISTd16' quantityType='base'>
+<Quantity xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='NISTq20' dimensionURL='#NISTd16' quantityType='base'>
   <QuantityName xml:lang='en-US'>power</QuantityName>
 </Quantity>
        </math>
@@ -429,7 +429,7 @@ OUTPUT
              </mrow>
            </msup>
          </mrow>
-         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_kg.s-2' dimensionURL='#NISTd37'>
+         <Unit xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='U_kg.s-2' dimensionURL='#NISTd37'>
            <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
            <UnitName xml:lang='en'>kg*s^-2</UnitName>
            <UnitSymbol type='HTML'>
@@ -458,14 +458,14 @@ OUTPUT
              <EnumeratedRootUnit unit='second' powerNumerator='-2'/>
            </RootUnits>
          </Unit>
-         <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
+         <Prefix xmlns='https://schema.unitsml.org/unitsml/1.0' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
            <PrefixName xml:lang='en'>kilo</PrefixName>
            <PrefixSymbol type='ASCII'>k</PrefixSymbol>
     <PrefixSymbol type='unicode'>k</PrefixSymbol>
     <PrefixSymbol type='LaTeX'>k</PrefixSymbol>
     <PrefixSymbol type='HTML'>k</PrefixSymbol>
          </Prefix>
-         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd37'>
+         <Dimension xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='NISTd37'>
            <Mass symbol='M' powerNumerator='1'/>
            <Time symbol='T' powerNumerator='-2'/>
          </Dimension>
@@ -499,7 +499,7 @@ INPUT
   <mrow xref='U_NISTu5'>
     <mi mathvariant='normal'>&#xB0;K</mi>
   </mrow>
-  <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu5' dimensionURL='#NISTd5'>
+  <Unit xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='U_NISTu5' dimensionURL='#NISTd5'>
     <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
     <UnitName xml:lang='en'>kelvin</UnitName>
     <UnitSymbol type='HTML'>K</UnitSymbol>
@@ -511,10 +511,10 @@ INPUT
       </math>
     </UnitSymbol>
   </Unit>
-  <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd5'>
+  <Dimension xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='NISTd5'>
     <ThermodynamicTemperature symbol='Theta' powerNumerator='1'/>
   </Dimension>
-  <Quantity xmlns='http://unitsml.nist.gov/2005' xml:id='NISTq5' dimensionURL='#NISTd5' quantityType='base'>
+  <Quantity xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='NISTq5' dimensionURL='#NISTd5' quantityType='base'>
   <QuantityName xml:lang='en-US'>thermodynamic temperature</QuantityName>
 </Quantity>
   <mo>+</mo>
@@ -537,7 +537,7 @@ INPUT
   <mrow xref='U_NISTu362'>
     <mi mathvariant='normal'>mbar</mi>
   </mrow>
-  <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu362'>
+  <Unit xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='U_NISTu362'>
     <UnitSystem name='not_SI' type='not_SI' xml:lang='en-US'/>
     <UnitName xml:lang='en'>millibar</UnitName>
     <UnitSymbol type='HTML'>mbar</UnitSymbol>
@@ -552,14 +552,14 @@ INPUT
       <EnumeratedRootUnit unit='bar' prefix='m'/>
     </RootUnits>
   </Unit>
-  <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='-3' xml:id='NISTp10_-3'>
+  <Prefix xmlns='https://schema.unitsml.org/unitsml/1.0' prefixBase='10' prefixPower='-3' xml:id='NISTp10_-3'>
     <PrefixName xml:lang='en'>milli</PrefixName>
     <PrefixSymbol type='ASCII'>m</PrefixSymbol>
     <PrefixSymbol type='unicode'>m</PrefixSymbol>
     <PrefixSymbol type='LaTeX'>m</PrefixSymbol>
     <PrefixSymbol type='HTML'>m</PrefixSymbol>
   </Prefix>
-  <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd14'>
+  <Dimension xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='NISTd14'>
   <Length symbol='L' powerNumerator='-1'/>
   <Mass symbol='M' powerNumerator='1'/>
   <Time symbol='T' powerNumerator='-2'/>
@@ -576,7 +576,7 @@ OUTPUT
   <mrow xref='NISTp10_-12'>
     <mi mathvariant='normal'>p</mi>
   </mrow>
-  <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='-12' xml:id='NISTp10_-12'>
+  <Prefix xmlns='https://schema.unitsml.org/unitsml/1.0' prefixBase='10' prefixPower='-12' xml:id='NISTp10_-12'>
     <PrefixName xml:lang='en'>pico</PrefixName>
     <PrefixSymbol type='ASCII'>p</PrefixSymbol>
     <PrefixSymbol type='unicode'>p</PrefixSymbol>
@@ -587,7 +587,7 @@ OUTPUT
    <mrow xref='NISTp10_1'>
    <mi mathvariant='normal'>da</mi>
  </mrow>
- <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='1' xml:id='NISTp10_1'>
+ <Prefix xmlns='https://schema.unitsml.org/unitsml/1.0' prefixBase='10' prefixPower='1' xml:id='NISTp10_1'>
    <PrefixName xml:lang='en'>deka</PrefixName>
    <PrefixSymbol type='ASCII'>da</PrefixSymbol>
    <PrefixSymbol type='unicode'>da</PrefixSymbol>
@@ -606,24 +606,24 @@ INPUT
   <mrow xref='NISTp10_-6'>
     <mi mathvariant='normal'>&#xB5;</mi>
   </mrow>
-  <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='-6' xml:id='NISTp10_-6'>
+  <Prefix xmlns='https://schema.unitsml.org/unitsml/1.0' prefixBase='10' prefixPower='-6' xml:id='NISTp10_-6'>
     <PrefixName xml:lang='en'>micro</PrefixName>
     <PrefixSymbol type='ASCII'>u</PrefixSymbol>
     <PrefixSymbol type='unicode'>&#x3BC;</PrefixSymbol>
     <PrefixSymbol type='LaTeX'>$mu$</PrefixSymbol>
     <PrefixSymbol type='HTML'>&#xB5;</PrefixSymbol>
   </Prefix>
-  <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd2'>
+  <Dimension xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='NISTd2'>
     <Mass symbol='M' powerNumerator='1'/>
   </Dimension>
-  <Quantity xmlns='http://unitsml.nist.gov/2005' xml:id='NISTq2' dimensionURL='#NISTd2' quantityType='base'>
+  <Quantity xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='NISTq2' dimensionURL='#NISTd2' quantityType='base'>
     <QuantityName xml:lang='en-US'>mass</QuantityName>
   </Quantity>
   <mo>+</mo>
   <mrow xref='U_um'>
     <mi mathvariant='normal'>&#xB5;m</mi>
   </mrow>
-  <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_um' dimensionURL='#NISTd1'>
+  <Unit xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='U_um' dimensionURL='#NISTd1'>
     <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
     <UnitName xml:lang='en'>um</UnitName>
     <UnitSymbol type='HTML'>um</UnitSymbol>
@@ -638,7 +638,7 @@ INPUT
       <EnumeratedRootUnit unit='meter' prefix='u'/>
     </RootUnits>
   </Unit>
-  <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd1'>
+  <Dimension xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='NISTd1'>
     <Length symbol='L' powerNumerator='1'/>
   </Dimension>
 </math>
@@ -664,7 +664,7 @@ INPUT
              </mrow>
            </msup>
          </mrow>
-         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_A.C3' dimensionURL='#D_M3I4'>
+         <Unit xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='U_A.C3' dimensionURL='#D_M3I4'>
            <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
            <UnitName xml:lang='en'>A*C^3</UnitName>
            <UnitSymbol type='HTML'>
@@ -692,7 +692,7 @@ INPUT
              <EnumeratedRootUnit unit='coulomb' powerNumerator='3'/>
            </RootUnits>
          </Unit>
-         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_M3I4'>
+         <Dimension xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='D_M3I4'>
            <Mass symbol='M' powerNumerator='3'/>
            <ElectricCurrent symbol='I' powerNumerator='4'/>
          </Dimension>
@@ -746,7 +746,7 @@ OUTPUT
              </mrow>
            </msup>
          </mrow>
-          <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_kg-2' dimensionURL='#D_M-2'>
+          <Unit xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='U_kg-2' dimensionURL='#D_M-2'>
    <UnitSystem name='SI' type='SI_base' xml:lang='en-US'/>
    <UnitName xml:lang='en'>kg^-2</UnitName>
    <UnitSymbol type='HTML'>
@@ -772,14 +772,14 @@ OUTPUT
   <EnumeratedRootUnit unit='gram' prefix='k' powerNumerator='-2'/>
 </RootUnits>
  </Unit>
- <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
+ <Prefix xmlns='https://schema.unitsml.org/unitsml/1.0' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
    <PrefixName xml:lang='en'>kilo</PrefixName>
    <PrefixSymbol type='ASCII'>k</PrefixSymbol>
     <PrefixSymbol type='unicode'>k</PrefixSymbol>
     <PrefixSymbol type='LaTeX'>k</PrefixSymbol>
     <PrefixSymbol type='HTML'>k</PrefixSymbol>
  </Prefix>
- <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='D_M-2'>
+ <Dimension xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='D_M-2'>
    <Mass symbol='M' powerNumerator='-2'/>
  </Dimension>
 </math>
@@ -814,7 +814,7 @@ OUTPUT
       </mrow>
     </msup>
   </mrow>
-  <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_kg.s-2' dimensionURL='#NISTd37'>
+  <Unit xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='U_kg.s-2' dimensionURL='#NISTd37'>
     <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
     <UnitName xml:lang='en'>kg*s^-2</UnitName>
     <UnitSymbol type='HTML'>
@@ -843,14 +843,14 @@ OUTPUT
       <EnumeratedRootUnit unit='second' powerNumerator='-2'/>
     </RootUnits>
   </Unit>
-  <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
+  <Prefix xmlns='https://schema.unitsml.org/unitsml/1.0' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
     <PrefixName xml:lang='en'>kilo</PrefixName>
     <PrefixSymbol type='ASCII'>k</PrefixSymbol>
     <PrefixSymbol type='unicode'>k</PrefixSymbol>
     <PrefixSymbol type='LaTeX'>k</PrefixSymbol>
     <PrefixSymbol type='HTML'>k</PrefixSymbol>
   </Prefix>
-  <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd37'>
+  <Dimension xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='NISTd37'>
     <Mass symbol='M' powerNumerator='1'/>
     <Time symbol='T' powerNumerator='-2'/>
   </Dimension>
@@ -875,7 +875,7 @@ OUTPUT
              </mrow>
            </msup>
          </mrow>
-         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_kg.s-2' dimensionURL='#NISTd37'>
+         <Unit xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='U_kg.s-2' dimensionURL='#NISTd37'>
            <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
            <UnitName xml:lang='en'>kg*s^-2</UnitName>
            <UnitSymbol type='HTML'>
@@ -904,14 +904,14 @@ OUTPUT
              <EnumeratedRootUnit unit='second' powerNumerator='-2'/>
            </RootUnits>
          </Unit>
-         <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
+         <Prefix xmlns='https://schema.unitsml.org/unitsml/1.0' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
            <PrefixName xml:lang='en'>kilo</PrefixName>
            <PrefixSymbol type='ASCII'>k</PrefixSymbol>
     <PrefixSymbol type='unicode'>k</PrefixSymbol>
     <PrefixSymbol type='LaTeX'>k</PrefixSymbol>
     <PrefixSymbol type='HTML'>k</PrefixSymbol>
          </Prefix>
-         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd37'>
+         <Dimension xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='NISTd37'>
            <Mass symbol='M' powerNumerator='1'/>
            <Time symbol='T' powerNumerator='-2'/>
          </Dimension>
@@ -936,7 +936,7 @@ OUTPUT
       </mrow>
     </msup>
   </mrow>
-  <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_kg.s-2' dimensionURL='#NISTd37'>
+  <Unit xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='U_kg.s-2' dimensionURL='#NISTd37'>
     <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
     <UnitName xml:lang='en'>kg*s^-2</UnitName>
     <UnitSymbol type='HTML'>
@@ -965,14 +965,14 @@ OUTPUT
       <EnumeratedRootUnit unit='second' powerNumerator='-2'/>
     </RootUnits>
   </Unit>
-  <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
+  <Prefix xmlns='https://schema.unitsml.org/unitsml/1.0' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
     <PrefixName xml:lang='en'>kilo</PrefixName>
     <PrefixSymbol type='ASCII'>k</PrefixSymbol>
     <PrefixSymbol type='unicode'>k</PrefixSymbol>
     <PrefixSymbol type='LaTeX'>k</PrefixSymbol>
     <PrefixSymbol type='HTML'>k</PrefixSymbol>
   </Prefix>
-  <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd37'>
+  <Dimension xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='NISTd37'>
     <Mass symbol='M' powerNumerator='1'/>
     <Time symbol='T' powerNumerator='-2'/>
   </Dimension>
@@ -1000,7 +1000,7 @@ INPUT
              </mrow>
            </msup>
          </mrow>
-         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_mW.cm-2'>
+         <Unit xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='U_mW.cm-2'>
            <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
            <UnitName xml:lang='en'>mW*cm^-2</UnitName>
            <UnitSymbol type='HTML'>
@@ -1029,14 +1029,14 @@ INPUT
              <EnumeratedRootUnit unit='meter' prefix='c' powerNumerator='-2'/>
            </RootUnits>
          </Unit>
-         <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='-3' xml:id='NISTp10_-3'>
+         <Prefix xmlns='https://schema.unitsml.org/unitsml/1.0' prefixBase='10' prefixPower='-3' xml:id='NISTp10_-3'>
            <PrefixName xml:lang='en'>milli</PrefixName>
            <PrefixSymbol type='ASCII'>m</PrefixSymbol>
            <PrefixSymbol type='unicode'>m</PrefixSymbol>
            <PrefixSymbol type='LaTeX'>m</PrefixSymbol>
            <PrefixSymbol type='HTML'>m</PrefixSymbol>
          </Prefix>
-         <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='-2' xml:id='NISTp10_-2'>
+         <Prefix xmlns='https://schema.unitsml.org/unitsml/1.0' prefixBase='10' prefixPower='-2' xml:id='NISTp10_-2'>
            <PrefixName xml:lang='en'>centi</PrefixName>
            <PrefixSymbol type='ASCII'>c</PrefixSymbol>
            <PrefixSymbol type='unicode'>c</PrefixSymbol>
@@ -1057,7 +1057,7 @@ INPUT
   <mrow xref='U_NISTu1'>
     <mi mathvariant='normal'>m</mi>
   </mrow>
-  <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu1' dimensionURL='#NISTd1'>
+  <Unit xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='U_NISTu1' dimensionURL='#NISTd1'>
     <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
     <UnitName xml:lang='en'>meter</UnitName>
     <UnitSymbol type='HTML'>m</UnitSymbol>
@@ -1069,10 +1069,10 @@ INPUT
       </math>
     </UnitSymbol>
   </Unit>
-  <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd1'>
+  <Dimension xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='NISTd1'>
     <Length symbol='L' powerNumerator='1'/>
   </Dimension>
-  <Quantity xmlns='http://unitsml.nist.gov/2005' xml:id='NISTq103' dimensionURL='#NISTd1' quantityType='base'>
+  <Quantity xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='NISTq103' dimensionURL='#NISTd1' quantityType='base'>
     <QuantityName xml:lang='en-US'>position vector</QuantityName>
   </Quantity>
 </math>
@@ -1105,7 +1105,7 @@ INPUT
              </mrow>
            </msup>
          </mrow>
-         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_cal_th.cm-2'>
+         <Unit xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='U_cal_th.cm-2'>
            <UnitSystem name='not_SI' type='not_SI' xml:lang='en-US'/>
            <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
            <UnitName xml:lang='en'>langley</UnitName>
@@ -1144,7 +1144,7 @@ INPUT
              <EnumeratedRootUnit unit='meter' prefix='c' powerNumerator='-2'/>
            </RootUnits>
          </Unit>
-         <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='-2' xml:id='NISTp10_-2'>
+         <Prefix xmlns='https://schema.unitsml.org/unitsml/1.0' prefixBase='10' prefixPower='-2' xml:id='NISTp10_-2'>
            <PrefixName xml:lang='en'>centi</PrefixName>
            <PrefixSymbol type='ASCII'>c</PrefixSymbol>
            <PrefixSymbol type='unicode'>c</PrefixSymbol>
@@ -1168,7 +1168,7 @@ INPUT
              <mi mathvariant='normal'>a</mi>
            </math>
          </mrow>
-         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_NISTu1' dimensionURL='#NISTd1'>
+         <Unit xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='U_NISTu1' dimensionURL='#NISTd1'>
            <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
            <UnitName xml:lang='en'>meter</UnitName>
            <UnitSymbol type='HTML'>m</UnitSymbol>
@@ -1180,7 +1180,7 @@ INPUT
              </math>
            </UnitSymbol>
          </Unit>
-         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd1'>
+         <Dimension xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='NISTd1'>
            <Length symbol='L' powerNumerator='1'/>
          </Dimension>
          <mo>+</mo>
@@ -1202,7 +1202,7 @@ INPUT
              <mn>2</mn>
            </math>
          </mrow>
-         <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_cm.s-2' dimensionURL='#NISTd28'>
+         <Unit xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='U_cm.s-2' dimensionURL='#NISTd28'>
            <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
            <UnitName xml:lang='en'>cm*s^-2</UnitName>
            <UnitSymbol type='HTML'>
@@ -1231,14 +1231,14 @@ INPUT
              <EnumeratedRootUnit unit='second' powerNumerator='-2'/>
            </RootUnits>
          </Unit>
-         <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='-2' xml:id='NISTp10_-2'>
+         <Prefix xmlns='https://schema.unitsml.org/unitsml/1.0' prefixBase='10' prefixPower='-2' xml:id='NISTp10_-2'>
            <PrefixName xml:lang='en'>centi</PrefixName>
            <PrefixSymbol type='ASCII'>c</PrefixSymbol>
            <PrefixSymbol type='unicode'>c</PrefixSymbol>
            <PrefixSymbol type='LaTeX'>c</PrefixSymbol>
            <PrefixSymbol type='HTML'>c</PrefixSymbol>
          </Prefix>
-         <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd28'>
+         <Dimension xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='NISTd28'>
            <Length symbol='L' powerNumerator='1'/>
            <Time symbol='T' powerNumerator='-2'/>
          </Dimension>
@@ -1266,7 +1266,7 @@ INPUT
       </mrow>
     </msup>
   </mrow>
-  <Unit xmlns='http://unitsml.nist.gov/2005' xml:id='U_cm.s-2' dimensionURL='#NISTd28'>
+  <Unit xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='U_cm.s-2' dimensionURL='#NISTd28'>
     <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
     <UnitName xml:lang='en'>cm*s^-2</UnitName>
     <UnitSymbol type='HTML'>
@@ -1295,14 +1295,14 @@ INPUT
       <EnumeratedRootUnit unit='second' powerNumerator='-2'/>
     </RootUnits>
   </Unit>
-  <Prefix xmlns='http://unitsml.nist.gov/2005' prefixBase='10' prefixPower='-2' xml:id='NISTp10_-2'>
+  <Prefix xmlns='https://schema.unitsml.org/unitsml/1.0' prefixBase='10' prefixPower='-2' xml:id='NISTp10_-2'>
     <PrefixName xml:lang='en'>centi</PrefixName>
     <PrefixSymbol type='ASCII'>c</PrefixSymbol>
     <PrefixSymbol type='unicode'>c</PrefixSymbol>
     <PrefixSymbol type='LaTeX'>c</PrefixSymbol>
     <PrefixSymbol type='HTML'>c</PrefixSymbol>
   </Prefix>
-  <Dimension xmlns='http://unitsml.nist.gov/2005' xml:id='NISTd28'>
+  <Dimension xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='NISTd28'>
     <Length symbol='L' powerNumerator='1'/>
     <Time symbol='T' powerNumerator='-2'/>
   </Dimension>

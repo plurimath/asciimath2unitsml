@@ -10,21 +10,25 @@ require_relative "unit"
 
 module Asciimath2UnitsML
   MATHML_NS = "http://www.w3.org/1998/Math/MathML".freeze
-  UNITSML_NS = "http://unitsml.nist.gov/2005".freeze
+  UNITSML_NS = "https://schema.unitsml.org/unitsml/1.0".freeze
 
   class Conv
     def initialize(options = {})
-      @dimensions_id = read_yaml("../unitsdb/dimensions.yaml").each_with_object({}) do |(k, v), m|
+      @dimensions_id = read_yaml("../unitsdb/dimensions.yaml").
+        each_with_object({}) do |(k, v), m|
         m[k.to_s] = UnitsDB::Dimension.new(k, v)
       end
-      @prefixes_id = read_yaml("../unitsdb/prefixes.yaml").each_with_object({}) do |(k, v), m|
+      @prefixes_id = read_yaml("../unitsdb/prefixes.yaml").
+        each_with_object({}) do |(k, v), m|
         m[k] = UnitsDB::Prefix.new(k, v)
       end
       @prefixes = flip_name_and_symbol(@prefixes_id)
-      @quantities = read_yaml("../unitsdb/quantities.yaml").each_with_object({}) do |(k, v), m|
+      @quantities = read_yaml("../unitsdb/quantities.yaml").
+        each_with_object({}) do |(k, v), m|
         m[k.to_s] = UnitsDB::Quantity.new(k, v)
       end
-      @units_id = read_yaml("../unitsdb/units.yaml").each_with_object({}) do |(k, v), m|
+      @units_id = read_yaml("../unitsdb/units.yaml").
+        each_with_object({}) do |(k, v), m|
         m[k.to_s] = UnitsDB::Unit.new(k.to_s, v)
       end
       @units = flip_name_and_symbols(@units_id)
@@ -69,8 +73,10 @@ module Asciimath2UnitsML
       "kg" => { dimension: "Mass", order: 2, symbol: "M" },
       "s" => { dimension: "Time", order: 3, symbol: "T" },
       "A" => { dimension: "ElectricCurrent", order: 4, symbol: "I" },
-      "K" => { dimension: "ThermodynamicTemperature", order: 5, symbol: "Theta" },
-      "degK" => { dimension: "ThermodynamicTemperature", order: 5, symbol: "Theta" },
+      "K" => { dimension: "ThermodynamicTemperature", order: 5,
+               symbol: "Theta" },
+      "degK" => { dimension: "ThermodynamicTemperature", order: 5,
+                  symbol: "Theta" },
       "mol" => { dimension: "AmountOfSubstance", order: 6, symbol: "N" },
       "cd" => { dimension: "LuminousIntensity", order: 7, symbol: "J" },
       "deg" => { dimension: "PlaneAngle", order: 8, symbol: "Phi" },
@@ -78,7 +84,9 @@ module Asciimath2UnitsML
 
     def units2dimensions(units)
       norm = decompose_units(units)
-      return if norm.any? { |u| u[:unit] == "unknown" || u[:prefix] == "unknown" || u[:unit].nil? }
+      return if norm.any? do |u|
+        u[:unit] == "unknown" || u[:prefix] == "unknown" || u[:unit].nil?
+      end
       norm.map do |u|
         { dimension: U2D[u[:unit]][:dimension],
           unit: u[:unit],
@@ -88,7 +96,8 @@ module Asciimath2UnitsML
     end
 
     def dimension1(u)
-      %(<#{u[:dimension]} symbol="#{u[:symbol]}" powerNumerator="#{float_to_display(u[:exponent])}"/>)
+      %(<#{u[:dimension]} symbol="#{u[:symbol]}" 
+      powerNumerator="#{float_to_display(u[:exponent])}"/>)
     end
 
     def dim_id(dims)
@@ -97,9 +106,11 @@ module Asciimath2UnitsML
       dimsvector = %w(Length Mass Time ElectricCurrent ThermodynamicTemperature 
                       AmountOfSubstance LuminousIntensity PlaneAngle)
         .map { |h| dimhash.dig(h, :exponent) }.join(":")
-      id = @dimensions_id&.values&.select { |d| d.vector == dimsvector }&.first&.id and return id.to_s
+      id = @dimensions_id&.values&.select { |d| d.vector == dimsvector }&.
+        first&.id and return id.to_s
       "D_" + dims.map do |d|
-        U2D[d[:unit]][:symbol] + (d[:exponent] == 1 ? "" : float_to_display(d[:exponent]))
+        U2D[d[:unit]][:symbol] +
+          (d[:exponent] == 1 ? "" : float_to_display(d[:exponent]))
       end.join("")
     end
 
@@ -111,9 +122,12 @@ module Asciimath2UnitsML
       units.sort { |a, b| a[:unit] <=> b[:unit] }.each_with_object([]) do |k, m|
         if m.empty? || m[-1][:unit] != k[:unit] then m << k
         else
-          m[-1] = { prefix: combine_prefixes(@prefixes[m[-1][:prefix]], @prefixes[k[:prefix]]),
-                    unit: m[-1][:unit],
-                    exponent: (k[:exponent]&.to_f || 1) + (m[-1][:exponent]&.to_f || 1) }
+          m[-1] = {
+            prefix: combine_prefixes(
+              @prefixes[m[-1][:prefix]], @prefixes[k[:prefix]]),
+            unit: m[-1][:unit],
+            exponent: (k[:exponent]&.to_f || 1) +
+            (m[-1][:exponent]&.to_f || 1) }
         end
       end
     end
@@ -128,8 +142,10 @@ module Asciimath2UnitsML
         { prefix: u[:prefix], unit: "unknown", exponent: u[:exponent] }
       else
         @units[u[:unit]].si_derived_bases.each_with_object([]) do |k, m|
-          m << { prefix: !k[:prefix].nil? && !k[:prefix].empty? ? 
-                 combine_prefixes(@prefixes_id[k[:prefix]], @prefixes[u[:prefix]]) : u[:prefix],
+          prefix = !k[:prefix].nil? && !k[:prefix].empty? ?
+            combine_prefixes(@prefixes_id[k[:prefix]], @prefixes[u[:prefix]]) :
+            u[:prefix]
+          m << { prefix: prefix,
                  unit: @units_id[k[:id]].symbolid,
                  exponent: (k[:power]&.to_i || 1) * (u[:exponent]&.to_f || 1) }
         end
@@ -156,9 +172,11 @@ module Asciimath2UnitsML
     end
 
     def quantity(normtext, quantity)
-      return unless @units[normtext] && @units[normtext].quantities.size == 1 || @quantities[quantity]
+      return unless @units[normtext] && @units[normtext].quantities.size == 1 ||
+        @quantities[quantity]
       id = quantity || @units[normtext].quantities.first
-      dim = %( dimensionURL="##{@units[normtext].dimension}") if @units[normtext]&.dimension
+      @units[normtext]&.dimension and
+        dim = %( dimensionURL="##{@units[normtext].dimension}")
       <<~END
       <Quantity xmlns='#{UNITSML_NS}' xml:id="#{id}"#{dim} quantityType="base">
       #{quantityname(id)}
