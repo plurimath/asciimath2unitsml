@@ -489,6 +489,78 @@ OUTPUT
     OUTPUT
   end
 
+  it "deals with parentheses" do
+    expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
+    10 "unitsml(K/(kg*m))"
+    INPUT
+     <math xmlns='http://www.w3.org/1998/Math/MathML'>
+         <mn>10</mn>
+         <mo rspace='thickmathspace'>&#x2062;</mo>
+         <mrow xref='U_K/kg.m'>
+           <mi mathvariant='normal'>K</mi>
+           <mo>/</mo>
+           <mi mathvariant='normal'>kg</mi>
+           <mo>&#xB7;</mo>
+           <mi mathvariant='normal'>m</mi>
+         </mrow>
+         <Unit xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='U_K.kg-1.m-1' dimensionURL='#D_L-1M-1Theta'>
+           <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
+           <UnitName xml:lang='en'>K*kg^-1*m^-1</UnitName>
+           <UnitSymbol type='HTML'>
+             K&#xB7;kg
+             <sup>&#x2212;1</sup>
+             &#xB7;m
+             <sup>&#x2212;1</sup>
+           </UnitSymbol>
+           <UnitSymbol type='MathML'>
+             <math xmlns='http://www.w3.org/1998/Math/MathML'>
+               <mrow>
+                 <mi mathvariant='normal'>K</mi>
+                 <mo>&#xB7;</mo>
+                 <msup>
+                   <mrow>
+                     <mi mathvariant='normal'>kg</mi>
+                   </mrow>
+                   <mrow>
+                     <mo>&#x2212;</mo>
+                     <mn>1</mn>
+                   </mrow>
+                 </msup>
+                 <mo>&#xB7;</mo>
+                 <msup>
+                   <mrow>
+                     <mi mathvariant='normal'>m</mi>
+                   </mrow>
+                   <mrow>
+                     <mo>&#x2212;</mo>
+                     <mn>1</mn>
+                   </mrow>
+                 </msup>
+               </mrow>
+             </math>
+           </UnitSymbol>
+           <RootUnits>
+             <EnumeratedRootUnit unit='kelvin'/>
+             <EnumeratedRootUnit unit='gram' prefix='k' powerNumerator='-1'/>
+             <EnumeratedRootUnit unit='meter' powerNumerator='-1'/>
+           </RootUnits>
+         </Unit>
+         <Prefix xmlns='https://schema.unitsml.org/unitsml/1.0' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
+           <PrefixName xml:lang='en'>kilo</PrefixName>
+           <PrefixSymbol type='ASCII'>k</PrefixSymbol>
+           <PrefixSymbol type='unicode'>k</PrefixSymbol>
+           <PrefixSymbol type='LaTeX'>k</PrefixSymbol>
+           <PrefixSymbol type='HTML'>k</PrefixSymbol>
+         </Prefix>
+         <Dimension xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='D_L-1M-1Theta'>
+           <Length symbol='L' powerNumerator='-1'/>
+           <Mass symbol='M' powerNumerator='-1'/>
+           <ThermodynamicTemperature symbol='Theta' powerNumerator='1'/>
+         </Dimension>
+       </math>
+    OUTPUT
+  end
+
   it "deals with notational variants" do
     expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
     9 "unitsml(degK)" + 10 "unitsml(K)"
@@ -647,7 +719,7 @@ INPUT
 
   it "deals with units division" do
     expect(xmlpp(Asciimath2UnitsML::Conv.new().Asciimath2UnitsML(<<~INPUT))).to be_equivalent_to xmlpp(<<~OUTPUT)
-    9 "unitsml(A*C^3)" + 13 "unitsml(A/C^-3)"
+    9 "unitsml(A*C^3)" + 13 "unitsml(A/C^-3)" + 2 "unitsml(J/kg*K)"
 INPUT
 <math xmlns='http://www.w3.org/1998/Math/MathML'>
          <mn>9</mn>
@@ -712,6 +784,76 @@ INPUT
              </mrow>
            </msup>
          </mrow>
+         <mo>+</mo>
+<mn>2</mn>
+<mo rspace='thickmathspace'>&#x2062;</mo>
+<mrow xref='U_J/kg.K'>
+  <mi mathvariant='normal'>J</mi>
+  <mo>/</mo>
+  <mi mathvariant='normal'>kg</mi>
+  <mo>&#xB7;</mo>
+  <mi mathvariant='normal'>K</mi>
+</mrow>
+<Unit xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='U_NISTu13.u27p10_3e-1/1.u5e-1/1' dimensionURL='#D_L2M0T-2Theta-1'>
+  <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
+  <UnitName xml:lang='en'>joule per kilogram kelvin</UnitName>
+  <UnitSymbol type='HTML'>
+    J&#xB7;kg
+    <sup>&#x2212;1</sup>
+    &#xB7;K
+    <sup>&#x2212;1</sup>
+  </UnitSymbol>
+  <UnitSymbol type='MathML'>
+    <math xmlns='http://www.w3.org/1998/Math/MathML'>
+      <mrow>
+        <mi mathvariant='normal'>J</mi>
+        <mo>&#xB7;</mo>
+        <msup>
+          <mrow>
+            <mi mathvariant='normal'>kg</mi>
+          </mrow>
+          <mrow>
+            <mo>&#x2212;</mo>
+            <mn>1</mn>
+          </mrow>
+        </msup>
+        <mo>&#xB7;</mo>
+        <msup>
+          <mrow>
+            <mi mathvariant='normal'>K</mi>
+          </mrow>
+          <mrow>
+            <mo>&#x2212;</mo>
+            <mn>1</mn>
+          </mrow>
+        </msup>
+      </mrow>
+    </math>
+  </UnitSymbol>
+  <RootUnits>
+    <EnumeratedRootUnit unit='joule'/>
+    <EnumeratedRootUnit unit='gram' prefix='k' powerNumerator='-1'/>
+    <EnumeratedRootUnit unit='kelvin' powerNumerator='-1'/>
+  </RootUnits>
+</Unit>
+<Prefix xmlns='https://schema.unitsml.org/unitsml/1.0' prefixBase='10' prefixPower='3' xml:id='NISTp10_3'>
+  <PrefixName xml:lang='en'>kilo</PrefixName>
+  <PrefixSymbol type='ASCII'>k</PrefixSymbol>
+  <PrefixSymbol type='unicode'>k</PrefixSymbol>
+  <PrefixSymbol type='LaTeX'>k</PrefixSymbol>
+  <PrefixSymbol type='HTML'>k</PrefixSymbol>
+</Prefix>
+<Dimension xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='NISTd40'>
+  <Length symbol='L' powerNumerator='2'/>
+  <Time symbol='T' powerNumerator='-2'/>
+  <ThermodynamicTemperature symbol='Theta' powerNumerator='-1'/>
+</Dimension>
+<Dimension xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='D_L2M0T-2Theta-1'>
+  <Length symbol='L' powerNumerator='2'/>
+  <Mass symbol='M' powerNumerator='0'/>
+  <Time symbol='T' powerNumerator='-2'/>
+  <ThermodynamicTemperature symbol='Theta' powerNumerator='-1'/>
+</Dimension>
        </math>
 OUTPUT
   end

@@ -97,14 +97,15 @@ module Asciimath2UnitsML
         seq("sqrt(", unit1, ")") { |x| { prefix: nil, unit: x[1], display_exponent: "0.5" } } |
         seq("sqrt(", prefix1, unit1, ")") { |x| { prefix: x[1], unit: x[2], display_exponent: "0.5" } } |
         seq("sqrt(", prefix2, unit1, ")") { |x| { prefix: x[1], unit: x[2], display_exponent: "0.5" } } |
-        seq(unit1, exponent._? & multiplier) { |x| { prefix: nil, unit: x[0], display_exponent: (x[1][0] )} } |
+        seq(unit1, exponent._? & (multiplier | ")".r)) { |x| { prefix: nil, unit: x[0], display_exponent: (x[1][0] )} } |
         seq(unit1, exponent._?).eof { |x| { prefix: nil, unit: x[0], display_exponent: (x[1][0] )} } |
         seq(prefix1, unit1, exponent._? ) { |x| { prefix: x[0], unit: x[1], display_exponent: (x[2][0] ) } } |
         seq(prefix2, unit1, exponent._? ) { |x| { prefix: x[0], unit: x[1], display_exponent: (x[2][0] ) } } |
-        "1".r.map { |_| { prefix: nil, unit: "1", display_exponent: nil } } 
+        "1".r.map { |_| { prefix: nil, unit: "1", display_exponent: nil } }
+      units1 = "(".r >> lazy{units} << ")" | unit
       units = seq(prefix2, "-") { |x| [{ prefix: x[0], unit: nil, display_exponent: nil }] } |
         seq(prefix1, "-") { |x| [{ prefix: x[0], unit: nil, display_exponent: nil }] } |
-        unit.join(multiplier)
+        units1.join(multiplier)
       parser = units.eof
     end
 
@@ -119,7 +120,7 @@ module Asciimath2UnitsML
     end
 
     def postprocess(units, text)
-      units = postprocess1(units)
+      units = postprocess1(units.flatten)
       quantity = text[1..-1]&.select { |x| /^quantity:/.match(x) }&.first&.sub(/^quantity:\s*/, "")
       name = text[1..-1]&.select { |x| /^name:/.match(x) }&.first&.sub(/^name:\s*/, "")
       symbol = text[1..-1]&.select { |x| /^symbol:/.match(x) }&.first&.sub(/^symbol:\s*/, "")
@@ -135,7 +136,7 @@ module Asciimath2UnitsML
       inverse = false
       units.each_with_object([]) do |u, m| 
         if u[:multiplier]
-          inverse = (u[:multiplier] == "/")
+          inverse = !inverse if (u[:multiplier] == "/")
         else
           u[:exponent] = inverse ? "-#{u[:display_exponent] || '1'}" : u[:display_exponent]
           u[:exponent] = u[:exponent]&.sub(/^--+/, "")
