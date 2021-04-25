@@ -11,7 +11,7 @@ RSpec.describe Asciimath2UnitsML do
          <mo rspace='thickmathspace'>&#x2062;</mo>
          <mrow xref='U_mm.s-2'>
            <mi mathvariant='normal'>mm</mi>
-           <mo>&#xB7;</mo>
+           <mo>&#x22C5;</mo>
            <msup>
              <mrow>
                <mi mathvariant='normal'>s</mi>
@@ -26,14 +26,14 @@ RSpec.describe Asciimath2UnitsML do
            <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
            <UnitName xml:lang='en'>mm*s^-2</UnitName>
            <UnitSymbol type='HTML'>
-             mm&#xB7;s
+             mm&#x22C5;s
              <sup>&#x2212;2</sup>
            </UnitSymbol>
            <UnitSymbol type='MathML'>
              <math xmlns='http://www.w3.org/1998/Math/MathML'>
                <mrow>
                  <mi mathvariant='normal'>mm</mi>
-                 <mo>&#xB7;</mo>
+                 <mo>&#x22C5;</mo>
                  <msup>
                    <mrow>
                      <mi mathvariant='normal'>s</mi>
@@ -418,7 +418,7 @@ OUTPUT
          <mo rspace='thickmathspace'>&#x2062;</mo>
          <mrow xref='U_kg.s-2'>
            <mi mathvariant='normal'>kg</mi>
-           <mo>&#xB7;</mo>
+           <mo>&#x22C5;</mo>
            <msup>
              <mrow>
                <mi mathvariant='normal'>s</mi>
@@ -433,14 +433,14 @@ OUTPUT
            <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
            <UnitName xml:lang='en'>kg*s^-2</UnitName>
            <UnitSymbol type='HTML'>
-             kg&#xB7;s
+             kg&#x22C5;s
              <sup>&#x2212;2</sup>
            </UnitSymbol>
            <UnitSymbol type='MathML'>
              <math xmlns='http://www.w3.org/1998/Math/MathML'>
                <mrow>
                  <mi mathvariant='normal'>kg</mi>
-                 <mo>&#xB7;</mo>
+                 <mo>&#x22C5;</mo>
                  <msup>
                    <mrow>
                      <mi mathvariant='normal'>s</mi>
@@ -474,7 +474,7 @@ OUTPUT
          <mo rspace='thickmathspace'>&#x2062;</mo>
          <mrow xref='U_kg.s-2'>
            <mi mathvariant='normal'>kg</mi>
-           <mo>&#xB7;</mo>
+           <mo>&#x22C5;</mo>
            <msup>
              <mrow>
                <mi mathvariant='normal'>s</mi>
@@ -500,23 +500,23 @@ OUTPUT
            <mi mathvariant='normal'>K</mi>
            <mo>/</mo>
            <mi mathvariant='normal'>kg</mi>
-           <mo>&#xB7;</mo>
+           <mo>&#x22C5;</mo>
            <mi mathvariant='normal'>m</mi>
          </mrow>
          <Unit xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='U_K.kg-1.m-1' dimensionURL='#D_L-1M-1Theta'>
            <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
            <UnitName xml:lang='en'>K*kg^-1*m^-1</UnitName>
            <UnitSymbol type='HTML'>
-             K&#xB7;kg
+             K&#x22C5;kg
              <sup>&#x2212;1</sup>
-             &#xB7;m
+             &#x22C5;m
              <sup>&#x2212;1</sup>
            </UnitSymbol>
            <UnitSymbol type='MathML'>
              <math xmlns='http://www.w3.org/1998/Math/MathML'>
                <mrow>
                  <mi mathvariant='normal'>K</mi>
-                 <mo>&#xB7;</mo>
+                 <mo>&#x22C5;</mo>
                  <msup>
                    <mrow>
                      <mi mathvariant='normal'>kg</mi>
@@ -526,7 +526,7 @@ OUTPUT
                      <mn>1</mn>
                    </mrow>
                  </msup>
-                 <mo>&#xB7;</mo>
+                 <mo>&#x22C5;</mo>
                  <msup>
                    <mrow>
                      <mi mathvariant='normal'>m</mi>
@@ -726,7 +726,7 @@ INPUT
          <mo rspace='thickmathspace'>&#x2062;</mo>
          <mrow xref='U_A.C3'>
            <mi mathvariant='normal'>A</mi>
-           <mo>&#xB7;</mo>
+           <mo>&#x22C5;</mo>
            <msup>
              <mrow>
                <mi mathvariant='normal'>C</mi>
@@ -740,14 +740,14 @@ INPUT
            <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
            <UnitName xml:lang='en'>A*C^3</UnitName>
            <UnitSymbol type='HTML'>
-             A&#xB7;C
+             A&#x22C5;C
              <sup>3</sup>
            </UnitSymbol>
            <UnitSymbol type='MathML'>
              <math xmlns='http://www.w3.org/1998/Math/MathML'>
                <mrow>
                  <mi mathvariant='normal'>A</mi>
-                 <mo>&#xB7;</mo>
+                 <mo>&#x22C5;</mo>
                  <msup>
                    <mrow>
                      <mi mathvariant='normal'>C</mi>
@@ -791,23 +791,23 @@ INPUT
   <mi mathvariant='normal'>J</mi>
   <mo>/</mo>
   <mi mathvariant='normal'>kg</mi>
-  <mo>&#xB7;</mo>
+  <mo>&#x22C5;</mo>
   <mi mathvariant='normal'>K</mi>
 </mrow>
 <Unit xmlns='https://schema.unitsml.org/unitsml/1.0' xml:id='U_NISTu13.u27p10_3e-1/1.u5e-1/1' dimensionURL='#D_L2M0T-2Theta-1'>
   <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
   <UnitName xml:lang='en'>joule per kilogram kelvin</UnitName>
   <UnitSymbol type='HTML'>
-    J&#xB7;kg
+    J&#x22C5;kg
     <sup>&#x2212;1</sup>
-    &#xB7;K
+    &#x22C5;K
     <sup>&#x2212;1</sup>
   </UnitSymbol>
   <UnitSymbol type='MathML'>
     <math xmlns='http://www.w3.org/1998/Math/MathML'>
       <mrow>
         <mi mathvariant='normal'>J</mi>
-        <mo>&#xB7;</mo>
+        <mo>&#x22C5;</mo>
         <msup>
           <mrow>
             <mi mathvariant='normal'>kg</mi>
@@ -817,7 +817,7 @@ INPUT
             <mn>1</mn>
           </mrow>
         </msup>
-        <mo>&#xB7;</mo>
+        <mo>&#x22C5;</mo>
         <msup>
           <mrow>
             <mi mathvariant='normal'>K</mi>
@@ -1131,7 +1131,7 @@ INPUT
          <mo rspace='thickmathspace'>&#x2062;</mo>
          <mrow xref='U_mW.cm-2'>
            <mi mathvariant='normal'>mW</mi>
-           <mo>&#xB7;</mo>
+           <mo>&#x22C5;</mo>
            <msup>
              <mrow>
                <mi mathvariant='normal'>cm</mi>
@@ -1146,14 +1146,14 @@ INPUT
            <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
            <UnitName xml:lang='en'>mW*cm^-2</UnitName>
            <UnitSymbol type='HTML'>
-             mW&#xB7;cm
+             mW&#x22C5;cm
              <sup>&#x2212;2</sup>
            </UnitSymbol>
            <UnitSymbol type='MathML'>
              <math xmlns='http://www.w3.org/1998/Math/MathML'>
                <mrow>
                  <mi mathvariant='normal'>mW</mi>
-                 <mo>&#xB7;</mo>
+                 <mo>&#x22C5;</mo>
                  <msup>
                    <mrow>
                      <mi mathvariant='normal'>cm</mi>
@@ -1254,7 +1254,7 @@ INPUT
            <UnitSymbol type='HTML'>
              cal
              <sub>th</sub>
-             &#xB7;cm
+             &#x22C5;cm
              <sup>&#x2212;2</sup>
            </UnitSymbol>
            <UnitSymbol type='MathML'>
@@ -1268,7 +1268,7 @@ INPUT
                      <mi mathvariant='normal'>th</mi>
                    </mrow>
                  </msub>
-                 <mo>&#xB7;</mo>
+                 <mo>&#x22C5;</mo>
                  <msup>
                    <mrow>
                      <mi mathvariant='normal'>cm</mi>
@@ -1348,14 +1348,14 @@ INPUT
            <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
            <UnitName xml:lang='en'>cm*s^-2</UnitName>
            <UnitSymbol type='HTML'>
-             cm&#xB7;s
+             cm&#x22C5;s
              <sup>&#x2212;2</sup>
            </UnitSymbol>
            <UnitSymbol type='MathML'>
              <math xmlns='http://www.w3.org/1998/Math/MathML'>
                <mrow>
                  <mi mathvariant='normal'>cm</mi>
-                 <mo>&#xB7;</mo>
+                 <mo>&#x22C5;</mo>
                  <msup>
                    <mrow>
                      <mi mathvariant='normal'>s</mi>
@@ -1412,14 +1412,14 @@ INPUT
     <UnitSystem name='SI' type='SI_derived' xml:lang='en-US'/>
     <UnitName xml:lang='en'>cm*s^-2</UnitName>
     <UnitSymbol type='HTML'>
-      cm&#xB7;s
+      cm&#x22C5;s
       <sup>&#x2212;2</sup>
     </UnitSymbol>
     <UnitSymbol type='MathML'>
       <math xmlns='http://www.w3.org/1998/Math/MathML'>
         <mrow>
           <mi mathvariant='normal'>cm</mi>
-          <mo>&#xB7;</mo>
+          <mo>&#x22C5;</mo>
           <msup>
             <mrow>
               <mi mathvariant='normal'>s</mi>

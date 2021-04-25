@@ -3,71 +3,29 @@ module Asciimath2UnitsML
     include Rsec::Helpers
 
     def read_yaml(path)
-      validate_yaml(symbolize_keys(YAML.load_file(File.join(File.join(File.dirname(__FILE__), path)))), path)
+      validate_yaml(symbolize_keys(YAML
+        .load_file(File.join(File.join(File.dirname(__FILE__), path)))), path)
     end
 
     def flip_name_and_symbol(hash)
-      hash.each_with_object({}) do |(k, v), m|
+      hash.each_with_object({}) do |(_k, v), m|
         next if v.name.nil? || v.name.empty?
+
         m[v.symbolid] = v
       end
     end
 
     def flip_name_and_symbols(hash)
-      hash.each_with_object({}) do |(k, v), m|
+      hash.each_with_object({}) do |(_k, v), m|
         next if v.name.nil? || v.name.empty?
+
         v.symbolids.each { |s| m[s] = v }
       end
     end
 
-    def validate_yaml(hash, path)
-      return hash if path == "../unitsdb/quantities.yaml"
-      return hash if path == "../unitsdb/dimensions.yaml"
-      hash.each_with_object({}) do |(k, v), m|
-        path == "../unitsdb/units.yaml" and validate_unit(v)
-        m = validate_symbols(m, v)
-        v[:unit_symbols]&.each { |s| validate_unit_symbol_cardinality(s, k) }
-      end
-      hash
-    end
-
-    def validate_unit(v)
-      if v[:quantity_reference]
-        v[:quantity_reference].is_a?(Array) or
-          raise StandardError.new "No quantity_reference array provided for unit: #{v}"
-      end
-      if v[:unit_name]
-        v[:unit_name].is_a?(Array) or raise StandardError.new "No unit_name array provided for unit: #{v}"
-      end
-    end
-
-    def validate_symbols(m, v)
-      symbol = symbol_key(v)
-      !symbol.nil? or raise StandardError.new "No symbol provided for unit: #{v}"
-      Array(symbol)&.each do |s|
-        m[s] && s != "1" and
-          raise StandardError.new "symbol #{s} is not unique in #{v}: already used for #{m[s]}"
-        m[s] = v
-      end
-      m 
-    end
-
-    def validate_unit_symbol_cardinality(us, k)
-      return true if us.nil?
-      !us[:id].nil? && !us[:ascii].nil? && !us[:html].nil? && !us[:mathml].nil? && !us[:latex].nil? &&
-        !us[:unicode].nil? and return true
-      raise StandardError.new "malformed unit_symbol for #{k}: #{us}"
-    end
-
-    def symbol_key(v)
-      symbol = v[:unit_symbols]&.each_with_object([]) { |s, m| m << (s["id"] || s[:id]) } || 
-        v.dig(:symbol, :ascii) || v[:symbol] #|| v[:short]
-      symbol = [symbol] if !symbol.nil? && v[:unit_symbols] && !symbol.is_a?(Array)
-      symbol
-    end
-
     def symbolize_keys(hash)
       return hash if hash.is_a? String
+
       hash.inject({}) do |result, (key, value)|
         new_key = case key
                   when String then key.to_sym
@@ -97,10 +55,10 @@ module Asciimath2UnitsML
         seq("sqrt(", unit1, ")") { |x| { prefix: nil, unit: x[1], display_exponent: "0.5" } } |
         seq("sqrt(", prefix1, unit1, ")") { |x| { prefix: x[1], unit: x[2], display_exponent: "0.5" } } |
         seq("sqrt(", prefix2, unit1, ")") { |x| { prefix: x[1], unit: x[2], display_exponent: "0.5" } } |
-        seq(unit1, exponent._? & (multiplier | ")".r)) { |x| { prefix: nil, unit: x[0], display_exponent: (x[1][0] )} } |
-        seq(unit1, exponent._?).eof { |x| { prefix: nil, unit: x[0], display_exponent: (x[1][0] )} } |
-        seq(prefix1, unit1, exponent._? ) { |x| { prefix: x[0], unit: x[1], display_exponent: (x[2][0] ) } } |
-        seq(prefix2, unit1, exponent._? ) { |x| { prefix: x[0], unit: x[1], display_exponent: (x[2][0] ) } } |
+        seq(unit1, exponent._? & (multiplier | ")".r)) { |x| { prefix: nil, unit: x[0], display_exponent: (x[1][0]) } } |
+        seq(unit1, exponent._?).eof { |x| { prefix: nil, unit: x[0], display_exponent: (x[1][0]) } } |
+        seq(prefix1, unit1, exponent._? ) { |x| { prefix: x[0], unit: x[1], display_exponent: (x[2][0]) } } |
+        seq(prefix2, unit1, exponent._? ) { |x| { prefix: x[0], unit: x[1], display_exponent: (x[2][0]) } } |
         "1".r.map { |_| { prefix: nil, unit: "1", display_exponent: nil } }
       units1 = "(".r >> lazy{units} << ")" | unit
       units = seq(prefix2, "-") { |x| [{ prefix: x[0], unit: nil, display_exponent: nil }] } |
@@ -115,6 +73,7 @@ module Asciimath2UnitsML
       if !units || Rsec::INVALID[units]
         raise Rsec::SyntaxError.new "error parsing UnitsML expression", x, 1, 0
       end
+
       Rsec::Fail.reset
       postprocess(units, text)
     end
@@ -134,11 +93,12 @@ module Asciimath2UnitsML
 
     def postprocess1(units)
       inverse = false
-      units.each_with_object([]) do |u, m| 
+      units.each_with_object([]) do |u, m|
         if u[:multiplier]
-          inverse = !inverse if (u[:multiplier] == "/")
+          inverse = !inverse if u[:multiplier] == "/"
         else
-          u[:exponent] = inverse ? "-#{u[:display_exponent] || '1'}" : u[:display_exponent]
+          u[:exponent] =
+            inverse ? "-#{u[:display_exponent] || '1'}" : u[:display_exponent]
           u[:exponent] = u[:exponent]&.sub(/^--+/, "")
         end
         m << u
@@ -155,11 +115,13 @@ module Asciimath2UnitsML
       xml.is_a? String and xml = Nokogiri::XML(xml)
       xml.xpath(".//m:mtext", "m" => MATHML_NS).each do |x|
         next unless %r{^unitsml\(.+\)$}.match(x.text)
+
         text = x.text.sub(%r{^unitsml\((.+)\)$}m, "\\1")
         units, origtext, normtext, quantity, name, symbol, multiplier = parse(text)
         rendering = symbol ? embeddedmathml(asciimath2mathml(symbol)) :
           mathmlsymbol(units, false, multiplier)
-        x.replace("#{delimspace(rendering, x)}<mrow xref='#{unit_id(origtext)}'>#{rendering}</mrow>\n"\
+        x.replace("#{delimspace(rendering, x)}"\
+                  "<mrow xref='#{unit_id(origtext)}'>#{rendering}</mrow>\n"\
                   "#{unitsml(units, origtext, normtext, quantity, name)}")
       end
       dedup_ids(xml)
@@ -167,19 +129,25 @@ module Asciimath2UnitsML
 
     # if previous sibling's last descendent non-whitespace is MathML and mn or mi, no space
     def delimspace(rendering, elem)
-      prec_text_elem = elem.xpath("./preceding-sibling::*[namespace-uri() = '#{MATHML_NS}']/"\
-                                  "descendant::text()[normalize-space()!=''][last()]/parent::*").last
-      return "" if prec_text_elem.nil? || !%w(mn mi).include?(prec_text_elem&.name)
-      text = HTMLEntities.new.encode(Nokogiri::XML("<mrow>#{rendering}</mrow>").text.strip)
+      prec_text_elem =
+        elem.xpath("./preceding-sibling::*[namespace-uri() = '#{MATHML_NS}']/"\
+                   "descendant::text()[normalize-space()!=''][last()]/parent::*").last
+      return "" if prec_text_elem.nil? ||
+        !%w(mn mi).include?(prec_text_elem&.name)
+
+      text = HTMLEntities.new.encode(Nokogiri::XML("<mrow>#{rendering}</mrow>")
+        .text.strip)
       /\p{L}|\p{N}/.match(text) ?
         "<mo rspace='thickmathspace'>&#x2062;</mo>" : "<mo>&#x2062;</mo>"
     end
 
     def dedup_ids(xml)
       %w(Unit Dimension Prefix Quantity).each do |t|
-        xml.xpath(".//m:#{t}/@xml:id", "m" => UNITSML_NS).map { |a| a.text }.uniq.each do |v|
+        xml.xpath(".//m:#{t}/@xml:id", "m" => UNITSML_NS).map(&:text)
+          .uniq.each do |v|
           xml.xpath(".//*[@xml:id = '#{v}']").each_with_index do |n, i|
-            next if i == 0
+            next if i.zero?
+
             n.remove
           end
         end
@@ -189,26 +157,28 @@ module Asciimath2UnitsML
 
     def asciimath2mathml(expression)
       AsciiMath::MathMLBuilder.new(:msword => true).append_expression(
-        AsciiMath.parse(HTMLEntities.new.decode(expression)).ast).to_s.
-      gsub(/<math>/, "<math xmlns='#{MATHML_NS}'>")
+        AsciiMath.parse(HTMLEntities.new.decode(expression)).ast).to_s
+        .gsub(/<math>/, "<math xmlns='#{MATHML_NS}'>")
     end
 
     def embeddedmathml(mathml)
       x = Nokogiri::XML(mathml)
-      x.xpath(".//m:mi", "m" => MATHML_NS).each { |mi| mi["mathvariant"] = "normal" }
+      x.xpath(".//m:mi", "m" => MATHML_NS)
+        .each { |mi| mi["mathvariant"] = "normal" }
       x.children.to_xml
     end
 
     def ambig_units
-      u = @units_id.each_with_object({}) do |(k, v), m|
+      u = @units_id.each_with_object({}) do |(_k, v), m|
         v.symbolids.each do |x|
           next if %r{[*/^]}.match(x)
           next unless v.symbols_hash[x][:html] != x
+
           m[v.symbols_hash[x][:html]] ||= []
           m[v.symbols_hash[x][:html]] << x
         end
       end
-      u.keys.each { |k| u[k] = u[k].unshift(k) if @symbols.dig(k, :html) == k }
+      u.each_key { |k| u[k] = u[k].unshift(k) if @symbols.dig(k, :html) == k }
       render_ambig_units(u)
     end
 
@@ -217,16 +187,17 @@ module Asciimath2UnitsML
       u.each { |_, v| maxcols = v.size if maxcols < v.size }
       puts %([cols="#{maxcols + 1}*"]\n|===\n|Symbol | Unit + ID #{"| " * (maxcols - 1)}\n)
       puts "\n\n"
-      u.keys.sort_by { |a| [-u[a].size, a.gsub(%r{\&[^;]+;}, "").gsub(/[^A-Za-z]/, "").downcase] }.each do |k|
+      u.keys.sort_by { |a| [-u[a].size, a.gsub(%r{\&[^;]+;}, "")
+        .gsub(/[^A-Za-z]/, "").downcase] }.each do |k|
         print "| #{html2adoc(k)} "
-        u[k].sort_by { |v1| v1.size }.each { |v1| print "| #{@units[v1].name}: `#{v1}` " }
-        puts "#{"| " * (maxcols - u[k].size) }\n"
+        u[k].sort_by(&:size).each { |v1| print "| #{@units[v1].name}: `#{v1}` " }
+        puts "#{'| ' * (maxcols - u[k].size) }\n"
       end
       puts "|===\n"
     end
 
-    def html2adoc(k)
-      k.gsub(%r{<i>}, "__").gsub(%r{</i>}, "__")
+    def html2adoc(elem)
+      elem.gsub(%r{<i>}, "__").gsub(%r{</i>}, "__")
         .gsub(%r{<sup>}, "^").gsub(%r{</sup>}, "^")
         .gsub(%r{<sub>}, "~").gsub(%r{</sub>}, "~")
     end
