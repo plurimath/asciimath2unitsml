@@ -1,6 +1,6 @@
 # coding: utf-8
 
-lib = File.expand_path("../lib", __FILE__)
+lib = File.expand_path("lib", __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "asciimath2unitsml/version"
 
@@ -29,20 +29,18 @@ Gem::Specification.new do |spec|
     .split("\n")
     .map { |kv_str| kv_str.split(" ") }
     .each do |(_, submodule_path)|
+    # for each submodule, change working directory to that submodule
+    Dir.chdir(submodule_path) do
+      # issue git ls-files in submodule's directory
+      submodule_files = `git ls-files | grep -i '.yaml$'`.split($\)
 
-      # for each submodule, change working directory to that submodule
-      Dir.chdir(submodule_path) do
-
-        # issue git ls-files in submodule's directory
-        submodule_files = `git ls-files | grep -i '.yaml$'`.split($\)
-
-        submodule_files_paths = submodule_files.map do |filename|
-          File.join submodule_path, filename
-        end
-
-        # add relative paths to gem.files
-        spec.files += submodule_files_paths
+      submodule_files_paths = submodule_files.map do |filename|
+        File.join submodule_path, filename
       end
+
+      # add relative paths to gem.files
+      spec.files += submodule_files_paths
+    end
   end
 
   spec.add_dependency "asciimath"
@@ -56,10 +54,9 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "guard", "~> 2.14"
   spec.add_development_dependency "guard-rspec", "~> 4.7"
   spec.add_development_dependency "rake", "~> 12.0"
+  spec.add_development_dependency "rexml"
   spec.add_development_dependency "rspec", "~> 3.6"
   spec.add_development_dependency "rubocop", "~> 1.5.2"
   spec.add_development_dependency "simplecov", "~> 0.15"
   spec.add_development_dependency "timecop", "~> 0.9"
-  spec.add_development_dependency "rexml"
 end
-

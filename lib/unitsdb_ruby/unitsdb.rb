@@ -1,6 +1,7 @@
 module UnitsDB
   class Dimension
-    attr_reader :id, :length, :mass, :time, :electric_current, :thermodynamic_temperature,
+    attr_reader :id, :length, :mass, :time, :electric_current,
+      :thermodynamic_temperature,
       :amount_of_substance, :luminous_intensity, :plane_angle, :dimensionless
 
     def initialize(id, hash)
@@ -10,12 +11,16 @@ module UnitsDB
         hash[:length] and @length = hash[:length][:powerNumerator].to_i
         hash[:mass] and @mass = hash[:mass][:powerNumerator].to_i
         hash[:time] and @time = hash[:time][:powerNumerator].to_i
-        hash[:electric_current] and @electric_current = hash[:electric_current][:powerNumerator].to_i
+        hash[:electric_current] and
+          @electric_current = hash[:electric_current][:powerNumerator].to_i
         hash[:thermodynamic_temperature] and
           @thermodynamic_temperature = hash[:thermodynamic_temperature][:powerNumerator].to_i
-        hash[:amount_of_substance] and @amount_of_substance = hash[:amount_of_substance][:powerNumerator].to_i
-        hash[:luminous_intensity] and @luminous_intensity = hash[:luminous_intensity][:powerNumerator].to_i
-        hash[:plane_angle] and @plane_angle = hash[:plane_angle][:powerNumerator].to_i
+        hash[:amount_of_substance] and
+          @amount_of_substance = hash[:amount_of_substance][:powerNumerator].to_i
+        hash[:luminous_intensity] and
+          @luminous_intensity = hash[:luminous_intensity][:powerNumerator].to_i
+        hash[:plane_angle] and
+          @plane_angle = hash[:plane_angle][:powerNumerator].to_i
       rescue
         raise StandardError.new "Parse fail on Dimension #{id}: #{hash}"
       end
@@ -48,7 +53,8 @@ module UnitsDB
     end
 
     def vector
-      "#{@length}:#{@mass}:#{@time}:#{@electric_current}:#{@thermodynamic_temperature}:#{@amount_of_substance}:"\
+      "#{@length}:#{@mass}:#{@time}:#{@electric_current}:"\
+        "#{@thermodynamic_temperature}:#{@amount_of_substance}:"\
         "#{@luminous_intensity}:#{@plane_angle}"
     end
   end
@@ -102,7 +108,8 @@ module UnitsDB
         @dimension = hash[:dimension_url].sub(/^#/, "")
         @type = hash[:quantity_type]
         hash[:quantity_name] and @names = hash[:quantity_name]
-        hash[:unit_reference] and @units = hash[:unit_reference].map { |x| x[:url].sub(/^#/, "") }
+        hash[:unit_reference] and
+          @units = hash[:unit_reference].map { |x| x[:url].sub(/^#/, "") }
       rescue
         raise StandardError.new "Parse fail on Quantity #{id}: #{hash}"
       end
@@ -118,7 +125,8 @@ module UnitsDB
   end
 
   class Unit
-    attr_reader :id, :dimension, :short, :root, :unit_system, :names, :symbols, :symbols_hash, :root_units, :quantities,
+    attr_reader :id, :dimension, :short, :root, :unit_system, :names,
+      :symbols, :symbols_hash, :root_units, :quantities,
       :si_derived_bases, :prefixed
 
     def initialize(id, hash)
@@ -129,11 +137,13 @@ module UnitsDB
         hash[:short] && !hash[:short].empty? and @short = hash[:short]
         @unit_system = hash[:unit_system]
         @names = hash[:unit_name]
-        @symbols_hash = hash[:unit_symbols]&.each_with_object({}) { |h, m| m[h[:id]] = h } || {}
+        @symbols_hash =
+          hash[:unit_symbols]&.each_with_object({}) { |h, m| m[h[:id]] = h } || {}
         @symbols = hash[:unit_symbols]
         hash[:root_units] and hash[:root_units][:enumerated_root_units] and
           @root = hash[:root_units][:enumerated_root_units]
-        hash[:quantity_reference] and @quantities = hash[:quantity_reference].map { |x| x[:url].sub(/^#/, "") }
+        hash[:quantity_reference] and
+          @quantities = hash[:quantity_reference].map { |x| x[:url].sub(/^#/, "") }
         hash[:si_derived_bases] and @si_derived_bases = hash[:si_derived_bases]
         @prefixed = (hash[:prefixed] == true)
       rescue
@@ -158,7 +168,7 @@ module UnitsDB
     end
 
     def symbolids
-      @symbols ? @symbols.map { |s| s[:id] } : [ @short ]
+      @symbols ? @symbols.map { |s| s[:id] } : [@short]
     end
   end
 end

@@ -46,7 +46,7 @@ module Asciimath2UnitsML
 
     def prefix(units)
       units.map { |u| u[:prefix] }.reject(&:nil?).uniq.map do |p|
-        <<~END
+        <<~XML
           <Prefix xmlns='#{UNITSML_NS}' prefixBase='#{@prefixes[p].base}'
                   prefixPower='#{@prefixes[p].power}' xml:id='#{@prefixes[p].id}'>
             <PrefixName xml:lang="en">#{@prefixes[p].name}</PrefixName>
@@ -55,18 +55,18 @@ module Asciimath2UnitsML
             <PrefixSymbol type="LaTeX">#{@prefixes[p].latex}</PrefixSymbol>
             <PrefixSymbol type="HTML">#{htmlent @prefixes[p].html}</PrefixSymbol>
           </Prefix>
-        END
+        XML
       end.join("\n")
     end
 
     def dimension_components(dims)
       return if dims.nil? || dims.empty?
 
-      <<~END
+      <<~XML
         <Dimension xmlns='#{UNITSML_NS}' xml:id="#{dim_id(dims)}">
         #{dims.map { |u| dimension1(u) }.join("\n")}
         </Dimension>
-      END
+      XML
     end
 
     U2D = {
@@ -98,9 +98,9 @@ module Asciimath2UnitsML
       end.sort { |a, b| U2D[a[:unit]][:order] <=> U2D[b[:unit]][:order] }
     end
 
-    def dimension1(u)
-      %(<#{u[:dimension]} symbol="#{u[:symbol]}"
-      powerNumerator="#{float_to_display(u[:exponent])}"/>)
+    def dimension1(dim)
+      %(<#{dim[:dimension]} symbol="#{dim[:symbol]}"
+      powerNumerator="#{float_to_display(dim[:exponent])}"/>)
     end
 
     def dim_id(dims)
@@ -188,11 +188,11 @@ module Asciimath2UnitsML
       id = quantity || @units[normtext].quantities.first
       @units[normtext]&.dimension and
         dim = %( dimensionURL="##{@units[normtext].dimension}")
-      <<~END
+      <<~XML
         <Quantity xmlns='#{UNITSML_NS}' xml:id="#{id}"#{dim} quantityType="base">
         #{quantityname(id)}
         </Quantity>
-      END
+      XML
     end
 
     def dimid2dimensions(normtext)
@@ -207,22 +207,22 @@ module Asciimath2UnitsML
       return unless @units[normtext]&.dimension
 
       dims = dimid2dimensions(@units[normtext]&.dimension)
-      <<~END
+      <<~XML
         <Dimension xmlns='#{UNITSML_NS}' xml:id="#{@units[normtext]&.dimension}">
         #{dims.map { |u| dimension1(u) }.join("\n")}
         </Dimension>
-      END
+      XML
     end
 
     def unitsml(units, origtext, normtext, quantity, name)
       dims = units2dimensions(units)
-      <<~END
+      <<~XML
         #{unit(units, origtext, normtext, dims, name)}
         #{prefix(units)}
         #{dimension(normtext)}
         #{dimension_components(dims)}
         #{quantity(normtext, quantity)}
-      END
+      XML
     end
   end
 end

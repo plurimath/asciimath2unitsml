@@ -1,13 +1,13 @@
-require 'simplecov'
-  
-SimpleCov.profiles.define 'gem' do
-  add_filter '/spec/'
-  add_filter '/autotest/'
-  add_group 'Libraries', '/lib/'
-end
-SimpleCov.start 'gem'
+require "simplecov"
 
-require 'asciimath2unitsml'
+SimpleCov.profiles.define "gem" do
+  add_filter "/spec/"
+  add_filter "/autotest/"
+  add_group "Libraries", "/lib/"
+end
+SimpleCov.start "gem"
+
+require "asciimath2unitsml"
 require "rspec/matchers"
 require "equivalent-xml/rspec_matchers"
 require "rexml/document"
@@ -24,10 +24,10 @@ RSpec.configure do |config|
   end
 end
 
-def xmlpp(x)
+def xmlpp(xml)
   s = ""
   f = REXML::Formatters::Pretty.new(2)
   f.compact = true
-  f.write(REXML::Document.new(x),s)
+  f.write(REXML::Document.new(xml), s)
   s
 end

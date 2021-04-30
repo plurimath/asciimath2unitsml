@@ -12,14 +12,14 @@ module Asciimath2UnitsML
       hash
     end
 
-    def validate_unit(v)
-      if v[:quantity_reference]
-        v[:quantity_reference].is_a?(Array) or
-          raise StandardError.new "No quantity_reference array provided for unit: #{v}"
+    def validate_unit(unit)
+      if unit[:quantity_reference]
+        unit[:quantity_reference].is_a?(Array) or
+          raise StandardError.new "No quantity_reference array provided for unit: #{unit}"
       end
-      if v[:unit_name]
-        v[:unit_name].is_a?(Array) or
-          raise StandardError.new "No unit_name array provided for unit: #{v}"
+      if unit[:unit_name]
+        unit[:unit_name].is_a?(Array) or
+          raise StandardError.new "No unit_name array provided for unit: #{unit}"
       end
     end
 
@@ -33,16 +33,16 @@ module Asciimath2UnitsML
           "already used for #{m[s]}"
         m[s] = v
       end
-      m 
+      m
     end
 
-    def validate_unit_symbol_cardinality(us, k)
-      return true if us.nil?
+    def validate_unit_symbol_cardinality(sym, k)
+      return true if sym.nil?
 
-      !us[:id].nil? && !us[:ascii].nil? && !us[:html].nil? &&
-        !us[:mathml].nil? && !us[:latex].nil? &&
-        !us[:unicode].nil? and return true
-      raise StandardError.new "malformed unit_symbol for #{k}: #{us}"
+      !sym[:id].nil? && !sym[:ascii].nil? && !sym[:html].nil? &&
+        !sym[:mathml].nil? && !sym[:latex].nil? &&
+        !sym[:unicode].nil? and return true
+      raise StandardError.new "malformed unit_symbol for #{k}: #{sym}"
     end
 
     def symbol_key(v)
