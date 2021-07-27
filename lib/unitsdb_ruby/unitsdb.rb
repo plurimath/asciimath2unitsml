@@ -1,29 +1,49 @@
 module UnitsDB
   class Dimension
-    attr_reader :id, :length, :mass, :time, :electric_current,
-      :thermodynamic_temperature,
-      :amount_of_substance, :luminous_intensity, :plane_angle, :dimensionless
+    attr_reader :id, :name, :symbols, :symbols_hash,
+                :length, :mass, :time, :electric_current,
+                :thermodynamic_temperature,
+                :amount_of_substance, :luminous_intensity, :plane_angle,
+                :dimensionless
 
     def initialize(id, hash)
-      begin
-        @id = id
-        @dimensionless = hash[:dimensionless]
-        hash[:length] and @length = hash[:length][:powerNumerator].to_i
-        hash[:mass] and @mass = hash[:mass][:powerNumerator].to_i
-        hash[:time] and @time = hash[:time][:powerNumerator].to_i
-        hash[:electric_current] and
-          @electric_current = hash[:electric_current][:powerNumerator].to_i
-        hash[:thermodynamic_temperature] and
-          @thermodynamic_temperature = hash[:thermodynamic_temperature][:powerNumerator].to_i
-        hash[:amount_of_substance] and
-          @amount_of_substance = hash[:amount_of_substance][:powerNumerator].to_i
-        hash[:luminous_intensity] and
-          @luminous_intensity = hash[:luminous_intensity][:powerNumerator].to_i
-        hash[:plane_angle] and
-          @plane_angle = hash[:plane_angle][:powerNumerator].to_i
-      rescue
-        raise StandardError.new "Parse fail on Dimension #{id}: #{hash}"
+      @id = id
+      @dimensionless = hash[:dimensionless]
+      init_dimension(hash)
+      name_dimension(hash)
+    rescue StandardError
+      raise StandardError.new "Parse fail on Dimension #{id}: #{hash}"
+    end
+
+    def init_dimension(hash)
+      hash[:length] and @length = hash[:length][:powerNumerator].to_i
+      hash[:mass] and @mass = hash[:mass][:powerNumerator].to_i
+      hash[:time] and @time = hash[:time][:powerNumerator].to_i
+      hash[:electric_current] and
+        @electric_current = hash[:electric_current][:powerNumerator].to_i
+      hash[:thermodynamic_temperature] and
+        @thermodynamic_temperature = hash[:thermodynamic_temperature][:powerNumerator].to_i
+      hash[:amount_of_substance] and
+        @amount_of_substance = hash[:amount_of_substance][:powerNumerator].to_i
+      hash[:luminous_intensity] and
+        @luminous_intensity = hash[:luminous_intensity][:powerNumerator].to_i
+      hash[:plane_angle] and
+        @plane_angle = hash[:plane_angle][:powerNumerator].to_i
+    end
+
+    def name_dimension(hash)
+      acc = %i(length mass time electric_current thermodynamic_temperature
+               amount_of_substance luminous_intensity plane_angle)
+        .each_with_object({}) do |x, m|
+        hash[x] and m[x] = hash[x][:powerNumerator]
       end
+      return unless acc.keys.size == 1 && acc.values[0] == 1
+
+      dim = acc.keys[0]
+      @name = dim.to_s
+      @symbols = hash[dim][:dim_symbols]
+      @symbols_hash =
+        @symbols&.each_with_object({}) { |h, m| m[h[:id]] = h } || {}
     end
 
     def keys
@@ -57,21 +77,27 @@ module UnitsDB
         "#{@thermodynamic_temperature}:#{@amount_of_substance}:"\
         "#{@luminous_intensity}:#{@plane_angle}"
     end
+
+    def symbolid
+      @symbols ? @symbols.first[:id] : nil
+    end
+
+    def symbolids
+      @symbols ? @symbols.map { |s| s[:id] } : []
+    end
   end
 
   class Prefix
     attr_reader :id, :name, :base, :power, :symbol
 
     def initialize(id, hash)
-      begin
-        @id = id
-        @name = hash[:name]
-        @base = hash[:base]
-        @power = hash[:power]
-        @symbol = hash[:symbol] # always is a hash
-      rescue
-        raise StandardError.new "Parse fail on Prefix #{id}: #{hash}"
-      end
+      @id = id
+      @name = hash[:name]
+      @base = hash[:base]
+      @power = hash[:power]
+      @symbol = hash[:symbol] # always is a hash
+    rescue StandardError
+      raise StandardError.new "Parse fail on Prefix #{id}: #{hash}"
     end
 
     def ascii
@@ -103,16 +129,14 @@ module UnitsDB
     attr_reader :id, :dimension, :type, :names, :units
 
     def initialize(id, hash)
-      begin
-        @id = id
-        @dimension = hash[:dimension_url].sub(/^#/, "")
-        @type = hash[:quantity_type]
-        hash[:quantity_name] and @names = hash[:quantity_name]
-        hash[:unit_reference] and
-          @units = hash[:unit_reference].map { |x| x[:url].sub(/^#/, "") }
-      rescue
-        raise StandardError.new "Parse fail on Quantity #{id}: #{hash}"
-      end
+      @id = id
+      @dimension = hash[:dimension_url].sub(/^#/, "")
+      @type = hash[:quantity_type]
+      hash[:quantity_name] and @names = hash[:quantity_name]
+      hash[:unit_reference] and
+        @units = hash[:unit_reference].map { |x| x[:url].sub(/^#/, "") }
+    rescue StandardError
+      raise StandardError.new "Parse fail on Quantity #{id}: #{hash}"
     end
 
     def name
@@ -126,29 +150,27 @@ module UnitsDB
 
   class Unit
     attr_reader :id, :dimension, :short, :root, :unit_system, :names,
-      :symbols, :symbols_hash, :root_units, :quantities,
-      :si_derived_bases, :prefixed
+                :symbols, :symbols_hash, :root_units, :quantities,
+                :si_derived_bases, :prefixed
 
     def initialize(id, hash)
-      begin
-        @id = id
-        @short = short
-        @dimension = hash[:dimension_url].sub(/^#/, "")
-        hash[:short] && !hash[:short].empty? and @short = hash[:short]
-        @unit_system = hash[:unit_system]
-        @names = hash[:unit_name]
-        @symbols_hash =
-          hash[:unit_symbols]&.each_with_object({}) { |h, m| m[h[:id]] = h } || {}
-        @symbols = hash[:unit_symbols]
-        hash[:root_units] and hash[:root_units][:enumerated_root_units] and
-          @root = hash[:root_units][:enumerated_root_units]
-        hash[:quantity_reference] and
-          @quantities = hash[:quantity_reference].map { |x| x[:url].sub(/^#/, "") }
-        hash[:si_derived_bases] and @si_derived_bases = hash[:si_derived_bases]
-        @prefixed = (hash[:prefixed] == true)
-      rescue
-        raise StandardError.new "Parse fail on Unit #{id}: #{hash}"
-      end
+      @id = id
+      @short = short
+      @dimension = hash[:dimension_url].sub(/^#/, "")
+      hash[:short] && !hash[:short].empty? and @short = hash[:short]
+      @unit_system = hash[:unit_system]
+      @names = hash[:unit_name]
+      @symbols_hash =
+        hash[:unit_symbols]&.each_with_object({}) { |h, m| m[h[:id]] = h } || {}
+      @symbols = hash[:unit_symbols]
+      hash[:root_units] and hash[:root_units][:enumerated_root_units] and
+        @root = hash[:root_units][:enumerated_root_units]
+      hash[:quantity_reference] and
+        @quantities = hash[:quantity_reference].map { |x| x[:url].sub(/^#/, "") }
+      hash[:si_derived_bases] and @si_derived_bases = hash[:si_derived_bases]
+      @prefixed = (hash[:prefixed] == true)
+    rescue StandardError
+      raise StandardError.new "Parse fail on Unit #{id}: #{hash}"
     end
 
     def system_name

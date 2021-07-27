@@ -3,6 +3,8 @@ require "nokogiri"
 require "htmlentities"
 require "yaml"
 require "rsec"
+require_relative "read"
+require_relative "dimensions"
 require_relative "string"
 require_relative "parse"
 require_relative "render"
@@ -19,6 +21,7 @@ module Asciimath2UnitsML
         .each_with_object({}) do |(k, v), m|
         m[k.to_s] = UnitsDB::Dimension.new(k, v)
       end
+      @dimensions = flip_name_and_symbols(@dimensions_id)
       @prefixes_id = read_yaml("../unitsdb/prefixes.yaml")
         .each_with_object({}) do |(k, v), m|
         m[k] = UnitsDB::Prefix.new(k, v)
@@ -33,10 +36,10 @@ module Asciimath2UnitsML
         m[k.to_s] = UnitsDB::Unit.new(k.to_s, v)
       end
       @units = flip_name_and_symbols(@units_id)
-      @symbols = @units.each_with_object({}) do |(_k, v), m|
+      @symbols = @units.merge(@dimensions).each_with_object({}) do |(_k, v), m|
         v.symbolids.each { |x| m[x] = v.symbols_hash[x] }
       end
-      @parser = parser
+      @parser, @dim_parser = parsers
       @multiplier = multiplier(options[:multiplier] || "\u22c5")
     end
 
@@ -59,70 +62,17 @@ module Asciimath2UnitsML
       end.join("\n")
     end
 
-    def dimension_components(dims)
-      return if dims.nil? || dims.empty?
-
-      <<~XML
-        <Dimension xmlns='#{UNITSML_NS}' xml:id="#{dim_id(dims)}">
-        #{dims.map { |u| dimension1(u) }.join("\n")}
-        </Dimension>
-      XML
-    end
-
-    U2D = {
-      "m" => { dimension: "Length", order: 1, symbol: "L" },
-      "g" => { dimension: "Mass", order: 2, symbol: "M" },
-      "kg" => { dimension: "Mass", order: 2, symbol: "M" },
-      "s" => { dimension: "Time", order: 3, symbol: "T" },
-      "A" => { dimension: "ElectricCurrent", order: 4, symbol: "I" },
-      "K" => { dimension: "ThermodynamicTemperature", order: 5,
-               symbol: "Theta" },
-      "degK" => { dimension: "ThermodynamicTemperature", order: 5,
-                  symbol: "Theta" },
-      "mol" => { dimension: "AmountOfSubstance", order: 6, symbol: "N" },
-      "cd" => { dimension: "LuminousIntensity", order: 7, symbol: "J" },
-      "deg" => { dimension: "PlaneAngle", order: 8, symbol: "Phi" },
-    }.freeze
-
-    def units2dimensions(units)
-      norm = decompose_units(units)
-      return if norm.any? do |u|
-        u[:unit] == "unknown" || u[:prefix] == "unknown" || u[:unit].nil?
-      end
-
-      norm.map do |u|
-        { dimension: U2D[u[:unit]][:dimension],
-          unit: u[:unit],
-          exponent: u[:exponent] || 1,
-          symbol: U2D[u[:unit]][:symbol] }
-      end.sort { |a, b| U2D[a[:unit]][:order] <=> U2D[b[:unit]][:order] }
-    end
-
-    def dimension1(dim)
-      %(<#{dim[:dimension]} symbol="#{dim[:symbol]}"
-      powerNumerator="#{float_to_display(dim[:exponent])}"/>)
-    end
-
-    def dim_id(dims)
-      return nil if dims.nil? || dims.empty?
-
-      dimhash = dims.each_with_object({}) { |h, m| m[h[:dimension]] = h }
-      dimsvector = %w(Length Mass Time ElectricCurrent ThermodynamicTemperature
-                      AmountOfSubstance LuminousIntensity PlaneAngle)
-        .map { |h| dimhash.dig(h, :exponent) }.join(":")
-      id = @dimensions_id&.values&.select { |d| d.vector == dimsvector }
-        &.first&.id and return id.to_s
-      "D_" + dims.map do |d|
-        U2D[d[:unit]][:symbol] +
-          (d[:exponent] == 1 ? "" : float_to_display(d[:exponent]))
-      end.join("")
-    end
-
     def decompose_units(units)
       gather_units(units_only(units).map { |u| decompose_unit(u) }.flatten)
     end
 
     def gather_units(units)
+      if units[0][:dim] then gather_dimensions(units)
+      else gather_units1(units)
+      end
+    end
+
+    def gather_units1(units)
       units.sort_by { |a| a[:unit] }.each_with_object([]) do |k, m|
         if m.empty? || m[-1][:unit] != k[:unit] then m << k
         else
@@ -138,12 +88,24 @@ module Asciimath2UnitsML
       end
     end
 
+    def gather_dimensions(units)
+      units.sort_by { |a| a[:dim] }.each_with_object([]) do |k, m| 
+        if m.empty? || m[-1][:dim] != k[:dim] then m << k
+        else
+          m[-1] = {
+            dim: m[-1][:dim],
+            exponent: (k[:exponent]&.to_f || 1) +
+              (m[-1][:exponent]&.to_f || 1),
+          }
+        end
+      end
+    end
+
     # treat g not kg as base unit: we have stripped the prefix k in parsing
     # reduce units down to basic units
     def decompose_unit(u)
-      if u[:unit].nil? then u
-      elsif u[:unit] == "g" then u
-      elsif @units[u[:unit]].system_type == "SI_base" then u
+      if u[:unit].nil? || u[:unit] == "g" ||
+          @units[u[:unit]].system_type == "SI_base" then u
       elsif !@units[u[:unit]].si_derived_bases
         { prefix: u[:prefix], unit: "unknown", exponent: u[:exponent] }
       else
@@ -192,25 +154,6 @@ module Asciimath2UnitsML
         <Quantity xmlns='#{UNITSML_NS}' xml:id="#{id}"#{dim} quantityType="base">
         #{quantityname(id)}
         </Quantity>
-      XML
-    end
-
-    def dimid2dimensions(normtext)
-      @dimensions_id[normtext].keys.map do |k|
-        { dimension: k,
-          symbol: U2D.values.select { |v| v[:dimension] == k }.first[:symbol],
-          exponent: @dimensions_id[normtext].exponent(k) }
-      end
-    end
-
-    def dimension(normtext)
-      return unless @units[normtext]&.dimension
-
-      dims = dimid2dimensions(@units[normtext]&.dimension)
-      <<~XML
-        <Dimension xmlns='#{UNITSML_NS}' xml:id="#{@units[normtext]&.dimension}">
-        #{dims.map { |u| dimension1(u) }.join("\n")}
-        </Dimension>
       XML
     end
 

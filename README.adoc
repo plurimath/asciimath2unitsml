@@ -59,6 +59,24 @@ units. The options are an XML entity, or the values `space` or `nospace` (for wh
 Standalone prefixes can be recognised by replacing the unit with hyphen; so `unitsml(p-)` corresponds
 to the standalone prefix "pico" (and is rendered as "p").
 
+The gem also supports fundamental units, e.g. `unitsml(e)` for the atomic unit of charge, _e_,
+and symbols for dimensions. The latter are entered as `dim_XXX`, where `XXX` is their established symbol:
+
+|===
+|Symbol | Dimension
+
+|dim_L | Length
+|dim_M | Mass
+|dim_T | Time
+|dim_I | Electric Current
+|dim_Theta | Thermodynamic Temperature
+|dim_N | Amount of Substance
+|dim_J | Luminous Intensity
+|dim_phi | Plane Angle (dimensionless)
+|===
+
+e.g. `unitsml(dim_I)` for the dimension of electric current, 𝖨.
+
 == Rendering
 
 The output of the gem is MathML, with MathML unit expressions (expressed as `<mi>`, 
@@ -141,7 +159,7 @@ The converter is run as:
 [source,ruby]
 ----
 c = Asciimath2UnitsML::Conv.new()
-c.Asciimath2UnitsML(1 "unitsml(mm*s^-2)") # AsciiMath string containing UnitsML
+c.Asciimath2UnitsML('1 "unitsml(mm*s^-2)"') # AsciiMath string containing UnitsML
 c.MathML2UnitsML("<math xmlns='http://www.w3.org/1998/Math/MathML'><mn>7</mn>"\
   "<mtext>unitsml(kg^-2)</mtext></math>") # AsciiMath string containing <mtext>unitsml()</mtext>
 c.MathML2UnitsML(Nokogiri::XML("<math xmlns='http://www.w3.org/1998/Math/MathML'><mn>7</mn>"\

@@ -1,14 +1,14 @@
 module Asciimath2UnitsML
   class Conv
-    def multiplier(x)
-      case x
+    def multiplier(val)
+      case val
       when :space
         { html: "&#xA0;", mathml: "<mo rspace='thickmathspace'>&#x2062;</mo>" }
       when :nospace
         { html: "", mathml: "<mo>&#x2062;</mo>" }
       else
-        { html: HTMLEntities.new.encode(x),
-          mathml: "<mo>#{HTMLEntities.new.encode(x)}</mo>" }
+        { html: HTMLEntities.new.encode(val),
+          mathml: "<mo>#{HTMLEntities.new.encode(val)}</mo>" }
       end
     end
 
@@ -33,14 +33,14 @@ module Asciimath2UnitsML
             render(normalise ? @units[u[:unit]].symbolid : u[:unit], :html)
           htmlsymbol_exponent(u, base)
         end
-      end.join("")
+      end.join
     end
 
-    def htmlsymbol_exponent(u, base)
-      if u[:display_exponent] == "0.5"
+    def htmlsymbol_exponent(unit, base)
+      if unit[:display_exponent] == "0.5"
         base = "&#x221a;#{base}"
-      elsif u[:display_exponent]
-        exp = "<sup>#{u[:display_exponent].sub(/-/, '&#x2212;')}</sup>"
+      elsif unit[:display_exponent]
+        exp = "<sup>#{unit[:display_exponent].sub(/-/, '&#x2212;')}</sup>"
         base += exp
       end
       base
@@ -56,18 +56,29 @@ module Asciimath2UnitsML
         else
           mathmlsymbol1(u, normalise)
         end
-      end.join("")
+      end.join
     end
 
-    def mathmlsymbol1(u, normalise)
-      base = render(normalise ? @units[u[:unit]].symbolid : u[:unit], :mathml)
-      if u[:prefix]
-        prefix = htmlent(@prefixes[u[:prefix]].html)
-        base = base.match(/<mi mathvariant='normal'>/) ?
-          base.sub(/<mi mathvariant='normal'>/, "<mi mathvariant='normal'>#{prefix}") :
-          "<mrow><mi mathvariant='normal'>#{prefix}#{base}</mrow>"
+    def mathmlsymbol1(unit, normalise)
+      base = if unit[:dim]
+               render(normalise ? @dimensions[unit[:dim]].symbolid : unit[:dim],
+                      :mathml)
+             else
+               render(normalise ? @units[unit[:unit]].symbolid : unit[:unit],
+                      :mathml)
+             end
+      unit[:prefix] and base = mathmlsymbol1_prefixed(unit, base)
+      mathmlsymbol_exponent(unit, base)
+    end
+
+    def mathmlsymbol1_prefixed(unit, base)
+      prefix = htmlent(@prefixes[unit[:prefix]].html)
+      if /<mi mathvariant='normal'>/.match?(base)
+        base.sub(/<mi mathvariant='normal'>/,
+                 "<mi mathvariant='normal'>#{prefix}")
+      else
+        "<mrow><mi mathvariant='normal'>#{prefix}#{base}</mrow>"
       end
-      mathmlsymbol_exponent(u, base)
     end
 
     def mathmlsymbol_exponent(unit, base)
