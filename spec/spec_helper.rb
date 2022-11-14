@@ -25,9 +25,5 @@ RSpec.configure do |config|
 end
 
 def xmlpp(xml)
-  s = ""
-  f = REXML::Formatters::Pretty.new(2)
-  f.compact = true
-  f.write(REXML::Document.new(xml), s)
-  s
+  Nokogiri::XML(xml).to_xml(indent: 2, encoding: "UTF-8")
 end
