@@ -1,3 +1,5 @@
+## DEPRECATION NOTICE: This repository is no longer maintained. Please visit link:https://github.com/plurimath/plurimath[Plurimath] for the latest updates and features.
+
 image:https://img.shields.io/gem/v/asciimath2unitsml.svg["Gem Version", link="https://rubygems.org/gems/asciimath2unitsml"]
 image:https://github.com/plurimath/asciimath2unitsml/workflows/rake/badge.svg["Build Status", link="https://github.com/plurimath/asciimath2unitsml/actions?workflow=rake"]
 // image:https://codeclimate.com/github/plurimath/asciimath2unitsml/badges/gpa.svg["Code Climate", link="https://codeclimate.com/github/plurimath/asciimath2unitsml"]
