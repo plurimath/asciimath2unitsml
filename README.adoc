@@ -1,3 +1,31 @@
+## RETIRED — superseded by Plurimath
+
+This repository was archived on 2026-11-02 and is no longer maintained. Its
+functionality — turning AsciiMath into MathML with UnitsML-encoded units — is
+fully subsumed by https://github.com/plurimath/plurimath[Plurimath]. Plurimath
+parses AsciiMath natively and carries `unitsml(...)` unit expressions as
+first-class formula content, expanding them into composed unit MathML; full
+UnitsML XML is available through the `unitsml` gem that Plurimath depends on.
+
+Gem usage:
+
+[source,ruby]
+----
+require "plurimath"
+
+formula = Plurimath::Math.parse('3~"unitsml(m)"', :asciimath)
+formula.to_mathml  # => MathML with the unit composed as styled MathML
+----
+
+Any AsciiMath expression converts to MathML the same way:
+
+[source,ruby]
+----
+Plurimath::Math.parse("3 + 4", :asciimath).to_mathml
+----
+
+Documentation: the formal specifications for every supported format live at
+https://plurimath.github.io/docs/ .
 ## DEPRECATION NOTICE: This repository is no longer maintained. Please visit link:https://github.com/plurimath/plurimath[Plurimath] for the latest updates and features.
 
 image:https://img.shields.io/gem/v/asciimath2unitsml.svg["Gem Version", link="https://rubygems.org/gems/asciimath2unitsml"]
